@@ -387,49 +387,103 @@ body {
 .side-tab.cab.active .side-tab-label { color: #fff; }
 .side-tab.page.active { background: rgba(201, 162, 39, 0.14); }
 
+/* ---------- Botón de menú y backdrop (solo móvil) ---------- */
+.nav-toggle,
+.nav-backdrop { display: none; }
+
+.nav-toggle {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 60;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--gold);
+  border-radius: 8px;
+  background: var(--paper);
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  padding: 0;
+}
+
+.nav-toggle-bar {
+  display: block;
+  width: 5px;
+  height: 22px;
+  border-radius: 3px;
+  background: var(--brown-dark);
+}
+
+.nav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 54;
+  background: rgba(30, 26, 20, 0.55);
+  backdrop-filter: blur(2px);
+}
+
 @media (max-width: 899px) {
   .has-side-nav { margin-left: 0; }
 
+  .nav-toggle { display: flex; }
+
+  .nav-backdrop:not([hidden]) { display: block; }
+
+  body.nav-open { overflow: hidden; }
+
   .side-nav {
-    position: sticky;
+    position: fixed;
     top: 0;
-    width: 100%;
+    left: 0;
+    bottom: 0;
+    width: 270px;
+    max-width: 84vw;
     height: auto;
-    flex-direction: row;
+    flex-direction: column;
     align-items: stretch;
-    gap: 6px;
-    padding: 8px 10px;
-    border-right: none;
-    border-bottom: 3px solid var(--gold);
-    overflow-x: auto;
+    gap: 8px;
+    padding: 64px 14px 14px;
+    border-right: 3px solid var(--gold);
+    border-bottom: none;
+    overflow-y: auto;
+    transform: translateX(-105%);
+    transition: transform 0.3s ease;
+    box-shadow: 4px 0 18px rgba(0, 0, 0, 0.25);
   }
 
+  .side-nav.open { transform: translateX(0); }
+
   .side-tabs-cab {
-    flex: none;
-    flex-direction: row;
-    align-items: stretch;
+    flex: 1 1 0;
+    flex-direction: column;
     gap: 6px;
-    margin-left: 0;
-    padding-left: 0;
-    border-left: none;
+    margin-left: 10px;
+    padding-left: 8px;
+    border-left: 2px dashed rgba(201, 162, 39, 0.55);
   }
 
   .side-tab {
-    flex: none;
     flex-direction: row;
     align-items: center;
-    padding: 6px 10px;
+    padding: 8px 12px;
     white-space: nowrap;
   }
 
-  .side-tab.cab { flex: none; min-height: 0; }
+  .side-tab.cab { flex: 1 1 0; min-height: 0; }
+  .side-tab.page { flex: 0 0 auto; }
 
-  .side-tab-handle { margin: 0 6px 0 0; width: 18px; height: 4px; }
-
-  .side-tab-label { font-size: 0.82rem; }
+  .side-tab-handle { margin: 0 8px 0 0; width: 20px; height: 4px; }
 
   .side-tab:hover,
   .side-tab.active { transform: none; }
+
+  .has-side-nav .archive-header,
+  .has-side-nav .site-header { padding-top: 64px; }
+
+  .page-admin.has-side-nav .admin-layout { padding-top: 58px; }
 }
 
 /* ---------- Página Misión ---------- */

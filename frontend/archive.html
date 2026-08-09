@@ -29,6 +29,13 @@
 <body class="page-archive has-side-nav">
   <div class="paper-texture"></div>
 
+  <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false">
+    <span class="nav-toggle-bar"></span>
+    <span class="nav-toggle-bar"></span>
+    <span class="nav-toggle-bar"></span>
+  </button>
+  <div class="nav-backdrop" id="nav-backdrop" hidden></div>
+
   <nav class="side-nav" aria-label="Navegación principal">
     <a class="side-tab page" href="/index.html">
       <span class="side-tab-handle"></span>
@@ -107,6 +114,7 @@
     </div>
   </div>
 
+  <script src="/scripts/nav.js" defer></script>
   <script src="/scripts/archive.js"></script>
 </body>
 </html>
