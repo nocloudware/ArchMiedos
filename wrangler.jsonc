@@ -21,6 +21,12 @@
   "observability": {
     "enabled": true
   },
+  "routes": [
+    {
+      "pattern": "archmiedos.nocloudware.com",
+      "custom_domain": true
+    }
+  ],
   "rules": [
     {
       "type": "Text",
