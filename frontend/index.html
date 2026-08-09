@@ -145,6 +145,22 @@
     </aside>
   </main>
 
+  <div id="ficha-modal" class="ficha-modal" hidden>
+    <div class="ficha-backdrop" data-close-ficha></div>
+    <div class="ficha-panel" role="dialog" aria-modal="true" aria-labelledby="ficha-title">
+      <button class="ficha-close" data-close-ficha aria-label="Cerrar" type="button">&times;</button>
+      <h2 id="ficha-title" class="ficha-title">Ficha del miedo</h2>
+      <p id="ficha-content" class="ficha-content"></p>
+      <div class="ficha-meta">
+        <span id="ficha-date" class="home-fear-date"></span>
+        <span id="ficha-topic" class="ficha-topic"></span>
+      </div>
+      <div class="ficha-actions">
+        <a id="ficha-cabinet" class="btn-deposit" href="#">Verlo en el cajón</a>
+      </div>
+    </div>
+  </div>
+
   <footer class="disclaimer-footer">
     <p class="disclaimer-text">
       Este archivo no guarda información personal ni de telemetría de quienes lo visitan.

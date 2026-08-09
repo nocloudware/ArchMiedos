@@ -374,6 +374,90 @@ body {
 
 .fear-view-link:hover { color: var(--accent-red); }
 
+/* ---------- Modal de ficha ---------- */
+.ficha-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.ficha-modal[hidden] { display: none; }
+
+.ficha-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(30, 26, 20, 0.6);
+  backdrop-filter: blur(3px);
+}
+
+.ficha-panel {
+  position: relative;
+  width: min(560px, 94vw);
+  max-height: 84vh;
+  overflow-y: auto;
+  background: var(--paper);
+  border: 2px solid var(--brown);
+  border-radius: 14px;
+  box-shadow: var(--shadow-soft), 6px 6px 0 rgba(74, 53, 38, 0.35);
+  padding: 28px;
+}
+
+.ficha-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  border: none;
+  background: transparent;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--brown);
+  cursor: pointer;
+  padding: 0 6px;
+  transition: color 0.2s ease, transform 0.15s ease;
+}
+
+.ficha-close:hover { color: var(--accent-red); transform: rotate(90deg); }
+
+.ficha-title {
+  font-family: var(--font-retro);
+  color: var(--brown-dark);
+  margin: 0 0 14px;
+  font-size: 1.4rem;
+}
+
+.ficha-content {
+  font-size: 1rem;
+  color: var(--ink);
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.7;
+  margin: 0 0 16px;
+}
+
+.ficha-meta {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-top: 1px solid var(--cream-dark);
+  padding-top: 10px;
+}
+
+.ficha-topic {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--steel);
+}
+
+.ficha-actions {
+  margin-top: 18px;
+  text-align: center;
+}
+
 /* ---------- Footer ---------- */
 .site-footer { text-align: center; padding: 32px 0 56px; }
 
