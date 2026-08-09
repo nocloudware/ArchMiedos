@@ -1,6 +1,7 @@
 import { json, notFound } from '../utils/http.js';
 import { isAuthorized } from '../services/auth.js';
 import { logAdminAccess } from '../services/adminLog.js';
+import { classifyFear } from '../services/classify.js';
 import * as db from '../services/db.js';
 import { clamp } from '../utils/validation.js';
 
@@ -19,6 +20,7 @@ export async function handleAdmin(request, env, path, url) {
   if (path === '/api/admin/stats' && method === 'GET') return getStats(env);
   if (path === '/api/admin/fears' && method === 'GET') return listFears(env, url);
   if (path === '/api/admin/logs' && method === 'GET') return getLogs(env, url);
+  if (path === '/api/admin/reclassify' && method === 'POST') return reclassifyFears(env);
 
   const updateMatch = path.match(/^\/api\/admin\/fears\/(\d+)$/);
   if (updateMatch && method === 'PUT') return updateFear(request, env, updateMatch[1]);
@@ -81,4 +83,15 @@ async function getLogs(env, url) {
   const limit = clamp(url.searchParams.get('limit'), 1, 100, 50);
   const result = await db.listAdminLogs(env, limit);
   return json({ items: result.results });
+}
+
+async function reclassifyFears(env) {
+  const result = await db.getAllFearsForClassification(env);
+  let updated = 0;
+  for (const fear of result.results) {
+    const { topic, letter } = await classifyFear(env, fear.content);
+    await db.updateFearClassification(env, fear.id, topic, letter);
+    updated++;
+  }
+  return json({ ok: true, updated, total: result.results.length });
 }

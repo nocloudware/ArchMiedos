@@ -1,6 +1,7 @@
 import { json, notFound } from '../utils/http.js';
 import { validateContent, parseLetterRange, clamp, RATE_LIMIT_PER_DAY } from '../utils/validation.js';
 import { moderateContent } from '../services/ai.js';
+import { classifyFear } from '../services/classify.js';
 import * as db from '../services/db.js';
 
 const VISITOR_COOKIE = 'am_visitor';
@@ -74,7 +75,15 @@ async function createFear(request, env) {
 
   const mod = await moderateContent(env, value);
   const approved = mod.isSafe;
-  const result = await db.insertFear(env, { content: value, ipHash, approved, comment: mod.comment });
+  const { topic, letter } = await classifyFear(env, value);
+  const result = await db.insertFear(env, {
+    content: value,
+    ipHash,
+    approved,
+    comment: mod.comment,
+    topic,
+    topicLetter: letter,
+  });
 
   if (!approved) {
     await db.insertReport(env, result.meta.last_row_id, mod.comment || 'Reportado por moderación automática');

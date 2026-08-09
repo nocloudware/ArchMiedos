@@ -57,12 +57,16 @@ Las páginas públicas (`archive`, `terminos`, `mision`) llevan un menú vertica
 | first_letter | CHAR(1) | GENERATED ALWAYS, UPPER(SUBSTR(content,1,1)) |
 | apoyos | INTEGER | contador de reacciones "apoyo" |
 | fuerzas | INTEGER | contador de reacciones "fuerza" |
+| topic | TEXT | tema del miedo extraído por IA (ej. "arañas") |
+| topic_letter | CHAR(1) | letra del tema (base de la agrupación por letra) |
 | ip_hash | TEXT | SHA-256 de la IP del autor (para rate limit) |
 | created_at | DATETIME | default CURRENT_TIMESTAMP |
 | is_approved | BOOLEAN | |
 | is_reported | BOOLEAN | |
 | status | TEXT | pending / approved / rejected |
 | moderation_comment | TEXT | motivo de la moderación |
+
+**Agrupación por letra.** Los archivadores agrupan por el **tema real del miedo**, no por la primera letra de la frase: "Tengo miedo a las arañas" queda en la letra **A**. En `POST /api/fears`, `services/classify.js` llama a Workers AI (`@cf/meta/llama-3.3-70b-instruct-fp8-fast`) para extraer el sustantivo del miedo, del que se deriva `topic` y `topic_letter` (normalizada a A–Z, sin acentos). Si la IA falla, cae a una heurística en español (patrones "miedo a las X", "me da miedo la X", "me asusta la X", etc.); como último recurso usa la primera letra del contenido. Las consultas públicas filtran por `topic_letter`. La columna generada `first_letter` queda como legado sin uso.
 
 ### `reactions` — reacciones (dedup por cookie + tipo)
 `UNIQUE(fear_id, cookie_id, type)`. `type ∈ {apoyo, fuerza}`. Sustituye a la antigua tabla `likes` (migración: `database/migrate_reactions.sql`).
@@ -112,6 +116,7 @@ PUT    /api/admin/fears/:id        { status, comment? }
 DELETE /api/admin/fears/:id
 GET    /api/admin/stats            + topLiked (orden por apoyos+fuerzas) + activity 7 días
 GET    /api/admin/logs?limit=100   últimos accesos al panel (admin_logs)
+POST   /api/admin/reclassify       reclasifica todos los miedos por tema (IA); backfill
 ```
 
 Las credenciales de admin se leen de los secretos `ADMIN_USERNAME` / `ADMIN_PASSWORD` (en `.dev.vars` para local). Comparación con `timingSafeEqual`.

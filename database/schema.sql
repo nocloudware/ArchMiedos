@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS fears (
   first_letter CHAR(1) GENERATED ALWAYS AS (UPPER(SUBSTR(content, 1, 1))) STORED,
   apoyos INTEGER DEFAULT 0,
   fuerzas INTEGER DEFAULT 0,
+  topic TEXT,
+  topic_letter CHAR(1),
   ip_hash TEXT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   is_approved BOOLEAN DEFAULT 0,
@@ -20,6 +22,7 @@ CREATE INDEX IF NOT EXISTS idx_first_letter ON fears(first_letter);
 CREATE INDEX IF NOT EXISTS idx_approved ON fears(is_approved);
 CREATE INDEX IF NOT EXISTS idx_created_at ON fears(created_at);
 CREATE INDEX IF NOT EXISTS idx_ip_hash ON fears(ip_hash);
+CREATE INDEX IF NOT EXISTS idx_topic_letter ON fears(topic_letter);
 
 -- Reacciones (Apoyo/Fuerza) con dedup por cookie y tipo
 CREATE TABLE IF NOT EXISTS reactions (

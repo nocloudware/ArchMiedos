@@ -1,15 +1,15 @@
-const APPROVED_FIELDS = 'id, content, apoyos, fuerzas, created_at';
+const APPROVED_FIELDS = 'id, content, topic, apoyos, fuerzas, created_at';
 
 export async function listApprovedByLetter(env, fromLetter, toLetter, limit, offset) {
   if (fromLetter === toLetter) {
     return env.DB.prepare(
-      `SELECT ${APPROVED_FIELDS} FROM fears WHERE is_approved = 1 AND first_letter = ? ORDER BY created_at DESC LIMIT ? OFFSET ?`
+      `SELECT ${APPROVED_FIELDS} FROM fears WHERE is_approved = 1 AND topic_letter = ? ORDER BY created_at DESC LIMIT ? OFFSET ?`
     )
       .bind(fromLetter, limit, offset)
       .all();
   }
   return env.DB.prepare(
-    `SELECT ${APPROVED_FIELDS} FROM fears WHERE is_approved = 1 AND first_letter BETWEEN ? AND ? ORDER BY created_at DESC LIMIT ? OFFSET ?`
+    `SELECT ${APPROVED_FIELDS} FROM fears WHERE is_approved = 1 AND topic_letter BETWEEN ? AND ? ORDER BY created_at DESC LIMIT ? OFFSET ?`
   )
     .bind(fromLetter, toLetter, limit, offset)
     .all();
@@ -17,12 +17,12 @@ export async function listApprovedByLetter(env, fromLetter, toLetter, limit, off
 
 export async function countApprovedByLetter(env, fromLetter, toLetter) {
   if (fromLetter === toLetter) {
-    return env.DB.prepare('SELECT COUNT(*) as total FROM fears WHERE is_approved = 1 AND first_letter = ?')
+    return env.DB.prepare('SELECT COUNT(*) as total FROM fears WHERE is_approved = 1 AND topic_letter = ?')
       .bind(fromLetter)
       .first();
   }
   return env.DB.prepare(
-    'SELECT COUNT(*) as total FROM fears WHERE is_approved = 1 AND first_letter BETWEEN ? AND ?'
+    'SELECT COUNT(*) as total FROM fears WHERE is_approved = 1 AND topic_letter BETWEEN ? AND ?'
   )
     .bind(fromLetter, toLetter)
     .first();
@@ -45,9 +45,11 @@ export async function getFearById(env, id) {
   return env.DB.prepare('SELECT * FROM fears WHERE id = ?').bind(id).first();
 }
 
-export async function insertFear(env, { content, ipHash, approved, comment }) {
-  return env.DB.prepare('INSERT INTO fears (content, ip_hash, is_approved, status, moderation_comment) VALUES (?, ?, ?, ?, ?)')
-    .bind(content, ipHash, approved ? 1 : 0, approved ? 'approved' : 'pending', comment)
+export async function insertFear(env, { content, ipHash, approved, comment, topic, topicLetter }) {
+  return env.DB.prepare(
+    'INSERT INTO fears (content, ip_hash, is_approved, status, moderation_comment, topic, topic_letter) VALUES (?, ?, ?, ?, ?, ?, ?)'
+  )
+    .bind(content, ipHash, approved ? 1 : 0, approved ? 'approved' : 'pending', comment, topic || null, topicLetter || null)
     .run();
 }
 
@@ -111,6 +113,16 @@ export async function markReported(env, id) {
 
 export async function deleteFear(env, id) {
   return env.DB.prepare('DELETE FROM fears WHERE id = ?').bind(id).run();
+}
+
+export async function updateFearClassification(env, id, topic, letter) {
+  return env.DB.prepare('UPDATE fears SET topic = ?, topic_letter = ? WHERE id = ?')
+    .bind(topic || null, letter || null, id)
+    .run();
+}
+
+export async function getAllFearsForClassification(env) {
+  return env.DB.prepare('SELECT id, content FROM fears ORDER BY id ASC').all();
 }
 
 export async function logAdminAccess(env, { ip, asn, country, region, city, timezone, user_agent, cf_ray, username, method, path, success }) {
