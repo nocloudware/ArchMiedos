@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Panel de administración del Archivo de Miedos" />
+  <title>Administración — Archivo de Miedos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Special+Elite&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles/main.css" />
+  <link rel="stylesheet" href="/styles/admin.css" />
+</head>
+<body class="page-admin">
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <h2 class="admin-logo">Archivo de Miedos</h2>
+      <p class="admin-logo-sub">Panel de Administración</p>
+      <nav class="admin-nav">
+        <button class="nav-item active" data-status="pending">Pendientes</button>
+        <button class="nav-item" data-status="approved">Aprobados</button>
+        <button class="nav-item" data-status="rejected">Rechazados</button>
+        <button class="nav-item" data-status="reported">Reportados</button>
+        <button class="nav-item" data-status="all">Todos</button>
+      </nav>
+      <a class="nav-item nav-link" href="/archive.html">Ver el Archivo</a>
+    </aside>
+
+    <main class="admin-main">
+      <header class="admin-header">
+        <h1 id="admin-title" class="admin-title">Pendientes</h1>
+        <a href="/index.html" class="btn-deposit">+ Depositar miedo</a>
+      </header>
+
+      <section id="stats-dashboard" class="stats-dashboard"></section>
+
+      <section class="stats-extra">
+        <div class="stat-panel">
+          <h3>Miedos más populares</h3>
+          <ol id="top-liked" class="top-list"></ol>
+        </div>
+        <div class="stat-panel">
+          <h3>Actividad (7 días)</h3>
+          <div id="activity-chart" class="activity-chart"></div>
+        </div>
+      </section>
+
+      <section class="fears-panel">
+        <table class="fears-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Miedo</th>
+              <th>Fecha</th>
+              <th>Apoyos</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="fears-tbody"></tbody>
+        </table>
+        <p id="fears-empty" class="empty-note" hidden>No hay miedos en esta categoría.</p>
+      </section>
+    </main>
+  </div>
+
+  <script src="/scripts/admin.js"></script>
+</body>
+</html>

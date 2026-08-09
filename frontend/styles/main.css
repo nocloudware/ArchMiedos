@@ -1,0 +1,220 @@
+/* ============================================
+   Archivo de Miedos — estilos base y portada
+   ============================================ */
+
+:root {
+  --cream: #f5efe0;
+  --cream-dark: #e8dfc8;
+  --paper: #faf5e9;
+  --ink: #2c2417;
+  --brown: #6b4f3a;
+  --brown-dark: #4a3526;
+  --olive: #5a5f3c;
+  --olive-dark: #454a2f;
+  --steel: #4b555f;
+  --steel-light: #6c7884;
+  --accent-red: #d64545;
+  --gold: #c9a227;
+  --font-retro: 'Special Elite', 'Courier New', monospace;
+  --font-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --shadow-soft: 0 10px 30px rgba(44, 36, 23, 0.14);
+  --shadow-stamp: 4px 4px 0 rgba(44, 36, 23, 0.22);
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.55), transparent 40%),
+    var(--cream);
+  min-height: 100vh;
+  line-height: 1.55;
+}
+
+.paper-texture {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(107, 79, 58, 0.035) 0 1px, transparent 1px 3px),
+    radial-gradient(circle at 30% 40%, rgba(107, 79, 58, 0.05) 0 1px, transparent 1.5px);
+  background-size: 100% 3px, 26px 26px;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  width: min(920px, 92vw);
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* ---------- Header ---------- */
+.site-header {
+  padding: 56px 0 8px;
+  text-align: center;
+}
+
+.brand-title {
+  font-family: var(--font-retro);
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  margin: 0;
+  color: var(--brown-dark);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.brand-subtitle {
+  font-family: var(--font-retro);
+  color: var(--steel);
+  margin: 6px 0 0;
+  font-size: 0.95rem;
+}
+
+.brand-title.small { font-size: 1.25rem; }
+
+/* ---------- Hero ---------- */
+.hero { text-align: center; padding: 28px 0 8px; }
+
+.hero-title {
+  font-family: var(--font-retro);
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  color: var(--olive-dark);
+  margin: 0 0 8px;
+}
+
+.hero-text {
+  max-width: 560px;
+  margin: 0 auto;
+  color: var(--steel);
+  font-size: 1.02rem;
+}
+
+/* ---------- Formulario ---------- */
+.submit-card {
+  background: var(--paper);
+  border: 1px solid rgba(107, 79, 58, 0.35);
+  border-radius: 14px;
+  padding: 24px;
+  margin: 28px 0 16px;
+  box-shadow: var(--shadow-soft), inset 0 0 0 6px rgba(255, 255, 255, 0.4);
+}
+
+.field-label {
+  display: block;
+  font-family: var(--font-retro);
+  color: var(--brown);
+  margin-bottom: 8px;
+  font-size: 1.05rem;
+}
+
+.fear-input {
+  width: 100%;
+  min-height: 150px;
+  resize: vertical;
+  border: 2px solid var(--cream-dark);
+  border-radius: 10px;
+  background: #fffdf7;
+  padding: 14px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--ink);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fear-input:focus {
+  outline: none;
+  border-color: var(--olive);
+  box-shadow: 0 0 0 4px rgba(90, 95, 60, 0.15);
+}
+
+.field-meta { text-align: right; margin-top: 6px; }
+
+.char-count {
+  font-family: var(--font-retro);
+  font-size: 0.85rem;
+  color: var(--steel);
+}
+
+.char-count.warn { color: var(--accent-red); }
+
+/* ---------- Botón sello ---------- */
+.btn-stamp {
+  display: block;
+  width: 100%;
+  margin-top: 16px;
+  padding: 16px 20px;
+  font-family: var(--font-retro);
+  font-size: 1.15rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #fff;
+  background: var(--olive);
+  border: 3px double #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: var(--shadow-stamp);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+}
+
+.btn-stamp:hover { background: var(--olive-dark); transform: translate(-1px, -1px); }
+.btn-stamp:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 rgba(44, 36, 23, 0.22); }
+.btn-stamp:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.btn-deposit {
+  display: inline-block;
+  padding: 10px 16px;
+  font-family: var(--font-retro);
+  font-size: 0.95rem;
+  color: #fff;
+  background: var(--steel);
+  border-radius: 8px;
+  text-decoration: none;
+  box-shadow: 3px 3px 0 rgba(44, 36, 23, 0.2);
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.btn-deposit:hover { background: var(--steel-light); transform: translateY(-1px); }
+
+/* ---------- Mensajes ---------- */
+.form-message {
+  min-height: 1.4em;
+  margin: 12px 0 0;
+  font-weight: 600;
+  text-align: center;
+}
+
+.form-message.success { color: var(--olive-dark); }
+.form-message.error { color: var(--accent-red); }
+
+/* ---------- Footer ---------- */
+.site-footer { text-align: center; padding: 32px 0 56px; }
+
+.explore-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-retro);
+  font-size: 1.05rem;
+  color: var(--brown);
+  text-decoration: none;
+  border-bottom: 2px dashed var(--gold);
+  padding-bottom: 4px;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.explore-link:hover { color: var(--brown-dark); border-color: var(--brown-dark); }
+
+/* ---------- Reutilizables ---------- */
+.empty-note {
+  font-family: var(--font-retro);
+  color: var(--steel);
+  text-align: center;
+  padding: 24px;
+}

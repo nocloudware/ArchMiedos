@@ -45,18 +45,28 @@ GET    /api/admin/stats                      Estadísticas del sistema
 
 ## 🚀 Setup para desarrollo
 
-Requisitos: Node.js 18+, [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/).
+Requisitos: Node.js 18+, [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/) (incluido como devDependency).
+
+Este proyecto usa credenciales de Cloudflare **exclusivas** (cuenta `nocloudware`). Todos los comandos de wrangler se ejecutan a través del wrapper `scripts/cf.mjs`, que inyecta las variables de `.env.cloudflare` (gitignored) sin tocar el OAuth global de otras cuentas.
 
 ```bash
 npm install
-wrangler d1 execute archivo-de-miedos-db --file=./database/schema.sql
-# Configurar secretos
-wrangler secret put ADMIN_USERNAME
-wrangler secret put ADMIN_PASSWORD
-# Desarrollo local
-wrangler dev
+# Configurar credenciales de la cuenta (una sola vez)
+#   CLOUDFLARE_EMAIL, CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID en .env.cloudflare
+
+# Aplicar esquema de base de datos (local y remoto)
+npm run db:init          # local
+npm run db:init:remote   # remoto (producción)
+
+# Configurar secretos de admin (producción)
+node scripts/cf.mjs secret put ADMIN_USERNAME
+node scripts/cf.mjs secret put ADMIN_PASSWORD
+
+# Desarrollo local (usa .dev.vars)
+npm run dev
+
 # Desplegar
-wrangler deploy
+npm run deploy
 ```
 
 ## 📁 Estructura
@@ -76,7 +86,11 @@ wrangler deploy
 │       └── utils/          # validation.js
 ├── database/
 │   └── schema.sql          # Esquema D1
-├── wrangler.toml
+├── scripts/
+│   └── cf.mjs              # Wrapper wrangler con credenciales del proyecto
+├── .env.cloudflare         # Credenciales de cuenta (gitignored)
+├── .dev.vars               # Secretos locales de desarrollo (gitignored)
+├── wrangler.jsonc
 └── package.json
 ```
 

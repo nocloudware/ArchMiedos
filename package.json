@@ -1,0 +1,17 @@
+{
+  "name": "archivo-de-miedos",
+  "version": "1.0.0",
+  "description": "Archivo anonimo de miedos con estetica retro y animaciones modernas. Cloudflare Workers + D1 + Workers AI.",
+  "main": "backend/src/index.js",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/cf.mjs dev",
+    "deploy": "node scripts/cf.mjs deploy",
+    "db:init": "node scripts/cf.mjs d1 execute archivo-de-miedos-db --file=./database/schema.sql",
+    "db:init:remote": "node scripts/cf.mjs d1 execute archivo-de-miedos-db --remote --file=./database/schema.sql",
+    "whoami": "node scripts/cf.mjs whoami"
+  },
+  "devDependencies": {
+    "wrangler": "^4.119.0"
+  }
+}

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Archivo de Miedos — deposita tu miedo en el archivo y libérate" />
+  <title>Archivo de Miedos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Special+Elite&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles/main.css" />
+</head>
+<body class="page-home">
+  <div class="paper-texture"></div>
+
+  <header class="site-header">
+    <div class="container">
+      <h1 class="brand-title">Archivo de Miedos</h1>
+      <p class="brand-subtitle">Est. 1950 — Departamento de Liberación Emocional</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h2 class="hero-title">Deposita tu miedo aquí.</h2>
+      <p class="hero-text">
+        Escríbelo, deposítalo en el archivo y libérate. Anónimo. Nadie sabrá quién eres.
+        Solo tú y el archivo.
+      </p>
+    </section>
+
+    <section class="submit-card">
+      <label class="field-label" for="fear-input">Tu miedo</label>
+      <textarea
+        id="fear-input"
+        class="fear-input"
+        maxlength="2000"
+        placeholder="Escribe aquí tu miedo... deposítalo en el archivo y libérate"
+        spellcheck="true"
+      ></textarea>
+      <div class="field-meta">
+        <span id="char-count" class="char-count">0 / 2000</span>
+      </div>
+      <button id="submit-btn" class="btn-stamp" type="button">
+        <span class="stamp-label">Depositar en el Archivo</span>
+      </button>
+      <p id="form-message" class="form-message" role="status"></p>
+    </section>
+
+    <footer class="site-footer">
+      <a class="explore-link" href="/archive.html">
+        Explorar el Archivo
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+      </a>
+    </footer>
+  </main>
+
+  <script src="/scripts/submit.js"></script>
+</body>
+</html>

@@ -1,0 +1,302 @@
+/* ============================================
+   Archivo de Miedos — archivadores y cajones
+   ============================================ */
+
+.page-archive { background: var(--steel); }
+.page-archive .paper-texture { opacity: 0.12; }
+
+.archive-header {
+  background: rgba(30, 35, 42, 0.9);
+  border-bottom: 3px solid var(--gold);
+  padding: 16px 0;
+}
+
+.archive-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brand-link { text-decoration: none; }
+.brand-link .brand-title.small { color: var(--cream); margin: 0; }
+
+.archive-intro {
+  color: var(--cream);
+  text-align: center;
+  padding: 40px 0 24px;
+}
+
+.page-title {
+  font-family: var(--font-retro);
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  margin: 0;
+  color: var(--cream);
+}
+
+.page-subtitle { margin: 8px 0 0; color: rgba(245, 239, 224, 0.75); }
+
+/* ---------- Grid de archivadores ---------- */
+.cabinets-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  padding: 8px 0 60px;
+}
+
+.filing-cabinet {
+  perspective: 1000px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  user-select: none;
+}
+
+.filing-cabinet:hover { transform: translateY(-4px); }
+
+.cabinet-frame {
+  background: linear-gradient(160deg, #8b95a0 0%, #5c6672 45%, #434c57 100%);
+  border-radius: 6px;
+  padding: 10px;
+  box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.cabinet-top { height: 8px; border-radius: 4px 4px 0 0; background: #a6b0bb; margin-bottom: 8px; }
+
+.drawer {
+  position: relative;
+  background: linear-gradient(170deg, #aab3bd 0%, #7d8793 50%, #68717c 100%);
+  border-radius: 4px;
+  padding: 18px 14px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25), inset 0 -2px 3px rgba(255, 255, 255, 0.18);
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.drawer-handle {
+  width: 46px;
+  height: 10px;
+  margin: 0 auto 14px;
+  background: linear-gradient(180deg, #d7dde3, #98a2ad);
+  border-radius: 3px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
+}
+
+.drawer-label {
+  font-family: var(--font-retro);
+  font-size: 1.35rem;
+  color: var(--cream);
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.drawer-count {
+  font-family: var(--font-retro);
+  font-size: 0.8rem;
+  color: rgba(245, 239, 224, 0.7);
+  text-align: center;
+  margin: 6px 0 0;
+}
+
+.cabinet-shadow {
+  height: 14px;
+  margin-top: 10px;
+  background: radial-gradient(ellipse at 50% 50%, rgba(0, 0, 0, 0.35), transparent 70%);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.filing-cabinet:hover .drawer { transform: rotateX(-10deg) translateY(-3px); }
+.filing-cabinet:hover .cabinet-shadow { transform: scaleY(1.2); opacity: 0.8; }
+.filing-cabinet.open .drawer { transform: rotateX(-16deg) translateY(-12px); box-shadow: 0 24px 40px rgba(0, 0, 0, 0.35); }
+
+/* ---------- Modal del cajón ---------- */
+.drawer-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.drawer-modal[hidden] { display: none; }
+
+.drawer-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(30, 26, 20, 0.65);
+  backdrop-filter: blur(3px);
+  animation: fadeIn 0.3s ease;
+}
+
+.drawer-modal-panel {
+  position: relative;
+  width: min(760px, 94vw);
+  max-height: 86vh;
+  overflow-y: auto;
+  background: var(--paper);
+  border: 2px solid var(--brown);
+  border-radius: 14px;
+  box-shadow: var(--shadow-soft), 6px 6px 0 rgba(74, 53, 38, 0.35);
+  padding: 28px;
+  animation: panelUp 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  border: none;
+  background: transparent;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--brown);
+  cursor: pointer;
+  padding: 0 6px;
+  transition: color 0.2s ease, transform 0.15s ease;
+}
+
+.modal-close:hover { color: var(--accent-red); transform: rotate(90deg); }
+
+.drawer-title {
+  font-family: var(--font-retro);
+  color: var(--brown-dark);
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.drawer-count { color: var(--steel); font-size: 0.9rem; margin: 4px 0 16px; }
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 2px solid var(--cream-dark);
+  border-radius: 10px;
+  padding: 8px 12px;
+  background: #fffdf7;
+  color: var(--steel);
+  margin-bottom: 18px;
+}
+
+.search-bar input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  background: transparent;
+  color: var(--ink);
+}
+
+/* ---------- Tarjetas (fichas de catálogo) ---------- */
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.loading-note {
+  font-family: var(--font-retro);
+  color: var(--steel);
+  text-align: center;
+  grid-column: 1 / -1;
+  padding: 24px;
+}
+
+.fear-card {
+  position: relative;
+  background: #fffdf4;
+  border: 1px dashed var(--steel-light);
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: var(--shadow-soft);
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+.fear-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: repeating-linear-gradient(90deg, transparent 0 6px, rgba(201, 162, 39, 0.45) 6px 10px);
+  border-radius: 10px 10px 0 0;
+}
+
+.fear-text {
+  font-size: 0.98rem;
+  color: var(--ink);
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 8px 0 12px;
+}
+
+.fear-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--cream-dark);
+  padding-top: 10px;
+}
+
+.fear-date {
+  font-family: var(--font-retro);
+  font-size: 0.75rem;
+  color: var(--steel);
+}
+
+.like-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--steel);
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 999px;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.like-button:hover { background: rgba(214, 69, 69, 0.08); color: var(--accent-red); }
+
+.like-button .heart-icon { font-size: 1.15rem; line-height: 1; transition: transform 0.15s ease; }
+
+.like-button.liked { color: var(--accent-red); }
+.like-button.liked .heart-icon { animation: heartPop 0.35s ease; }
+
+/* ---------- Animaciones ---------- */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+@keyframes panelUp {
+  from { opacity: 0; transform: translateY(40px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes heartPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .cabinets-grid { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  .drawer-modal-panel { padding: 20px; }
+}
+
+@media (max-width: 460px) {
+  .cabinets-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .drawer-label { font-size: 1.1rem; }
+}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Explora el Archivo de Miedos" />
+  <title>El Archivo — Archivo de Miedos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Special+Elite&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles/main.css" />
+  <link rel="stylesheet" href="/styles/archive.css" />
+</head>
+<body class="page-archive">
+  <div class="paper-texture"></div>
+
+  <header class="archive-header">
+    <div class="container archive-nav">
+      <a href="/" class="brand-link">
+        <span class="brand-title small">Archivo de Miedos</span>
+      </a>
+      <a href="/index.html" class="btn-deposit">Depositar tu miedo</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="archive-intro">
+      <h1 class="page-title">El Archivo</h1>
+      <p class="page-subtitle">Nueve cajones. Todos tus miedos. Cada cajón guarda los miedos por su primera letra.</p>
+    </section>
+
+    <section id="cabinets" class="cabinets-grid" aria-label="Archivadores de miedos"></section>
+
+    <p id="archive-empty" class="empty-note" hidden>
+      El archivo aún está vacío. Sé la primera persona en depositar un miedo.
+    </p>
+  </main>
+
+  <div id="drawer-modal" class="drawer-modal" hidden>
+    <div class="drawer-modal-backdrop" data-close-drawer></div>
+    <div class="drawer-modal-panel" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+      <button class="modal-close" data-close-drawer aria-label="Cerrar" type="button">&times;</button>
+      <h2 id="drawer-title" class="drawer-title">Archivo <span data-drawer-letters></span></h2>
+      <p class="drawer-count"><span data-drawer-total>0</span> miedos</p>
+
+      <div class="search-bar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></svg>
+        <input id="drawer-search" type="search" placeholder="Buscar por palabra clave..." autocomplete="off" />
+      </div>
+
+      <div id="cards-container" class="cards-container">
+        <p class="loading-note">Abriendo el cajón...</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/scripts/archive.js"></script>
+</body>
+</html>
