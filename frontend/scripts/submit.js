@@ -4,7 +4,7 @@ const btn = document.getElementById('submit-btn');
 const message = document.getElementById('form-message');
 
 const MIN_LENGTH = 10;
-const MAX_LENGTH = 2000;
+const MAX_LENGTH = 300;
 
 input.addEventListener('input', () => {
   counter.textContent = `${input.value.length} / ${MAX_LENGTH}`;

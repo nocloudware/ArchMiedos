@@ -3,7 +3,7 @@ PRAGMA foreign_keys = ON;
 -- Tabla principal de miedos
 CREATE TABLE IF NOT EXISTS fears (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  content TEXT NOT NULL CHECK (length(content) BETWEEN 10 AND 2000),
+  content TEXT NOT NULL CHECK (length(content) BETWEEN 10 AND 300),
   first_letter CHAR(1) GENERATED ALWAYS AS (UPPER(SUBSTR(content, 1, 1))) STORED,
   apoyos INTEGER DEFAULT 0,
   fuerzas INTEGER DEFAULT 0,

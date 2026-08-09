@@ -1,5 +1,5 @@
 export const MIN_LENGTH = 10;
-export const MAX_LENGTH = 2000;
+export const MAX_LENGTH = 300;
 export const RATE_LIMIT_PER_DAY = 5;
 
 export function validateContent(content) {
