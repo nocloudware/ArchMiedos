@@ -254,8 +254,8 @@ async function renderFearCard(fear) {
   const contentTop = 210;
   const contentBottom = contentTop + usedLines * lineH + 18;
   const bottomStart = contentBottom + 26;
-  const footerY = bottomStart + 152;
-  const H = footerY + 36;
+  const footerY = bottomStart + 160;
+  const H = footerY + 32;
 
   const cv = document.createElement('canvas');
   cv.width = W;
@@ -301,8 +301,10 @@ async function renderFearCard(fear) {
 
   ctx.fillStyle = '#6b4f3a';
   ctx.font = `400 32px ${RETRO}`;
-  ctx.fillText(`🫂 Apoyos: ${fear.apoyos || 0}`, 75, bottomStart + 98);
-  ctx.fillText(`💪 Fuerzas: ${fear.fuerzas || 0}`, 75, bottomStart + 144);
+  ctx.textAlign = 'left';
+  ctx.fillText(`🫂 Apoyos: ${fear.apoyos || 0}`, 75, bottomStart + 100);
+  ctx.textAlign = 'right';
+  ctx.fillText(`💪 Fuerzas: ${fear.fuerzas || 0}`, W - 75, bottomStart + 100);
 
   ctx.textAlign = 'center';
   ctx.font = `400 24px ${RETRO}`;
