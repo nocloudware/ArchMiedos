@@ -197,7 +197,7 @@ async function shareFear(btn) {
   try {
     let image = null;
     try {
-      image = renderFearCard({
+      image = await renderFearCard({
         content: btn.dataset.content || '',
         created_at: btn.dataset.date || '',
         apoyos: btn.dataset.apoyos,
@@ -235,12 +235,14 @@ async function shareFear(btn) {
   }
 }
 
-function renderFearCard(fear) {
+async function renderFearCard(fear) {
+  await ensureFonts();
   const W = 1000;
-  const FONT = 'Arial, Helvetica, sans-serif';
+  const RETRO = '"Special Elite", "Courier New", monospace';
+  const BODY = 'Inter, Arial, Helvetica, sans-serif';
 
   const measure = document.createElement('canvas').getContext('2d');
-  measure.font = '32px ' + FONT;
+  measure.font = `30px ${BODY}`;
   const allLines = wrapText(measure, String(fear.content || ''), W - 150);
   const maxLines = 10;
   const shown = allLines.slice(0, maxLines);
@@ -248,9 +250,9 @@ function renderFearCard(fear) {
   const minLines = 2;
   const usedLines = Math.max(shown.length + (hasMore ? 1 : 0), minLines);
 
-  const lineH = 46;
-  const contentTop = 200;
-  const contentBottom = contentTop + usedLines * lineH + 20;
+  const lineH = 44;
+  const contentTop = 210;
+  const contentBottom = contentTop + usedLines * lineH + 18;
   const bottomStart = contentBottom + 26;
   const footerY = bottomStart + 152;
   const H = footerY + 36;
@@ -264,7 +266,9 @@ function renderFearCard(fear) {
   ctx.fillRect(0, 0, W, H);
 
   ctx.fillStyle = '#c9a227';
-  ctx.fillRect(0, 0, W, 18);
+  for (let x = 0; x < W; x += 22) {
+    ctx.fillRect(x, 0, 14, 16);
+  }
 
   ctx.strokeStyle = '#6b4f3a';
   ctx.lineWidth = 8;
@@ -274,15 +278,15 @@ function renderFearCard(fear) {
 
   ctx.textAlign = 'center';
   ctx.fillStyle = '#4a3526';
-  ctx.font = 'bold 52px ' + FONT;
-  ctx.fillText('Archivo de Miedos', W / 2, 120);
+  ctx.font = `400 52px ${RETRO}`;
+  ctx.fillText('Archivo de Miedos', W / 2, 122);
   ctx.fillStyle = '#6b4f3a';
-  ctx.font = 'italic 24px ' + FONT;
-  ctx.fillText('Est. 1950 · Departamento de Liberación Emocional', W / 2, 162);
+  ctx.font = `400 24px ${RETRO}`;
+  ctx.fillText('Est. 1950 · Departamento de Liberación Emocional', W / 2, 164);
 
   ctx.textAlign = 'left';
   ctx.fillStyle = '#2c2417';
-  ctx.font = '32px ' + FONT;
+  ctx.font = `30px ${BODY}`;
   let y = contentTop;
   shown.forEach((l) => {
     ctx.fillText(l, 75, y);
@@ -298,20 +302,34 @@ function renderFearCard(fear) {
   ctx.stroke();
 
   ctx.fillStyle = '#4b555f';
-  ctx.font = '24px ' + FONT;
+  ctx.font = `400 24px ${RETRO}`;
   ctx.fillText(`Depositado el ${formatDate(fear.created_at)}`, 75, bottomStart + 42);
 
   ctx.fillStyle = '#6b4f3a';
-  ctx.font = 'bold 30px ' + FONT;
-  ctx.fillText(`Apoyos: ${fear.apoyos || 0}`, 75, bottomStart + 94);
-  ctx.fillText(`Fuerzas: ${fear.fuerzas || 0}`, 75, bottomStart + 138);
+  ctx.font = `400 32px ${RETRO}`;
+  ctx.fillText(`🫂 Apoyos: ${fear.apoyos || 0}`, 75, bottomStart + 98);
+  ctx.fillText(`💪 Fuerzas: ${fear.fuerzas || 0}`, 75, bottomStart + 144);
 
   ctx.textAlign = 'center';
-  ctx.font = 'italic 24px ' + FONT;
+  ctx.font = `400 24px ${RETRO}`;
   ctx.fillStyle = '#6b4f3a';
   ctx.fillText('Tu miedo importa. El archivo lo guarda.', W / 2, footerY);
 
   return cv.toDataURL('image/png');
+}
+
+async function ensureFonts() {
+  if (document.fonts && document.fonts.load) {
+    try {
+      await Promise.all([
+        document.fonts.load('400 52px "Special Elite"'),
+        document.fonts.load('30px Inter'),
+      ]);
+      await document.fonts.ready;
+    } catch {
+      /* usar el fallback */
+    }
+  }
 }
 
 function wrapText(ctx, text, maxWidth) {
