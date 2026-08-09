@@ -74,6 +74,20 @@ async function uploadBlob(session, bytes, contentType) {
   return json.blob;
 }
 
+export async function getPost(env, rkey) {
+  const did = (await createSession(env)).did;
+  const res = await fetch(
+    `${BSKY_API}/com.atproto.repo.getRecord?repo=${did}&collection=app.bsky.feed.post&rkey=${encodeURIComponent(rkey)}`
+  );
+  if (res.status === 400) {
+    const j = await res.json();
+    if (j.error === 'RecordNotFound') return null;
+    throw new Error(`getRecord ${res.status}: ${JSON.stringify(j)}`);
+  }
+  if (!res.ok) throw new Error(`getRecord ${res.status}`);
+  return (await res.json()).value;
+}
+
 export function shareText(content) {
   return `📁 Un miedo depositado en el Archivo de Miedos (anonimo):\n\n"${String(content).slice(0, 280)}"`;
 }

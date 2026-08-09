@@ -63,6 +63,12 @@ export async function insertShare(env, { fearId, ipHash, rkey, postUri }) {
     .run();
 }
 
+export async function updateShare(env, fearId, rkey, postUri) {
+  return env.DB.prepare('UPDATE shares SET rkey = ?, post_uri = ?, created_at = CURRENT_TIMESTAMP WHERE fear_id = ?')
+    .bind(rkey, postUri, fearId)
+    .run();
+}
+
 export async function countSharesByIpToday(env, ipHash) {
   return env.DB.prepare(
     "SELECT COUNT(*) as total FROM shares WHERE ip_hash = ? AND created_at >= datetime('now', '-1 day')"

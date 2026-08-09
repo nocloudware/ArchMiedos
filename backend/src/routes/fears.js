@@ -2,7 +2,7 @@ import { json, notFound } from '../utils/http.js';
 import { validateContent, parseLetterRange, clamp, RATE_LIMIT_PER_DAY } from '../utils/validation.js';
 import { moderateContent } from '../services/ai.js';
 import { classifyFear, groupForLetter } from '../services/classify.js';
-import { createPost, shareAccount, shareText } from '../services/bluesky.js';
+import { createPost, getPost, shareAccount, shareText } from '../services/bluesky.js';
 import * as db from '../services/db.js';
 
 const VISITOR_COOKIE = 'am_visitor';
@@ -94,12 +94,38 @@ async function shareFear(request, env, idStr) {
   const fear = await db.getApprovedFearById(env, fearId);
   if (!fear) return notFound();
 
+  let body = {};
+  try {
+    body = await request.json();
+  } catch {
+    /* sin imagen */
+  }
+
+  const image = typeof body?.image === 'string' && body.image.startsWith('data:image/png;base64,')
+    ? body.image.slice('data:image/png;base64,'.length)
+    : null;
+
+  const miedoUrl = `${SITE_BASE}/miedo/${fearId}`;
+  const text = image
+    ? `📁 Un miedo depositado en el Archivo de Miedos (anonimo)\n\n${miedoUrl}`
+    : shareText(fear.content);
+  const imageBytes = image ? Uint8Array.from(atob(image), (c) => c.charCodeAt(0)) : null;
+
+  // Dedup con validación: si el post ya no existe o es de solo texto, se recrea con imagen.
   const existing = await db.getShareByFear(env, fearId);
   if (existing) {
-    return json({
-      url: `https://bsky.app/profile/${shareAccount(env).handle}/post/${existing.rkey}`,
-      alreadyShared: true,
-    });
+    try {
+      const post = await getPost(env, existing.rkey);
+      const hasImage = !!(post && post.embed && post.embed.$type === 'app.bsky.embed.images');
+      if (post && hasImage) {
+        return json({
+          url: `https://bsky.app/profile/${shareAccount(env).handle}/post/${existing.rkey}`,
+          alreadyShared: true,
+        });
+      }
+    } catch {
+      /* si falla la verificación, se recrea por seguridad */
+    }
   }
 
   const ipHash = await hashIp(request.headers.get('CF-Connecting-IP') || 'unknown');
@@ -109,25 +135,12 @@ async function shareFear(request, env, idStr) {
   }
 
   try {
-    let body = {};
-    try {
-      body = await request.json();
-    } catch {
-      /* sin imagen */
-    }
-
-    const image = typeof body?.image === 'string' && body.image.startsWith('data:image/png;base64,')
-      ? body.image.slice('data:image/png;base64,'.length)
-      : null;
-
-    const miedoUrl = `${SITE_BASE}/miedo/${fearId}`;
-    const text = image
-      ? `📁 Un miedo depositado en el Archivo de Miedos (anonimo)\n\n${miedoUrl}`
-      : shareText(fear.content);
-
-    const imageBytes = image ? Uint8Array.from(atob(image), (c) => c.charCodeAt(0)) : null;
     const post = await createPost(env, text, imageBytes);
-    await db.insertShare(env, { fearId, ipHash, rkey: post.rkey, postUri: post.uri });
+    if (existing) {
+      await db.updateShare(env, fearId, post.rkey, post.uri);
+    } else {
+      await db.insertShare(env, { fearId, ipHash, rkey: post.rkey, postUri: post.uri });
+    }
     return json({ url: post.url, alreadyShared: false });
   } catch {
     return json({ error: 'No se pudo publicar en Bluesky ahora. Inténtalo más tarde.' }, 502);
