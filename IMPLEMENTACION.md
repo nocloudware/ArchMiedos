@@ -150,10 +150,9 @@ Hay dos usos de Bluesky:
 **1. Tarjeta al compartir enlaces** (cuenta `nocloudware.bsky.social`, records `site.standard.*`, ver arriba).
 
 **2. Compartir miedos de forma anónima** (`@archmiedos.bsky.social`). Cada tarjeta del archivo tiene un botón "Compartir en Bluesky". `POST /api/fears/:id/share` (`services/bluesky.js`):
-- El frontend renderiza la **tarjeta del miedo como imagen** (canvas: texto, fecha, apoyos y fuerzas) y la envía en el body como `image` (data URL PNG).
-- El backend sube la imagen (`uploadBlob`) y crea un post `app.bsky.feed.post` con `app.bsky.embed.images` + texto anónimo que incluye el **link a la página del miedo** (`/miedo/:id`). Si no hay imagen, cae al post de solo texto.
-- Devuelve `{ url }` con el enlace directo al post, que la UI muestra ("ver el post").
-- Dedup: cada miedo se comparte una sola vez (`shares`); un segundo intento devuelve el post existente. Rate limit: 10/día por IP.
+- El frontend renderiza la **tarjeta del miedo como imagen** (canvas con fuente segura Arial, sin emojis: texto, fecha, apoyos y fuerzas) y la envía en el body como `image` (data URL PNG).
+- El backend sube la imagen (`uploadBlob`) y crea un post `app.bsky.feed.post` con `app.bsky.embed.external`: `uri` = página `/miedo/:id` (el post queda linkeado), `title`, `description` y `thumb` = la tarjeta. El texto del post es solo el encabezado anónimo (sin URL). Si no hay imagen, cae al post de solo texto con URL.
+- Dedup con validación: `getRecord` verifica que el post exista y tenga imagen; si fue borrado o es de solo texto, se recrea con la tarjeta y se actualiza la fila de `shares`. Rate limit: 10/día por IP.
 - Credenciales en secretos `BSKY_HANDLE` / `BSKY_APP_PASSWORD` (y `.dev.vars` local).
 
 ## Otros

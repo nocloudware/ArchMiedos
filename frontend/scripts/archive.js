@@ -195,12 +195,17 @@ async function shareFear(btn) {
   btn.textContent = 'Publicando en Bluesky...';
 
   try {
-    const image = renderFearCard({
-      content: btn.dataset.content || '',
-      created_at: btn.dataset.date || '',
-      apoyos: btn.dataset.apoyos,
-      fuerzas: btn.dataset.fuerzas,
-    });
+    let image = null;
+    try {
+      image = renderFearCard({
+        content: btn.dataset.content || '',
+        created_at: btn.dataset.date || '',
+        apoyos: btn.dataset.apoyos,
+        fuerzas: btn.dataset.fuerzas,
+      });
+    } catch {
+      image = null;
+    }
     const res = await fetch(`/api/fears/${btn.dataset.id}/share`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -231,49 +236,50 @@ async function shareFear(btn) {
 }
 
 function renderFearCard(fear) {
-  const W = 900;
-  const H = 900;
+  const W = 1000;
+  const H = 1000;
   const cv = document.createElement('canvas');
   cv.width = W;
   cv.height = H;
   const ctx = cv.getContext('2d');
+  const FONT = 'Arial, Helvetica, sans-serif';
 
   ctx.fillStyle = '#faf5e9';
   ctx.fillRect(0, 0, W, H);
 
   ctx.fillStyle = '#c9a227';
-  ctx.fillRect(0, 0, W, 16);
+  ctx.fillRect(0, 0, W, 18);
 
   ctx.strokeStyle = '#6b4f3a';
   ctx.lineWidth = 8;
-  ctx.setLineDash([18, 12]);
-  ctx.strokeRect(36, 36, W - 72, H - 72);
+  ctx.setLineDash([20, 14]);
+  ctx.strokeRect(40, 40, W - 80, H - 80);
   ctx.setLineDash([]);
 
   ctx.textAlign = 'center';
   ctx.fillStyle = '#4a3526';
-  ctx.font = '600 46px Georgia, serif';
-  ctx.fillText('Archivo de Miedos', W / 2, 108);
-  ctx.font = 'italic 24px Georgia, serif';
+  ctx.font = 'bold 52px ' + FONT;
+  ctx.fillText('Archivo de Miedos', W / 2, 120);
   ctx.fillStyle = '#6b4f3a';
-  ctx.fillText('Est. 1950 · Departamento de Liberación Emocional', W / 2, 152);
+  ctx.font = 'italic 24px ' + FONT;
+  ctx.fillText('Est. 1950 · Departamento de Liberación Emocional', W / 2, 162);
 
   ctx.textAlign = 'left';
   ctx.fillStyle = '#2c2417';
-  ctx.font = '30px Georgia, serif';
+  ctx.font = '32px ' + FONT;
   const lines = wrapText(ctx, fear.content || '', W - 150);
-  let y = 220;
+  let y = 240;
   const maxLines = 13;
   lines.slice(0, maxLines).forEach((l) => {
     ctx.fillText(l, 75, y);
-    y += 44;
+    y += 46;
   });
   if (lines.length > maxLines) {
     ctx.fillText('…', 75, y);
-    y += 44;
+    y += 46;
   }
 
-  y += 22;
+  y += 20;
   ctx.strokeStyle = '#e8dfc8';
   ctx.lineWidth = 3;
   ctx.beginPath();
@@ -282,18 +288,18 @@ function renderFearCard(fear) {
   ctx.stroke();
 
   ctx.fillStyle = '#4b555f';
-  ctx.font = '24px Georgia, serif';
+  ctx.font = '24px ' + FONT;
   ctx.fillText(`Depositado el ${formatDate(fear.created_at)}`, 75, y + 44);
 
   ctx.fillStyle = '#6b4f3a';
-  ctx.font = '600 28px Georgia, serif';
-  ctx.fillText(`Apoyos 🫂  ${fear.apoyos || 0}`, 75, y + 96);
-  ctx.fillText(`Fuerzas 💪  ${fear.fuerzas || 0}`, 75, y + 140);
+  ctx.font = 'bold 30px ' + FONT;
+  ctx.fillText(`Apoyos: ${fear.apoyos || 0}`, 75, y + 96);
+  ctx.fillText(`Fuerzas: ${fear.fuerzas || 0}`, 75, y + 140);
 
   ctx.textAlign = 'center';
-  ctx.font = 'italic 24px Georgia, serif';
+  ctx.font = 'italic 24px ' + FONT;
   ctx.fillStyle = '#6b4f3a';
-  ctx.fillText('Tu miedo importa. El archivo lo guarda.', W / 2, H - 64);
+  ctx.fillText('Tu miedo importa. El archivo lo guarda.', W / 2, H - 72);
 
   return cv.toDataURL('image/png');
 }

@@ -22,7 +22,7 @@ export async function createSession(env) {
   return json; // { accessJwt, did, handle, ... }
 }
 
-export async function createPost(env, text, imageBytes = null) {
+export async function createPost(env, text, opts = {}) {
   const session = await createSession(env);
   const record = {
     $type: 'app.bsky.feed.post',
@@ -30,16 +30,16 @@ export async function createPost(env, text, imageBytes = null) {
     createdAt: new Date().toISOString(),
   };
 
-  if (imageBytes) {
-    const blob = await uploadBlob(session, imageBytes, 'image/png');
+  if (opts.imageBytes && opts.uri) {
+    const blob = await uploadBlob(session, opts.imageBytes, 'image/png');
     record.embed = {
-      $type: 'app.bsky.embed.images',
-      images: [
-        {
-          image: blob,
-          alt: 'Tarjeta de un miedo depositado en el Archivo de Miedos',
-        },
-      ],
+      $type: 'app.bsky.embed.external',
+      external: {
+        uri: opts.uri,
+        title: String(opts.title || 'Archivo de Miedos').slice(0, 300),
+        description: String(opts.description || '').slice(0, 300),
+        thumb: blob,
+      },
     };
   }
 

@@ -106,10 +106,20 @@ async function shareFear(request, env, idStr) {
     : null;
 
   const miedoUrl = `${SITE_BASE}/miedo/${fearId}`;
-  const text = image
-    ? `📁 Un miedo depositado en el Archivo de Miedos (anonimo)\n\n${miedoUrl}`
-    : shareText(fear.content);
   const imageBytes = image ? Uint8Array.from(atob(image), (c) => c.charCodeAt(0)) : null;
+
+  const text = image
+    ? '📁 Un miedo depositado en el Archivo de Miedos (anonimo)'
+    : `${shareText(fear.content)}\n\n${miedoUrl}`;
+
+  const postOpts = image
+    ? {
+        imageBytes,
+        uri: miedoUrl,
+        title: 'Un miedo depositado en el Archivo de Miedos',
+        description: String(fear.content).slice(0, 280),
+      }
+    : {};
 
   // Dedup con validación: si el post ya no existe o es de solo texto, se recrea con imagen.
   const existing = await db.getShareByFear(env, fearId);
@@ -135,7 +145,7 @@ async function shareFear(request, env, idStr) {
   }
 
   try {
-    const post = await createPost(env, text, imageBytes);
+    const post = await createPost(env, text, postOpts);
     if (existing) {
       await db.updateShare(env, fearId, post.rkey, post.uri);
     } else {
