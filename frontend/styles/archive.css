@@ -205,6 +205,64 @@
   padding: 24px;
 }
 
+/* ---------- Carrusel infinito ---------- */
+.carousel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  grid-column: 1 / -1;
+}
+
+.carousel-viewport {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.carousel-track {
+  display: flex;
+  align-items: stretch;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.carousel-track.no-anim { transition: none; }
+
+.carousel-slide {
+  flex: 0 0 100%;
+  box-sizing: border-box;
+  padding: 2px 6px;
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+.carousel-slide > .fear-card {
+  width: 100%;
+  max-width: 620px;
+  opacity: 1;
+  transform: none;
+  animation: none;
+}
+
+.carousel-arrow {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  background: var(--paper);
+  color: var(--brown-dark);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  transition: background 0.2s ease, transform 0.15s ease;
+  padding: 0;
+}
+
+.carousel-arrow:hover { background: var(--cream-dark); transform: scale(1.06); }
+.carousel-arrow[hidden] { visibility: hidden; }
+
 .fear-card {
   position: relative;
   background: #fffdf4;

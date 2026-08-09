@@ -90,14 +90,106 @@ async function loadFears(group, query) {
     if (!data.items || data.items.length === 0) {
       cardsEl.innerHTML =
         '<p class="loading-note">Este cajón está vacío. Sé el primero en depositar un miedo.</p>';
+      carouselState = null;
       return;
     }
 
-    cardsEl.innerHTML = data.items.map((fear, i) => cardHTML(fear, i)).join('');
+    cardsEl.innerHTML = `
+      <div class="carousel">
+        <button class="carousel-arrow prev" type="button" aria-label="Miedo anterior">‹</button>
+        <div class="carousel-viewport">
+          <div class="carousel-track">
+            ${data.items.map((fear, i) => `<div class="carousel-slide">${cardHTML(fear, i)}</div>`).join('')}
+          </div>
+        </div>
+        <button class="carousel-arrow next" type="button" aria-label="Miedo siguiente">›</button>
+      </div>`;
+    initCarousel();
   } catch {
     cardsEl.innerHTML = '<p class="loading-note">No se pudo abrir el cajón. Inténtalo de nuevo.</p>';
+    carouselState = null;
   }
 }
+
+// ---------- Carrusel infinito ----------
+let carouselState = null;
+
+function initCarousel() {
+  const carousel = cardsEl.querySelector('.carousel');
+  if (!carousel) return;
+  const viewport = carousel.querySelector('.carousel-viewport');
+  const track = carousel.querySelector('.carousel-track');
+  const prevBtn = carousel.querySelector('.carousel-arrow.prev');
+  const nextBtn = carousel.querySelector('.carousel-arrow.next');
+  const slides = Array.from(track.children);
+  const count = slides.length;
+  if (count === 0) return;
+
+  if (count <= 1) {
+    prevBtn.hidden = true;
+    nextBtn.hidden = true;
+    carouselState = null;
+    return;
+  }
+
+  const first = slides[0];
+  const last = slides[count - 1];
+  track.appendChild(first.cloneNode(true));
+  track.insertBefore(last.cloneNode(true), first);
+  const total = count + 2;
+  let current = 1;
+
+  const slideWidth = () => slides[0].getBoundingClientRect().width || viewport.clientWidth;
+
+  const move = (index) => {
+    track.style.transform = `translateX(-${index * slideWidth()}px)`;
+    current = index;
+  };
+  const jump = (index) => {
+    track.classList.add('no-anim');
+    track.style.transform = `translateX(-${index * slideWidth()}px)`;
+    void track.offsetWidth;
+    track.classList.remove('no-anim');
+    current = index;
+  };
+  const onTransitionEnd = () => {
+    if (current === 0) jump(count);
+    else if (current === total - 1) jump(1);
+  };
+  const go = (delta) => move(current + delta);
+
+  track.addEventListener('transitionend', onTransitionEnd);
+  prevBtn.addEventListener('click', () => go(-1));
+  nextBtn.addEventListener('click', () => go(1));
+
+  let startX = null;
+  viewport.addEventListener('pointerdown', (e) => { startX = e.clientX; });
+  viewport.addEventListener('pointerup', (e) => {
+    if (startX === null) return;
+    const dx = e.clientX - startX;
+    startX = null;
+    if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
+  });
+  viewport.addEventListener('pointercancel', () => { startX = null; });
+
+  carouselState = { move, go, current: () => current };
+  jump(1);
+}
+
+window.addEventListener('resize', () => {
+  if (carouselState) carouselState.move(carouselState.current());
+});
+
+document.addEventListener('keydown', (e) => {
+  if (modal.hidden || !carouselState) return;
+  if (e.key === 'ArrowLeft') {
+    carouselState.go(-1);
+    e.preventDefault();
+  } else if (e.key === 'ArrowRight') {
+    carouselState.go(1);
+    e.preventDefault();
+  }
+});
 
 function cardHTML(fear, index) {
   return fearCardHTML(fear, index);
