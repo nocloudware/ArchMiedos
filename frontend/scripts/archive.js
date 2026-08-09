@@ -271,10 +271,8 @@ async function renderFearCard(fear) {
   }
 
   ctx.strokeStyle = '#6b4f3a';
-  ctx.lineWidth = 8;
-  ctx.setLineDash([20, 14]);
+  ctx.lineWidth = 4;
   ctx.strokeRect(40, 40, W - 80, H - 80);
-  ctx.setLineDash([]);
 
   ctx.textAlign = 'center';
   ctx.fillStyle = '#4a3526';
