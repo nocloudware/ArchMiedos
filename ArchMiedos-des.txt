@@ -1,0 +1,458 @@
+---
+
+# 📁 ARCHIVO DE MIEDOS - Documento de Diseño e Implementación
+
+## 🎯 Visión General
+Una aplicación web que funciona como un "archivo anónimo de miedos" con estética retro de oficina de los años 50, pero con animaciones modernas y fluidas. Los usuarios pueden depositar sus miedos anónimamente, explorar los miedos de otros a través de archivadores metálicos interactivos, y dar "apoyos" (likes) para crear comunidad.
+
+---
+
+## 🏗️ Arquitectura Técnica
+
+### Stack Tecnológico
+| Componente | Tecnología | Propósito |
+|------------|------------|-----------|
+| Hosting | Cloudflare Pages | Servir HTML/CSS/JS |
+| Backend | Cloudflare Workers | API y lógica de negocio |
+| Base de Datos | Cloudflare D1 | Almacenar miedos y likes |
+| IA/Moderación | Cloudflare AI Gateway (Llama Guard 3 8B) | Filtrar contenido ofensivo |
+| Almacenamiento (opcional) | Cloudflare R2 | Imágenes/archivos estáticos |
+
+### Estructura de Archivos
+```
+/
+├── frontend/
+│   ├── index.html          # Página de ingreso
+│   ├── archive.html        # Página del archivo (archivadores)
+│   ├── admin.html          # Panel de administración
+│   ├── styles/
+│   │   ├── main.css        # Estilos generales
+│   │   ├── archive.css     # Estilos específicos del archivo
+│   │   └── admin.css       # Estilos del panel admin
+│   ├── scripts/
+│   │   ├── archive.js      # Lógica de archivadores
+│   │   ├── submit.js       # Lógica de envío de miedos
+│   │   └── admin.js        # Lógica del panel admin
+│   └── assets/
+│       └── images/         # Imágenes de archivadores
+│
+├── backend/
+│   ├── src/
+│   │   ├── index.js        # Worker principal
+│   │   ├── routes/
+│   │   │   ├── fears.js    # Endpoints de miedos
+│   │   │   └── admin.js    # Endpoints de admin
+│   │   ├── services/
+│   │   │   ├── db.js       # Operaciones D1
+│   │   │   └── ai.js       # Integración con IA
+│   │   └── utils/
+│   │       └── validation.js
+│   ├── wrangler.toml       # Configuración Cloudflare
+│   └── package.json
+│
+└── database/
+    └── schema.sql          # Esquema de D1
+```
+
+---
+
+## 🗄️ Base de Datos (D1)
+
+### Esquema
+```sql
+-- Tabla principal de miedos
+CREATE TABLE fears (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  content TEXT NOT NULL,
+  first_letter CHAR(1) GENERATED ALWAYS AS (UPPER(SUBSTR(content, 1, 1))) STORED,
+  likes INTEGER DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  is_approved BOOLEAN DEFAULT 0,
+  is_reported BOOLEAN DEFAULT 0,
+  moderation_comment TEXT
+);
+
+-- Índices para búsquedas rápidas
+CREATE INDEX idx_first_letter ON fears(first_letter);
+CREATE INDEX idx_approved ON fears(is_approved);
+CREATE INDEX idx_created_at ON fears(created_at);
+
+-- Tabla de reportes (para el panel de admin)
+CREATE TABLE reports (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  fear_id INTEGER,
+  reason TEXT,
+  reported_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (fear_id) REFERENCES fears(id)
+);
+```
+
+---
+
+## 🎨 Diseño de Interfaz
+
+### 1. Página de Ingreso (`index.html`)
+
+**Layout:**
+- **Header**: Título "Archivo de Miedos" con tipografía retro (ej: 'Special Elite' de Google Fonts)
+- **Hero Section**: Imagen de fondo sutil (papel envejecido o estantería de archivo)
+- **Formulario**: 
+  - Área de texto de 2000 caracteres con contador
+  - Placeholder: *"Escribe aquí tu miedo... deposítalo en el archivo y libérate"*
+  - Botón: "Depositar en el Archivo" (animación de pulsación)
+- **Footer**: Enlace a "Explorar el Archivo" con ícono de flecha
+
+**Estilo Moderno + Retro:**
+- Fuente principal moderna (ej: 'Inter' o 'Nunito') para contraste
+- Elementos retro: bordes decorativos, sombras de papel, sellos
+- Animaciones: hover suave, transiciones elegantes, efecto de tinta al escribir
+
+### 2. Página del Archivo (`archive.html`)
+
+**Layout Principal:**
+- **Header**: Logo + "Archivo de Miedos" + botón "Depositar tu miedo"
+- **Grid de Archivadores**: 3x3 con efecto de profundidad y sombras
+
+**Cada Archivador:**
+```html
+<div class="filing-cabinet" data-letter="A-C">
+  <div class="cabinet-drawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-label">A-C</div>
+    <div class="drawer-count">42 miedos</div>
+  </div>
+  <div class="cabinet-shadow"></div>
+</div>
+```
+
+**Interacción:**
+- Hover: El cajón se desliza ligeramente (2-3px) y la sombra se intensifica
+- Click: Animación de apertura (transición suave de 0.5s)
+- El cajón se "abre" revelando un modal con el contenido
+
+**Modal de Contenido:**
+- Header: "Archivo A-C" con contador
+- Barra de búsqueda (filtrar por palabra clave)
+- Grid de tarjetas (fichas de catálogo):
+  - Cada ficha muestra: texto del miedo, fecha (formato "depositado el 15/08/2026"), botón de apoyo
+  - Efecto de tarjeta de biblioteca con borde perforado
+  - Animación de entrada (fade-in escalonado)
+
+**Estilo:**
+- Fondo: verde oliva suave o gris acero
+- Archivadores: metálicos con reflejos y textura sutil
+- Tarjetas: blanco crema con borde punteado
+- Tipografía: Courier New para números, moderna para textos
+
+### 3. Panel de Administración (`admin.html`)
+
+**Layout:**
+- **Sidebar**: Navegación (Pendientes, Aprobados, Reportados, Estadísticas)
+- **Contenido Principal**: Tabla o lista de miedos con acciones
+- **Filtros**: Por estado, fecha, letra
+
+**Acciones por Miedo:**
+- ✅ Aprobar / ❌ Rechazar
+- 🗑️ Eliminar
+- 👁️ Ver detalle (texto completo, fecha, IP anónima)
+
+**Estadísticas (Dashboard):**
+- Total de miedos depositados
+- Total de apoyos dados
+- Miedos más populares (top 5)
+- Actividad en los últimos 7 días (gráfico simple)
+
+**Seguridad:**
+- Autenticación básica con usuario/contraseña (Cloudflare Access o HTTP Auth)
+- Todas las rutas de admin protegidas
+
+---
+
+## 🧠 Lógica del Backend (Worker)
+
+### Endpoints API
+
+#### Miedos Públicos
+```javascript
+// GET /api/fears?letter=A&limit=20&offset=0
+// Obtiene miedos aprobados por letra
+GET /api/fears
+
+// GET /api/fears/search?q=araña&limit=20
+// Busca miedos por palabra clave
+GET /api/fears/search
+
+// POST /api/fears
+// Deposita un nuevo miedo (requiere moderación)
+Body: { content: "texto del miedo" }
+Response: { id: 123, status: "pending_approval" }
+
+// POST /api/fears/:id/like
+// Añade un apoyo (like) a un miedo
+Response: { likes: 42 }
+
+// GET /api/fears/random
+// Obtiene un miedo aleatorio (para la página de inicio)
+```
+
+#### Administración
+```javascript
+// GET /api/admin/fears?status=pending&limit=20
+// Lista miedos para moderar
+
+// PUT /api/admin/fears/:id
+// Actualiza estado de un miedo
+Body: { status: "approved" | "rejected", comment: "motivo" }
+
+// DELETE /api/admin/fears/:id
+// Elimina un miedo permanentemente
+
+// GET /api/admin/stats
+// Obtiene estadísticas del sistema
+```
+
+### Integración con IA (Moderación)
+
+```javascript
+// services/ai.js
+export async function moderateContent(content) {
+  const response = await fetch('https://gateway.ai.cloudflare.com/v1/...', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${API_KEY}` },
+    body: JSON.stringify({
+      model: '@cf/meta/llama-guard-3-8b',
+      messages: [
+        {
+          role: 'system',
+          content: 'Eres un moderador de contenido. Determina si el siguiente texto contiene: odio, violencia, spam, acoso, o contenido inapropiado. Responde con "SAFE" si es seguro, o "UNSAFE" si no lo es.'
+        },
+        {
+          role: 'user',
+          content: content
+        }
+      ]
+    })
+  });
+  
+  const result = await response.json();
+  return result.is_safe; // true o false
+}
+```
+
+### Flujo de Depositar un Miedo
+
+1. Usuario envía texto desde el frontend
+2. Worker recibe petición POST `/api/fears`
+3. Valida longitud (mínimo 10, máximo 2000 caracteres)
+4. Envía a IA para moderación (async)
+5. Si es seguro:
+   - Guarda en D1 con `is_approved = 1`
+   - Devuelve ID y estado "approved"
+6. Si es inseguro:
+   - Guarda en D1 con `is_approved = 0`
+   - Registra en tabla de reportes
+   - Devuelve mensaje de "en revisión"
+7. El usuario ve confirmación: *"Tu miedo ha sido depositado en el archivo"*
+
+---
+
+## 🎬 Animaciones y Transiciones
+
+### 1. Apertura de Archivador (CSS)
+```css
+.filing-cabinet {
+  perspective: 1000px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.filing-cabinet:hover {
+  transform: translateY(-4px);
+}
+
+.drawer {
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.drawer.open {
+  transform: rotateX(-15deg) translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+```
+
+### 2. Entrada de Tarjetas (JavaScript + CSS)
+```javascript
+// Efecto de cascada al abrir un cajón
+cards.forEach((card, index) => {
+  card.style.animationDelay = `${index * 0.05}s`;
+  card.classList.add('fade-in-up');
+});
+```
+
+### 3. Like (Corazón con rebote)
+```css
+@keyframes heartPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+.like-button.liked .heart-icon {
+  animation: heartPop 0.3s ease;
+  color: #ff6b6b;
+}
+```
+
+### 4. Contraste Moderno/Retro
+- **Fondo**: Textura de papel o grano sutil (retro) + degradado moderno
+- **Tipografía**: Retro en títulos, moderna en cuerpo
+- **Colores**: Paleta cálida (crema, marrón, verde oliva) + acentos vibrantes modernos
+- **Sombras**: Sombra difusa moderna para profundidad + sombra de gota retro para elementos vintage
+
+---
+
+## 📦 Instalación y Configuración
+
+### Requisitos Previos
+- Cuenta de Cloudflare
+- Node.js instalado
+- Wrangler CLI (`npm install -g wrangler`)
+
+### Pasos de Configuración
+
+1. **Crear proyecto**
+```bash
+mkdir archivo-de-miedos
+cd archivo-de-miedos
+wrangler init
+```
+
+2. **Configurar D1**
+```bash
+wrangler d1 create archivo-de-miedos-db
+wrangler d1 execute archivo-de-miedos-db --file=./database/schema.sql
+```
+
+3. **Configurar AI Gateway**
+- Ir a Cloudflare Dashboard → AI → AI Gateway
+- Crear gateway "archivo-miedos"
+- Obtener API key
+
+4. **Configurar Variables de Entorno**
+En `wrangler.toml`:
+```toml
+name = "archivo-de-miedos"
+main = "src/index.js"
+compatibility_date = "2024-08-08"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "archivo-de-miedos-db"
+database_id = "tu-database-id"
+
+[vars]
+AI_GATEWAY_URL = "https://gateway.ai.cloudflare.com/v1/..."
+AI_API_KEY = "tu-api-key"
+ADMIN_USERNAME = "admin"
+ADMIN_PASSWORD_HASH = "hash-de-password"
+```
+
+5. **Desplegar Worker**
+```bash
+wrangler deploy
+```
+
+6. **Desplegar Pages**
+- Conectar repositorio de GitHub en Cloudflare Pages
+- Configurar build (si usas build tool) o deploy directo
+
+---
+
+## 📱 Responsive Design
+
+### Mobile (hasta 768px)
+- Archivadores: Grid 2x2 en lugar de 3x3
+- Tarjetas: Stack vertical
+- Texto: Tamaño de fuente reducido
+- Botones: Touch-friendly (mínimo 44px)
+
+### Tablet (768px - 1024px)
+- Archivadores: Grid 3x3 con tamaño reducido
+- Modal: Ocupa 80% de la pantalla
+
+### Desktop (>1024px)
+- Layout completo con efectos visuales mejorados
+- Animaciones completas
+
+---
+
+## 🔒 Consideraciones de Seguridad
+
+1. **Validación de entrada**: Sanitizar texto (escapar HTML)
+2. **Rate limiting**: Máximo 5 miedos por IP en 24h
+3. **Autenticación admin**: HTTP Basic Auth o Cloudflare Access
+4. **HTTPS**: Forzado por defecto en Cloudflare
+5. **CSRF**: Tokens en formularios
+6. **Moderación IA**: Bloquear automáticamente contenido ofensivo
+
+---
+
+## 📊 Métricas y Monitoreo
+
+- **Cloudflare Analytics**: Tráfico, rendimiento, errores
+- **Logs de Worker**: Para debugging
+- **Alertas**: Configurar en Cloudflare para errores del 5%
+
+---
+
+## 🚀 Próximas Mejoras (Futuras Iteraciones)
+
+1. **Comentarios anidados**: Permitir respuestas a miedos
+2. **Tags/Categorías**: Más allá de la primera letra
+3. **Modo oscuro**: Para accesibilidad
+4. **Notificaciones**: Cuando alguien apoya tu miedo
+5. **Exportar**: Descargar tu miedo como "certificado de superación"
+6. **Muro de la fama**: Top 10 miedos más apoyados
+
+---
+
+## 📦 Entregables al Asistente de Código
+
+### Para comenzar a codificar inmediatamente:
+
+1. **Crear estructura de archivos** (frontend y backend)
+2. **Implementar el esquema D1** (archivo schema.sql)
+3. **Configurar Worker base** (index.js con endpoints básicos)
+4. **Crear HTML de las 3 páginas** (con diseño base)
+5. **Implementar lógica de archivadores** (JavaScript)
+6. **Integrar IA** (moderación)
+7. **Añadir animaciones** (CSS keyframes)
+
+### Archivos prioritarios:
+- `backend/src/index.js` - El Worker principal
+- `backend/src/services/ai.js` - Integración con IA
+- `frontend/archive.html` - La página principal con archivadores
+- `frontend/scripts/archive.js` - Toda la lógica de interacción
+- `frontend/styles/archive.css` - Estilos y animaciones
+
+---
+
+## 🎯 Check List de Implementación
+
+- [ ] Crear proyecto Cloudflare y configurar D1
+- [ ] Implementar schema de base de datos
+- [ ] Desarrollar Worker con endpoints básicos
+- [ ] Configurar AI Gateway y moderación
+- [ ] Crear página de ingreso con validación
+- [ ] Crear página de archivadores con grid 3x3
+- [ ] Implementar apertura de cajones con animación
+- [ ] Desarrollar modal con tarjetas de miedos
+- [ ] Añadir funcionalidad de likes
+- [ ] Implementar búsqueda por palabra clave
+- [ ] Crear panel de administración
+- [ ] Añadir autenticación para admin
+- [ ] Optimizar responsive design
+- [ ] Probar y desplegar
+
+---
+

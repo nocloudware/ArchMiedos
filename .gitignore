@@ -1,0 +1,22 @@
+# Dependencias
+node_modules/
+
+# Cloudflare / Wrangler
+.wrangler/
+.dev.vars
+
+# Secretos y credenciales
+api keys y tokens.txt
+*.key
+*.pem
+
+# Logs
+*.log
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Entorno
+.env
+.env.local
