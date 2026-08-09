@@ -239,10 +239,10 @@ async function renderFearCard(fear) {
   await ensureFonts();
   const W = 1000;
   const RETRO = '"Special Elite", "Courier New", monospace';
-  const BODY = 'Inter, Arial, Helvetica, sans-serif';
+  const BODY = '"Kalam", "Patrick Hand", "Comic Sans MS", cursive';
 
   const measure = document.createElement('canvas').getContext('2d');
-  measure.font = `30px ${BODY}`;
+  measure.font = `34px ${BODY}`;
   const allLines = wrapText(measure, String(fear.content || ''), W - 150);
   const maxLines = 10;
   const shown = allLines.slice(0, maxLines);
@@ -250,7 +250,7 @@ async function renderFearCard(fear) {
   const minLines = 2;
   const usedLines = Math.max(shown.length + (hasMore ? 1 : 0), minLines);
 
-  const lineH = 44;
+  const lineH = 46;
   const contentTop = 210;
   const contentBottom = contentTop + usedLines * lineH + 18;
   const bottomStart = contentBottom + 26;
@@ -284,7 +284,7 @@ async function renderFearCard(fear) {
 
   ctx.textAlign = 'left';
   ctx.fillStyle = '#2c2417';
-  ctx.font = `30px ${BODY}`;
+  ctx.font = `400 34px ${BODY}`;
   let y = contentTop;
   shown.forEach((l) => {
     ctx.fillText(l, 75, y);
@@ -321,7 +321,7 @@ async function ensureFonts() {
     try {
       await Promise.all([
         document.fonts.load('400 52px "Special Elite"'),
-        document.fonts.load('30px Inter'),
+        document.fonts.load('400 34px "Kalam"'),
       ]);
       await document.fonts.ready;
     } catch {
