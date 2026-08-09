@@ -755,55 +755,52 @@ body {
 }
 
 @media (min-width: 900px) {
-  .dashboard {
-    height: 100vh;
-    height: 100dvh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
+  .dashboard { overflow: hidden; }
 
   .dashboard .home-layout {
-    flex: 1 1 0;
-    min-height: 0;
-    height: auto;
+    width: min(920px, calc(100vw - 172px));
+    height: calc(100vh - 64px);
+    height: calc(100dvh - 64px);
+    align-items: stretch;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 25%);
     gap: 24px;
-    padding-top: 14px;
+    padding-top: 12px;
+    padding-bottom: 0;
   }
 
   .dashboard .home-main {
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    min-height: 0;
-    overflow-y: auto;
+    overflow: hidden;
   }
 
-  .dashboard .home-hero { padding: 6px 0 2px; }
-  .dashboard .home-hero .brand-title { font-size: clamp(1.5rem, 3vw, 2rem); }
-  .dashboard .home-hero .brand-subtitle { margin: 4px 0 0; }
+  .dashboard .home-main > .home-hero,
+  .dashboard .home-main > .hero,
+  .dashboard .home-main > .site-footer { flex: 0 0 auto; }
 
-  .dashboard .hero { padding: 8px 0 2px; }
-  .dashboard .hero-title { font-size: clamp(1.1rem, 2.2vw, 1.5rem); margin-bottom: 4px; }
-  .dashboard .hero-text { font-size: 0.95rem; }
+  .dashboard .home-hero { padding: 4px 0 0; }
+  .dashboard .home-hero .brand-title { font-size: clamp(1.4rem, 3vw, 1.9rem); }
+  .dashboard .home-hero .brand-subtitle { margin: 2px 0 0; font-size: 0.85rem; }
+
+  .dashboard .hero { padding: 6px 0 0; }
+  .dashboard .hero-title { font-size: clamp(1.05rem, 2vw, 1.4rem); margin-bottom: 2px; }
+  .dashboard .hero-text { font-size: 0.9rem; }
 
   .dashboard .submit-card {
     flex: 1 1 0;
     min-height: 0;
     display: flex;
     flex-direction: column;
-    margin: 8px 0;
-    padding: 18px;
+    margin: 6px 0 2px;
+    padding: 14px 18px;
   }
 
   .dashboard .fear-input { flex: 1 1 0; min-height: 0; resize: none; }
 
-  .dashboard .site-footer { padding: 4px 0 10px; margin-top: 2px; }
+  .dashboard .site-footer { padding: 2px 0 8px; margin-top: 0; }
 
-  .dashboard #home-mine {
-    flex: 0 0 auto;
-    margin: 4px 0;
-    padding: 14px 16px;
-  }
+  .dashboard #home-mine { flex: 0 0 auto; margin: 4px 0; padding: 12px 16px; }
   .dashboard #home-mine .home-mine-text {
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -811,39 +808,44 @@ body {
     overflow: hidden;
   }
 
-  .dashboard .home-side { height: 100%; min-height: 0; gap: 16px; }
+  .dashboard .home-side { min-height: 0; display: flex; flex-direction: column; gap: 14px; }
 
-  .dashboard .home-side .home-box:first-child { flex: 0 0 auto; padding: 14px 16px; }
-  .dashboard .home-side .home-box:first-child .home-stat { padding: 10px 8px 8px; }
-  .dashboard .home-side .home-box:first-child .home-stat-value { font-size: 1.35rem; }
+  .dashboard .home-side .home-box:first-child { flex: 0 0 auto; padding: 8px 10px; }
+  .dashboard .home-side .home-box:first-child .home-section-title { font-size: 0.85rem; margin-bottom: 6px; }
+  .dashboard .home-side .home-box:first-child .home-stats { flex-direction: row; gap: 6px; }
+  .dashboard .home-side .home-box:first-child .home-stat { padding: 6px 4px; border-radius: 8px; }
+  .dashboard .home-side .home-box:first-child .home-stat-value { font-size: 1rem; }
+  .dashboard .home-side .home-box:first-child .home-stat-label { font-size: 0.58rem; margin-top: 3px; }
 
-  .dashboard .home-side .home-section-title { font-size: 1.05rem; }
-  .dashboard .home-side .home-stat-value { font-size: 1.15rem; }
-  .dashboard .home-side .home-stat-label { font-size: 0.68rem; }
-  .dashboard .home-side .home-fear-text { font-size: 0.86rem; }
-  .dashboard .home-side .home-fear-date { font-size: 0.68rem; }
-  .dashboard .home-side .btn-deposit { font-size: 0.8rem; padding: 8px 14px; }
+  .dashboard .home-side .home-section-title { font-size: 1.02rem; margin-bottom: 8px; }
+  .dashboard .home-side .home-fear-text { font-size: 0.84rem; }
+  .dashboard .home-side .home-fear-date { font-size: 0.66rem; }
+  .dashboard .home-side .btn-deposit { font-size: 0.78rem; padding: 7px 12px; }
 
   .dashboard .home-side .home-box:last-child {
     flex: 1 1 0;
     min-height: 0;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
   .dashboard .home-side #home-fear-card {
     flex: 1 1 0;
     min-height: 0;
-    overflow-y: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
   .dashboard .home-side .home-fear-text {
     display: -webkit-box;
-    -webkit-line-clamp: 8;
+    -webkit-line-clamp: 9;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
 
-  .dashboard .disclaimer-footer { padding: 8px 0 12px; margin-top: 0; }
-  .dashboard .disclaimer-text { font-size: 0.75rem; }
+  .dashboard .disclaimer-footer { padding: 6px 0 10px; margin-top: 0; }
+  .dashboard .disclaimer-text { font-size: 0.72rem; }
 }
 
 @media (min-width: 900px) {
