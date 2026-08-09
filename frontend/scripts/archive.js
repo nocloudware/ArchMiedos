@@ -270,10 +270,6 @@ async function renderFearCard(fear) {
     ctx.fillRect(x, 0, 14, 16);
   }
 
-  ctx.strokeStyle = '#6b4f3a';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(40, 40, W - 80, H - 80);
-
   ctx.textAlign = 'center';
   ctx.fillStyle = '#4a3526';
   ctx.font = `400 52px ${RETRO}`;

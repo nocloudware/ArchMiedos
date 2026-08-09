@@ -229,7 +229,8 @@
 }
 
 .fear-text {
-  font-size: 0.98rem;
+  font-family: 'Kalam', 'Comic Sans MS', cursive;
+  font-size: 1.06rem;
   color: var(--ink);
   white-space: pre-wrap;
   word-break: break-word;
