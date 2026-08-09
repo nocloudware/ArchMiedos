@@ -269,37 +269,36 @@ function renderFearCard(fear) {
   ctx.font = '32px ' + FONT;
   const lines = wrapText(ctx, fear.content || '', W - 150);
   let y = 240;
-  const maxLines = 13;
+  const maxLines = 10;
   lines.slice(0, maxLines).forEach((l) => {
     ctx.fillText(l, 75, y);
     y += 46;
   });
   if (lines.length > maxLines) {
     ctx.fillText('…', 75, y);
-    y += 46;
   }
 
-  y += 20;
+  const bottom = H - 160;
   ctx.strokeStyle = '#e8dfc8';
   ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.moveTo(75, y);
-  ctx.lineTo(W - 75, y);
+  ctx.moveTo(75, bottom);
+  ctx.lineTo(W - 75, bottom);
   ctx.stroke();
 
   ctx.fillStyle = '#4b555f';
   ctx.font = '24px ' + FONT;
-  ctx.fillText(`Depositado el ${formatDate(fear.created_at)}`, 75, y + 44);
+  ctx.fillText(`Depositado el ${formatDate(fear.created_at)}`, 75, bottom + 42);
 
   ctx.fillStyle = '#6b4f3a';
   ctx.font = 'bold 30px ' + FONT;
-  ctx.fillText(`Apoyos: ${fear.apoyos || 0}`, 75, y + 96);
-  ctx.fillText(`Fuerzas: ${fear.fuerzas || 0}`, 75, y + 140);
+  ctx.fillText(`Apoyos: ${fear.apoyos || 0}`, 75, bottom + 94);
+  ctx.fillText(`Fuerzas: ${fear.fuerzas || 0}`, 75, bottom + 138);
 
   ctx.textAlign = 'center';
   ctx.font = 'italic 24px ' + FONT;
   ctx.fillStyle = '#6b4f3a';
-  ctx.fillText('Tu miedo importa. El archivo lo guarda.', W / 2, H - 72);
+  ctx.fillText('Tu miedo importa. El archivo lo guarda.', W / 2, H - 64);
 
   return cv.toDataURL('image/png');
 }

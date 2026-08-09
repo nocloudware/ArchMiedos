@@ -2,7 +2,7 @@ import { json, notFound } from '../utils/http.js';
 import { validateContent, parseLetterRange, clamp, RATE_LIMIT_PER_DAY } from '../utils/validation.js';
 import { moderateContent } from '../services/ai.js';
 import { classifyFear, groupForLetter } from '../services/classify.js';
-import { createPost, getPost, shareAccount, shareText } from '../services/bluesky.js';
+import { createPost, getPost, shareAccount } from '../services/bluesky.js';
 import * as db from '../services/db.js';
 
 const VISITOR_COOKIE = 'am_visitor';
@@ -105,21 +105,12 @@ async function shareFear(request, env, idStr) {
     ? body.image.slice('data:image/png;base64,'.length)
     : null;
 
-  const miedoUrl = `${SITE_BASE}/miedo/${fearId}`;
+  const homeUrl = `${SITE_BASE}/`;
   const imageBytes = image ? Uint8Array.from(atob(image), (c) => c.charCodeAt(0)) : null;
 
-  const text = image
-    ? '📁 Un miedo depositado en el Archivo de Miedos (anonimo)'
-    : `${shareText(fear.content)}\n\n${miedoUrl}`;
+  const text = `📁 Un miedo depositado en el Archivo de Miedos (anonimo)\n\n${homeUrl}`;
 
-  const postOpts = image
-    ? {
-        imageBytes,
-        uri: miedoUrl,
-        title: 'Un miedo depositado en el Archivo de Miedos',
-        description: String(fear.content).slice(0, 280),
-      }
-    : {};
+  const postOpts = image ? { imageBytes } : {};
 
   // Dedup con validación: si el post ya no existe o es de solo texto, se recrea con imagen.
   const existing = await db.getShareByFear(env, fearId);

@@ -1,4 +1,4 @@
-const CACHE = 'archmiedos-v3';
+const CACHE = 'archmiedos-v4';
 const SHELL = [
   '/',
   '/index.html',

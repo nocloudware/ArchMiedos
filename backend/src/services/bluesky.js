@@ -30,16 +30,16 @@ export async function createPost(env, text, opts = {}) {
     createdAt: new Date().toISOString(),
   };
 
-  if (opts.imageBytes && opts.uri) {
+  if (opts.imageBytes) {
     const blob = await uploadBlob(session, opts.imageBytes, 'image/png');
     record.embed = {
-      $type: 'app.bsky.embed.external',
-      external: {
-        uri: opts.uri,
-        title: String(opts.title || 'Archivo de Miedos').slice(0, 300),
-        description: String(opts.description || '').slice(0, 300),
-        thumb: blob,
-      },
+      $type: 'app.bsky.embed.images',
+      images: [
+        {
+          image: blob,
+          alt: 'Tarjeta de un miedo depositado en el Archivo de Miedos',
+        },
+      ],
     };
   }
 
