@@ -15,7 +15,7 @@ Descripción funcional y técnica de la implementación. Para una lectura enfoca
 
 El Worker `archivo-de-miedos` es la única pieza desplegada. Atiende:
 
-- **Estáticos**: los 3 HTML (portada, archivo, admin) se importan como texto y se sirven desde el Worker (así se evita el redirect `.html` → extensión vacía del runtime de dev). CSS/JS/imágenes se sirven vía el binding `ASSETS` (carpeta `frontend/`) con `run_worker_first: true`.
+- **Estáticos**: los HTML (portada, archivo, admin, términos, misión y la plantilla de ficha `/miedo`) se importan como texto y se sirven desde el Worker (así se evita el redirect `.html` → extensión vacía del runtime de dev). CSS/JS/imágenes se sirven vía el binding `ASSETS` (carpeta `frontend/`) con `run_worker_first: true`.
 - **API pública** bajo `/api/*`.
 - **API de administración** bajo `/api/admin/*`, protegida con HTTP Basic Auth.
 
@@ -27,6 +27,7 @@ El Worker `archivo-de-miedos` es la única pieza desplegada. Atiende:
 /admin(.html)           → admin.html (requiere auth; loguea el intento)
 /terminos(.html)        → terminos.html
 /mision(.html)          → mision.html (README en vivo desde GitHub)
+/miedo/:id              → plantilla con OG dinámico del miedo (redirige a / si no existe)
 /api/*                  → handleFears
 /api/admin/*            → handleAdmin (loguea el intento)
 todo lo demás           → env.ASSETS.fetch
@@ -34,7 +35,7 @@ todo lo demás           → env.ASSETS.fetch
 
 ### Navegación vertical
 
-Las páginas públicas (`archive`, `terminos`, `mision`) llevan un menú vertical izquierdo (`<nav class="side-nav">`) con estética de archivador: pestañas tipo cajón metálico (`Inicio`, `El Archivo`, `Términos`, `Misión`), con la activa resaltada. En móvil (< 900px) se convierte en barra superior horizontal.
+Todas las páginas llevan un menú vertical izquierdo (`<nav class="side-nav">`) con estética de archivador: `Inicio`, `Archivo` y los **9 cajones** (A-C…Y-Z) que abren el cajón en `/archive.html?cajon=X`, más `Términos` y `Misión`. Los cajones del menú son los mismos archivadores de la página de archivos y llenan el alto disponible. En la página de archivo, `archive.js` marca como activo el cajón según `?cajon=` y lo abre. En móvil (< 900px) el menú se oculta y se despliega desde un botón hamburguesa (izquierda → derecha, con backdrop), colapsando al elegir una opción o al pulsar Esc.
 
 `mision.html` muestra el contenido de `README.md` cargándolo en vivo desde `raw.githubusercontent.com` (CORS `*`) y renderizándolo con `marked` (CDN jsdelivr, pinned v12). El renderer escapa HTML crudo del markdown (no se inyecta HTML arbitrario) y abre enlaces externos en otra pestaña. Así la página refleja cualquier actualización del README sin redeploy.
 
@@ -53,7 +54,7 @@ Las páginas públicas (`archive`, `terminos`, `mision`) llevan un menú vertica
 | Columna | Tipo | Notas |
 |---|---|---|
 | id | INTEGER PK | autoincrement |
-| content | TEXT | CHECK 10–2000 caracteres |
+| content | TEXT | CHECK 10–300 caracteres |
 | first_letter | CHAR(1) | GENERATED ALWAYS, UPPER(SUBSTR(content,1,1)) |
 | apoyos | INTEGER | contador de reacciones "apoyo" |
 | fuerzas | INTEGER | contador de reacciones "fuerza" |
@@ -72,7 +73,7 @@ Las páginas públicas (`archive`, `terminos`, `mision`) llevan un menú vertica
 `UNIQUE(fear_id, cookie_id, type)`. `type ∈ {apoyo, fuerza}`. Sustituye a la antigua tabla `likes` (migración: `database/migrate_reactions.sql`).
 
 ### `shares` — publicaciones en Bluesky
-Dedup por miedo (`fear_id UNIQUE`), con `ip_hash` (para rate limit de compartidos), `rkey` y `post_uri` del post creado en `@archmiedos.bsky.social`. El texto del post es anónimo (solo el contenido del miedo). Límite: 10 compartidos/día por IP.
+Dedup por miedo (`fear_id UNIQUE`), con `ip_hash` (para rate limit de compartidos), `rkey` y `post_uri` del post creado en `@archmiedos.bsky.social`. El post publica la tarjeta del miedo como imagen (anónimo). Límite: 10 compartidos/día por IP.
 
 ### `reports` — reportes de moderación
 Referencia `fear_id` con `ON DELETE CASCADE`.
@@ -130,7 +131,7 @@ Las credenciales de admin se leen de los secretos `ADMIN_USERNAME` / `ADMIN_PASS
 
 ## Flujo de moderación
 
-1. `POST /api/fears` valida contenido (10–2000 chars) y rate limit.
+1. `POST /api/fears` valida contenido (10–300 chars) y rate limit.
 2. `moderateContent` llama a Llama Guard 3 8B con `input` = `{ messages: [{ role: "user", content }] }`. **Nota:** el modelo no acepta rol `system`; usar siempre `user`/`assistant` (bug resuelto en `services/ai.js`).
 3. Si `unsafe`, se guarda con `status=pending` y se inserta un `reports`; queda oculto del público hasta decisión manual del admin.
 4. Si `safe`, se publica directamente (`is_approved=1`).
@@ -145,20 +146,40 @@ Las credenciales de admin se leen de los secretos `ADMIN_USERNAME` / `ADMIN_PASS
 
 ## Integración con Bluesky (AT Protocol)
 
-Hay dos usos de Bluesky:
+### 1. Tarjeta al compartir enlaces (cuenta `nocloudware.bsky.social`)
 
-**1. Tarjeta al compartir enlaces** (cuenta `nocloudware.bsky.social`, records `site.standard.*`, ver arriba).
+Al compartir un enlace del sitio en Bluesky se muestra una tarjeta. Se usan dos mecanismos (implementados según el patrón del proyecto Bluesk-AI):
 
-**2. Compartir miedos de forma anónima** (`@archmiedos.bsky.social`). Cada tarjeta del archivo tiene un botón "Compartir en Bluesky". `POST /api/fears/:id/share` (`services/bluesky.js`):
-- El frontend renderiza la **tarjeta del miedo como imagen** (canvas con fuente segura Arial, sin emojis: texto, fecha, apoyos y fuerzas) y la envía en el body como `image` (data URL PNG).
-- El backend sube la imagen (`uploadBlob`) y crea un post `app.bsky.feed.post` con `app.bsky.embed.images` (imagen simple, sin crop). El texto del post es el encabezado anónimo + **link a la página de inicio**. Si no hay imagen, cae al post de solo texto con link.
+1. **Tags Open Graph** (método 1). Todas las páginas (`index`, `archive`, `admin`, `terminos`, `mision`, `miedo`) llevan `og:title`, `og:description`, `og:type`, `og:url`, `og:image` (usando `card.png`, 892×448, servido por ASSETS en `/card.png`) y `twitter:card = summary_large_image`. El fetcher de Bluesky los lee automáticamente al compartir el link. No requiere cuenta.
+
+2. **Tarjeta extendida `site.standard.*`** (método 2). Se crean records AT en el repositorio de `nocloudware.bsky.social`:
+   - `site.standard.publication` (el sitio, una vez, rkey `archmiedos`), con el ícono `card.png` subido como blob.
+   - `site.standard.document` por página pública (rkeys `archmiedos-inicio`, `archmiedos-el-archivo`, `archmiedos-terminos`), con `site` apuntando a la publicación, `title`, `publishedAt`, `description`, `textContent` (para el tiempo de lectura) y `contributors`.
+   - Cada página emite `<link rel="site.standard.publication">` y `<link rel="site.standard.document">` con sus `at://` URIs para que el fetcher resuelva los records.
+
+Configuración: las credenciales están en `.env.bsky` (gitignored): `BSKY_HANDLE`, `BSKY_APP_PASSWORD`. El script `scripts/setup-bsky.mjs` hace login, sube el ícono y crea/actualiza los records con `com.atproto.repo.putRecord` (idempotente). Para regenerar los tags:
+
+```
+node scripts/setup-bsky.mjs
+```
+
+Si cambian los records, actualizar los `<link rel>` embebidos en los HTML con las nuevas `at://` URIs. El documento de admin no se crea (página protegida).
+
+### 2. Compartir miedos de forma anónima (`@archmiedos.bsky.social`)
+
+Cada ficha del archivo y de la portada tiene un botón "Compartir en Bluesky". `POST /api/fears/:id/share` (`services/bluesky.js`):
+- El frontend renderiza la **tarjeta del miedo como imagen** (`scripts/card.js` → `renderFearCard`, canvas con tipografía de la página: **Special Elite** en títulos y **Kalam** manuscrita en el cuerpo; incluye texto del miedo, fecha, apoyos 🫂, fuerzas 💪 y `Tema:` centrado) y la envía en el body como `image` (data URL PNG).
+- El backend sube la imagen (`uploadBlob`) y crea un post `app.bsky.feed.post` con `app.bsky.embed.images` (imagen simple, sin crop). El texto del post es el encabezado anónimo + **link a la página de inicio** con **facet** (`app.bsky.richtext.facet` → link clickeable). El **alt-text** de la imagen incluye el texto del miedo y los contadores. Si no hay imagen, cae al post de solo texto con link.
 - Dedup con validación: `getRecord` verifica que el post exista y tenga imagen; si fue borrado o es de solo texto, se recrea con la tarjeta y se actualiza la fila de `shares`. Rate limit: 10/día por IP.
 - Credenciales en secretos `BSKY_HANDLE` / `BSKY_APP_PASSWORD` (y `.dev.vars` local).
 
 ## Otros
 
-- **Página `/miedo/:id`**: URL pública por miedo con OG dinámico (`og:title/description` = contenido del miedo). Sirve como destino de los posts compartidos y enlaces "ver ficha". Si el miedo no existe o no está aprobado, redirige a `/`.
-- **PWA**: `manifest.json`, `sw.js` (caché del shell), iconos 192/512 y `theme-color`. Registro en `home.js`.
+- **Ficha compartida** (`frontend/scripts/card.js`): `fearCardHTML()` genera la misma ficha en el archivo y en la portada (azar) — contenido, tema, fecha, reacciones y compartir — y `bindCardActions()` conecta reacciones y compartir por delegación.
+- **Portada tipo dashboard**: menú + columna principal (título, hero, depósito, "Tu miedo") + sidebar derecho de 25% con contadores (miedos/apoyos/fuerzas) arriba y "Del archivo" (último + aleatorio) abajo; sin scroll en desktop (≥900px), apilado en móvil.
+- **Mi miedo**: cookie `am_mine` (ids de depósitos del visitante) → panel "Tu miedo" con enlace al cajón y **certificado de superación** (PNG generado en canvas).
+- **Página `/miedo/:id`**: URL pública por miedo con OG dinámico (`og:title/description` = contenido del miedo). Sirve como destino de los posts compartidos. Si el miedo no existe o no está aprobado, redirige a `/`.
+- **PWA**: `manifest.json`, iconos 192/512, `theme-color` y `sw.js` **network-first** (siempre sirve la versión nueva; el caché solo como respaldo offline). `scripts/cf.mjs` **renueva la versión del caché del SW en cada deploy** (auto-bump), de modo que la PWA siempre refleja el último despliegue.
 - **SEO**: `robots.txt` y `sitemap.xml` estáticos en ASSETS.
 
 ## Despliegue y entorno
@@ -175,43 +196,26 @@ npm run whoami          # verifica la cuenta activa
 
 Migraciones: los cambios de esquema sobre bases existentes se aplican con los scripts de `database/migrate_*.sql` (ej. `migrate_reactions.sql`, `migrate_admin_logs.sql`) mediante `wrangler d1 execute ... --file=...`.
 
-## Integración con Bluesky (AT Protocol)
-
-Al compartir un enlace del sitio en Bluesky se muestra una tarjeta. Se usan dos mecanismos (implementados según el patrón del proyecto Bluesk-AI):
-
-1. **Tags Open Graph** (método 1). Todas las páginas (`index`, `archive`, `admin`, `terminos`) llevan `og:title`, `og:description`, `og:type`, `og:url`, `og:image` (usando `card.png`, 892×448, servido por ASSETS en `/card.png`) y `twitter:card = summary_large_image`. El fetcher de Bluesky los lee automáticamente al compartir el link. No requiere cuenta.
-
-2. **Tarjeta extendida `site.standard.*`** (método 2). Se crean records AT en el repositorio de `nocloudware.bsky.social`:
-   - `site.standard.publication` (el sitio, una vez, rkey `archmiedos`), con el ícono `card.png` subido como blob.
-   - `site.standard.document` por página pública (rkeys `archmiedos-inicio`, `archmiedos-el-archivo`, `archmiedos-terminos`), con `site` apuntando a la publicación, `title`, `publishedAt`, `description`, `textContent` (para el tiempo de lectura) y `contributors`.
-   - Cada página emite `<link rel="site.standard.publication">` y `<link rel="site.standard.document">` con sus `at://` URIs para que el fetcher resuelva los records.
-
-Configuración: las credenciales están en `.env.bsky` (gitignored): `BSKY_HANDLE`, `BSKY_APP_PASSWORD`. El script `scripts/setup-bsky.mjs` hace login, sube el ícono y crea/actualiza los records con `com.atproto.repo.putRecord` (idempotente). Para regenerar los tags:
-
-```
-node scripts/setup-bsky.mjs
-```
-
-Si cambian los records, actualizar los `<link rel>` embebidos en los HTML con las nuevas `at://` URIs. El documento de admin no se crea (página protegida).
-
 ## Estructura de archivos
 
 ```
 ├── frontend/
-│   ├── index.html / archive.html / admin.html / terminos.html / mision.html
-│   ├── card.png             # imagen OG / ícono de la publicación AT
-│   ├── styles/              # main.css, archive.css, admin.css
-│   └── scripts/             # submit.js, archive.js, admin.js, mision.js, home.js, nav.js
+│   ├── index.html / archive.html / admin.html / terminos.html / mision.html / miedo.html
+│   ├── manifest.json / sw.js / robots.txt / sitemap.xml   # PWA y SEO
+│   ├── icons/             # iconos 192/512 + favicon
+│   ├── card.png           # imagen OG / ícono de la publicación AT
+│   ├── styles/            # main.css, archive.css, admin.css
+│   └── scripts/           # card.js (ficha compartida), submit.js, archive.js, admin.js, mision.js, home.js, nav.js
 ├── backend/src/
 │   ├── index.js           # Worker principal (enrutado + estáticos)
 │   ├── routes/            # fears.js, admin.js
-│   ├── services/          # db.js, ai.js, auth.js, adminLog.js
+│   ├── services/          # db.js, ai.js, classify.js, bluesky.js, auth.js, adminLog.js
 │   └── utils/             # http.js, validation.js
 ├── database/
 │   ├── schema.sql         # esquema completo (instalaciones nuevas)
 │   └── migrate_*.sql      # migraciones incrementales
 ├── scripts/
-│   ├── cf.mjs             # wrapper de wrangler con credenciales del proyecto
+│   ├── cf.mjs             # wrapper de wrangler (renueva el caché SW en cada deploy)
 │   └── setup-bsky.mjs     # crea/actualiza records site.standard.* en Bluesky
 ├── wrangler.jsonc
 └── package.json

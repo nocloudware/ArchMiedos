@@ -18,8 +18,8 @@ Algunas personas encuentran alivio con solo escribirlo. Otras encuentran consuel
 
 Es muy fácil. No necesitas cuenta, correo ni contraseña.
 
-1. **Deposita tu miedo.** En la portada, escribe lo que te da miedo (entre 10 y 2000 caracteres) y pulsa *"Depositar en el Archivo"*. Eso es todo.
-2. **Explora el archivo.** Nueve archivadores de oficina guardan los miedos por su primera letra, de A a la Z. Abre un cajón y lee lo que otros han dejado.
+1. **Deposita tu miedo.** En la portada, escribe lo que te da miedo (entre 10 y 300 caracteres) y pulsa *"Depositar en el Archivo"*. Eso es todo.
+2. **Explora el archivo.** Nueve archivadores de oficina guardan los miedos por el **tema real que los provoca** — una inteligencia artificial clasifica cada depósito y lo archiva donde corresponde (por ejemplo, *"tengo miedo a las arañas"* queda en la A). Abre un cajón y lee lo que otros han dejado.
 3. **Busca.** Dentro de cada cajón puedes buscar por palabra clave. ¿Miedo a la oscuridad? Busca "oscu" y verás que no eres el único.
 4. **Acompaña.** Si un miedo te llega, puedes dejarle **🫂 Apoyo** o **💪 Fuerza**. Es tu forma de decirle a un desconocido: *"te leo y no estás solo"*. Cada persona puede dar cada reacción una sola vez.
 
@@ -28,6 +28,8 @@ Es muy fácil. No necesitas cuenta, correo ni contraseña.
 - **Anónimo de verdad.** No se pide nombre, correo ni datos personales. No hay cuentas, no hay perfiles, no hay seguimiento.
 - **Sin juicios.** Un miedo no se juzga: se archiva.
 - **Moderado con cuidado.** Cada miedo pasa por una revisión automática con inteligencia artificial y, cuando hace falta, por revisión humana, para que el archivo siga siendo un espacio seguro.
+- **Clasificado por IA.** Una inteligencia artificial identifica el miedo de fondo de cada depósito y lo archiva en el cajón que le corresponde por tema.
+- **Compartir anónimo en Bluesky.** Desde cualquier ficha puedes compartir el miedo (sin tu identidad) en la cuenta **@archmiedos.bsky.social**, con una tarjeta que muestra su texto, fecha y reacciones.
 - **Código abierto.** Puedes revisar exactamente cómo funciona este sitio, qué datos guarda y cuáles no. [Mira el código en GitHub](https://github.com/nocloudware/ArchMiedos).
 
 ## Enlaces
