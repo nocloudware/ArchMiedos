@@ -307,70 +307,85 @@ body {
   z-index: 40;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 18px 14px;
-  background: linear-gradient(180deg, #39424d 0%, #2b323b 100%);
+  gap: 8px;
+  padding: 12px 12px;
+  background: var(--paper);
   border-right: 3px solid var(--gold);
-  box-shadow: 2px 0 14px rgba(0, 0, 0, 0.35);
+  box-shadow: 2px 0 14px rgba(0, 0, 0, 0.18);
 }
 
-.side-nav-title {
-  font-family: var(--font-retro);
-  font-size: 0.8rem;
-  color: var(--cream);
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  padding-bottom: 12px;
-  border-bottom: 1px dashed rgba(245, 239, 224, 0.35);
-  margin-bottom: 6px;
+.side-tabs-cab {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-left: 10px;
+  padding-left: 8px;
+  border-left: 2px dashed rgba(201, 162, 39, 0.55);
 }
 
 .side-tab {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
-  background: linear-gradient(170deg, #aab3bd 0%, #7d8793 50%, #68717c 100%);
   border-radius: 6px;
-  padding: 10px 12px;
+  padding: 6px 10px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.side-tab.page {
+  flex: 0 0 auto;
+  background: transparent;
+  border: 2px dashed var(--gold);
+}
+
+.side-tab.cab {
+  flex: 1 1 0;
+  min-height: 0;
+  background: linear-gradient(170deg, #aab3bd 0%, #7d8793 50%, #68717c 100%);
   box-shadow:
     inset 0 2px 4px rgba(0, 0, 0, 0.25),
     inset 0 -2px 3px rgba(255, 255, 255, 0.18),
     var(--shadow-soft);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .side-tab-handle {
   display: block;
-  width: 26px;
-  height: 6px;
-  margin: 0 auto 8px;
+  width: 24px;
+  height: 5px;
+  margin: 0 auto 5px;
   background: linear-gradient(180deg, #d7dde3, #98a2ad);
   border-radius: 3px;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
 }
 
+.side-tab.page .side-tab-handle {
+  background: linear-gradient(180deg, #e6d6a8, #c9a227);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+}
+
 .side-tab-label {
   font-family: var(--font-retro);
-  font-size: 1rem;
-  color: var(--cream);
+  font-size: 0.95rem;
   text-align: center;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+  line-height: 1.1;
 }
 
-.side-tab:hover { transform: translateX(8px); }
+.side-tab.cab .side-tab-label { color: var(--cream); text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4); }
+.side-tab.page .side-tab-label { color: var(--brown-dark); }
+
+.side-tab:hover { transform: translateX(6px); }
 
 .side-tab.active {
-  transform: translateX(8px);
-  box-shadow:
-    inset 0 2px 4px rgba(0, 0, 0, 0.25),
-    inset 0 -2px 3px rgba(255, 255, 255, 0.18),
-    0 0 0 2px var(--gold),
-    var(--shadow-soft);
+  transform: translateX(6px);
+  box-shadow: 0 0 0 2px var(--gold), var(--shadow-soft);
 }
 
-.side-tab.active .side-tab-label { color: #fff; }
+.side-tab.cab.active .side-tab-label { color: #fff; }
+.side-tab.page.active { background: rgba(201, 162, 39, 0.14); }
 
 @media (max-width: 899px) {
   .has-side-nav { margin-left: 0; }
@@ -381,24 +396,37 @@ body {
     width: 100%;
     height: auto;
     flex-direction: row;
-    align-items: center;
-    gap: 8px;
+    align-items: stretch;
+    gap: 6px;
     padding: 8px 10px;
     border-right: none;
     border-bottom: 3px solid var(--gold);
     overflow-x: auto;
   }
 
-  .side-nav-title { display: none; }
+  .side-tabs-cab {
+    flex: none;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 6px;
+    margin-left: 0;
+    padding-left: 0;
+    border-left: none;
+  }
 
   .side-tab {
+    flex: none;
     flex-direction: row;
     align-items: center;
-    padding: 7px 12px;
+    padding: 6px 10px;
     white-space: nowrap;
   }
 
-  .side-tab-handle { margin: 0 8px 0 0; width: 20px; height: 5px; }
+  .side-tab.cab { flex: none; min-height: 0; }
+
+  .side-tab-handle { margin: 0 6px 0 0; width: 18px; height: 4px; }
+
+  .side-tab-label { font-size: 0.82rem; }
 
   .side-tab:hover,
   .side-tab.active { transform: none; }

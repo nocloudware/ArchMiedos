@@ -2,11 +2,11 @@
    Archivo de Miedos — archivadores y cajones
    ============================================ */
 
-.page-archive { background: var(--steel); }
-.page-archive .paper-texture { opacity: 0.12; }
+.page-archive { background: var(--cream); }
+.page-archive .paper-texture { opacity: 0.5; }
 
 .archive-header {
-  background: rgba(30, 35, 42, 0.9);
+  background: rgba(245, 239, 224, 0.92);
   border-bottom: 3px solid var(--gold);
   padding: 16px 0;
 }
@@ -20,10 +20,10 @@
 }
 
 .brand-link { text-decoration: none; }
-.brand-link .brand-title.small { color: var(--cream); margin: 0; }
+.brand-link .brand-title.small { color: var(--brown-dark); margin: 0; }
 
 .archive-intro {
-  color: var(--cream);
+  color: var(--ink);
   text-align: center;
   padding: 40px 0 24px;
 }
@@ -32,10 +32,10 @@
   font-family: var(--font-retro);
   font-size: clamp(1.8rem, 5vw, 2.6rem);
   margin: 0;
-  color: var(--cream);
+  color: var(--ink);
 }
 
-.page-subtitle { margin: 8px 0 0; color: rgba(245, 239, 224, 0.75); }
+.page-subtitle { margin: 8px 0 0; color: var(--steel); }
 
 /* ---------- Grid de archivadores ---------- */
 .cabinets-grid {

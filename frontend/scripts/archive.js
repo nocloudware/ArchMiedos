@@ -56,12 +56,22 @@ function openDrawer(group) {
   searchInput.value = '';
   modal.hidden = false;
   document.body.style.overflow = 'hidden';
+  setActiveCabinet(group);
+  history.replaceState(null, '', `${location.pathname}?cajon=${encodeURIComponent(group)}`);
   loadFears(group, '');
 }
 
 function closeDrawer() {
   modal.hidden = true;
   document.body.style.overflow = '';
+  setActiveCabinet(null);
+  history.replaceState(null, '', location.pathname);
+}
+
+function setActiveCabinet(group) {
+  document.querySelectorAll('.side-tab.cab').forEach((el) => {
+    el.classList.toggle('active', el.dataset.group === group);
+  });
 }
 
 async function loadFears(group, query) {
@@ -183,3 +193,8 @@ function formatDate(raw) {
 
 buildCabinets();
 loadCounts();
+
+const cajonParam = new URLSearchParams(location.search).get('cajon');
+if (cajonParam && GROUPS.includes(cajonParam)) {
+  openDrawer(cajonParam);
+}
