@@ -42,7 +42,7 @@ export async function createPost(env, text, opts = {}) {
       images: [
         {
           image: blob,
-          alt: 'Tarjeta de un miedo depositado en el Archivo de Miedos',
+          alt: String(opts.alt || 'Tarjeta de un miedo depositado en el Archivo de Miedos').slice(0, 300),
         },
       ],
     };
