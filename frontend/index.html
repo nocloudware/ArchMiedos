@@ -69,75 +69,80 @@
     </a>
   </nav>
 
-  <header class="site-header">
-    <div class="container">
-      <h1 class="brand-title">Archivo de Miedos</h1>
-      <p class="brand-subtitle">Est. 1950 — Departamento de Liberación Emocional</p>
-    </div>
-  </header>
+  <main class="container home-layout">
+    <section class="home-main">
+      <header class="home-hero">
+        <h1 class="brand-title">Archivo de Miedos</h1>
+        <p class="brand-subtitle">Est. 1950 — Departamento de Liberación Emocional</p>
+      </header>
 
-  <main class="container">
-    <section class="hero">
-      <h2 class="hero-title">Deposita tu miedo aquí.</h2>
-      <p class="hero-text">
-        Escríbelo, deposítalo en el archivo y libérate. Anónimo. Nadie sabrá quién eres.
-        Solo tú y el archivo.
-      </p>
-    </section>
+      <section class="hero">
+        <h2 class="hero-title">Deposita tu miedo aquí.</h2>
+        <p class="hero-text">
+          Escríbelo, deposítalo en el archivo y libérate. Anónimo. Nadie sabrá quién eres.
+          Solo tú y el archivo.
+        </p>
+      </section>
 
-    <section id="home-stats" class="home-stats" aria-label="Estadísticas del archivo">
-      <div class="home-stat"><span class="home-stat-value">…</span><span class="home-stat-label">miedos</span></div>
-      <div class="home-stat"><span class="home-stat-value">…</span><span class="home-stat-label">apoyos 🫂</span></div>
-      <div class="home-stat"><span class="home-stat-value">…</span><span class="home-stat-label">fuerzas 💪</span></div>
-    </section>
-
-    <section class="submit-card">
-      <label class="field-label" for="fear-input">Tu miedo</label>
-      <textarea
-        id="fear-input"
-        class="fear-input"
-        maxlength="2000"
-        placeholder="Escribe aquí tu miedo... deposítalo en el archivo y libérate"
-        spellcheck="true"
-      ></textarea>
-      <div class="field-meta">
-        <span id="char-count" class="char-count">0 / 2000</span>
-      </div>
-      <button id="submit-btn" class="btn-stamp" type="button">
-        <span class="stamp-label">Depositar en el Archivo</span>
-      </button>
-      <p id="form-message" class="form-message" role="status"></p>
-    </section>
-
-    <section id="home-mine" class="home-panel" hidden>
-      <h2 class="home-section-title">Tu miedo</h2>
-      <div class="home-panel-body">
-        <p id="home-mine-text" class="home-mine-text"></p>
-        <div class="home-panel-actions">
-          <a id="home-mine-link" class="btn-deposit" href="#">Verlo en el archivo</a>
-          <button id="cert-btn" class="btn-stamp btn-cert" type="button">
-            <span class="stamp-label">Descargar certificado</span>
-          </button>
+      <section class="submit-card">
+        <label class="field-label" for="fear-input">Tu miedo</label>
+        <textarea
+          id="fear-input"
+          class="fear-input"
+          maxlength="2000"
+          placeholder="Escribe aquí tu miedo... deposítalo en el archivo y libérate"
+          spellcheck="true"
+        ></textarea>
+        <div class="field-meta">
+          <span id="char-count" class="char-count">0 / 2000</span>
         </div>
-      </div>
+        <button id="submit-btn" class="btn-stamp" type="button">
+          <span class="stamp-label">Depositar en el Archivo</span>
+        </button>
+        <p id="form-message" class="form-message" role="status"></p>
+      </section>
+
+      <section id="home-mine" class="home-panel" hidden>
+        <h2 class="home-section-title">Tu miedo</h2>
+        <div class="home-panel-body">
+          <p id="home-mine-text" class="home-mine-text"></p>
+          <div class="home-panel-actions">
+            <a id="home-mine-link" class="btn-deposit" href="#">Verlo en el archivo</a>
+            <button id="cert-btn" class="btn-stamp btn-cert" type="button">
+              <span class="stamp-label">Descargar certificado</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <footer class="site-footer">
+        <a class="explore-link" href="/archive.html">
+          Explorar el Archivo
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </a>
+      </footer>
     </section>
 
-    <section class="home-panel">
-      <h2 class="home-section-title">Del archivo</h2>
-      <div id="home-fear-card" class="fear-card-static">
-        <p class="loading-note">Abriendo un cajón...</p>
-      </div>
-      <div class="home-panel-actions center">
-        <button id="random-btn" class="btn-deposit" type="button">Saca otro miedo al azar</button>
-      </div>
-    </section>
+    <aside class="home-side">
+      <section class="home-box">
+        <h2 class="home-section-title">El archivo en cifras</h2>
+        <div id="home-stats" class="home-stats" aria-label="Estadísticas del archivo">
+          <div class="home-stat"><span class="home-stat-value">…</span><span class="home-stat-label">miedos</span></div>
+          <div class="home-stat"><span class="home-stat-value">…</span><span class="home-stat-label">apoyos 🫂</span></div>
+          <div class="home-stat"><span class="home-stat-value">…</span><span class="home-stat-label">fuerzas 💪</span></div>
+        </div>
+      </section>
 
-    <footer class="site-footer">
-      <a class="explore-link" href="/archive.html">
-        Explorar el Archivo
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-      </a>
-    </footer>
+      <section class="home-box">
+        <h2 class="home-section-title">Del archivo</h2>
+        <div id="home-fear-card" class="fear-card-static">
+          <p class="loading-note">Abriendo un cajón...</p>
+        </div>
+        <div class="home-panel-actions center">
+          <button id="random-btn" class="btn-deposit" type="button">Saca otro miedo al azar</button>
+        </div>
+      </section>
+    </aside>
   </main>
 
   <footer class="disclaimer-footer">
