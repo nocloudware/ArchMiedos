@@ -28,6 +28,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Special+Elite&family=Kalam:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles/main.css" />
+  <link rel="stylesheet" href="/styles/archive.css" />
 </head>
 <body class="page-home dashboard has-side-nav">
   <div class="paper-texture"></div>
@@ -145,22 +146,6 @@
     </aside>
   </main>
 
-  <div id="ficha-modal" class="ficha-modal" hidden>
-    <div class="ficha-backdrop" data-close-ficha></div>
-    <div class="ficha-panel" role="dialog" aria-modal="true" aria-labelledby="ficha-title">
-      <button class="ficha-close" data-close-ficha aria-label="Cerrar" type="button">&times;</button>
-      <h2 id="ficha-title" class="ficha-title">Ficha del miedo</h2>
-      <p id="ficha-content" class="ficha-content"></p>
-      <div class="ficha-meta">
-        <span id="ficha-date" class="home-fear-date"></span>
-        <span id="ficha-topic" class="ficha-topic"></span>
-      </div>
-      <div class="ficha-actions">
-        <a id="ficha-cabinet" class="btn-deposit" href="#">Verlo en el cajón</a>
-      </div>
-    </div>
-  </div>
-
   <footer class="disclaimer-footer">
     <p class="disclaimer-text">
       Este archivo no guarda información personal ni de telemetría de quienes lo visitan.
@@ -170,6 +155,7 @@
   </footer>
 
   <script src="/scripts/nav.js" defer></script>
+  <script src="/scripts/card.js"></script>
   <script src="/scripts/home.js" defer></script>
   <script src="/scripts/submit.js"></script>
 </body>

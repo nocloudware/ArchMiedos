@@ -237,6 +237,14 @@
   margin: 8px 0 12px;
 }
 
+.fear-topic {
+  display: block;
+  font-family: var(--font-retro);
+  font-size: 0.78rem;
+  color: var(--steel);
+  margin: -6px 0 10px;
+}
+
 .fear-meta {
   display: flex;
   align-items: center;

@@ -56,12 +56,7 @@ async function loadFear(url) {
       fearCard.innerHTML = '<p class="empty-note">El archivo aún está vacío. Sé la primera persona en depositar un miedo.</p>';
       return;
     }
-    fearCard.innerHTML = `
-      <p class="home-fear-text">${escapeHtml(item.content)}</p>
-      <div class="home-fear-meta">
-        <span class="home-fear-date">depositado el ${formatDate(item.created_at)}</span>
-        <a class="fear-view-link" href="/miedo/${item.id}" data-id="${item.id}">ver ficha ↗</a>
-      </div>`;
+    fearCard.innerHTML = fearCardHTML(item, 0);
   } catch {
     fearCard.innerHTML = '<p class="empty-note">No se pudo abrir el archivo. Inténtalo de nuevo.</p>';
   }
@@ -69,58 +64,7 @@ async function loadFear(url) {
 
 if (randomBtn) randomBtn.addEventListener('click', () => loadFear('/api/fears/random'));
 
-// ---------- Ficha en popup ----------
-const fichaModal = document.getElementById('ficha-modal');
-
-document.addEventListener('click', (e) => {
-  const link = e.target.closest('.fear-view-link');
-  if (!link) return;
-  e.preventDefault();
-  if (link.dataset.id) openFicha(link.dataset.id);
-});
-
-document.querySelectorAll('[data-close-ficha]').forEach((el) => {
-  el.addEventListener('click', closeFicha);
-});
-
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && fichaModal && !fichaModal.hidden) closeFicha();
-});
-
-async function openFicha(id) {
-  if (!fichaModal) return;
-  const contentEl = document.getElementById('ficha-content');
-  const dateEl = document.getElementById('ficha-date');
-  const topicEl = document.getElementById('ficha-topic');
-  const cabinetEl = document.getElementById('ficha-cabinet');
-
-  contentEl.textContent = 'Cargando la ficha...';
-  dateEl.textContent = '';
-  topicEl.textContent = '';
-  fichaModal.hidden = false;
-  document.body.style.overflow = 'hidden';
-
-  try {
-    const res = await fetch(`/api/fears/${id}`);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const item = (await res.json()).item;
-    if (!item) throw new Error('sin miedo');
-    contentEl.textContent = item.content;
-    dateEl.textContent = `depositado el ${formatDate(item.created_at)}`;
-    const group = groupOfLetter(item.topic_letter);
-    topicEl.textContent = `tema: ${item.topic || '—'} · cajón ${group}`;
-    cabinetEl.href = `/archive.html?cajon=${encodeURIComponent(group)}`;
-    cabinetEl.textContent = `Verlo en el cajón ${group}`;
-  } catch {
-    contentEl.textContent = 'No se pudo cargar la ficha.';
-  }
-}
-
-function closeFicha() {
-  if (!fichaModal) return;
-  fichaModal.hidden = true;
-  document.body.style.overflow = '';
-}
+bindCardActions(fearCard);
 
 // ---------- Mi miedo (cookie am_mine) ----------
 const mineSection = document.getElementById('home-mine');
