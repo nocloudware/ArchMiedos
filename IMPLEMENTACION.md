@@ -176,6 +176,7 @@ Cada ficha del archivo y de la portada tiene un botón "Compartir en Bluesky". `
 ## Otros
 
 - **Ficha compartida** (`frontend/scripts/card.js`): `fearCardHTML()` genera la misma ficha en el archivo y en la portada (azar) — contenido, tema, fecha, reacciones y compartir — y `bindCardActions()` conecta reacciones y compartir por delegación.
+- **Carrusel infinito** (cajón del archivo, `archive.js` + `archive.css`): las fichas de un cajón se muestran en un carrusel horizontal con loop sin costuras (clones del primer y último miedo). Navegación con flechas (desktop), teclado (←/→) y swipe con el dedo (pointer + `touch-action: pan-y` para que el móvil no intercepte el gesto horizontal). En móvil (< 900px) las flechas se ocultan y solo queda el swipe.
 - **Portada tipo dashboard**: menú + columna principal (título, hero, depósito, "Tu miedo") + sidebar derecho de 25% con contadores (miedos/apoyos/fuerzas) arriba y "Del archivo" (último + aleatorio) abajo; sin scroll en desktop (≥900px), apilado en móvil.
 - **Mi miedo**: cookie `am_mine` (ids de depósitos del visitante) → panel "Tu miedo" con enlace al cajón y **certificado de superación** (PNG generado en canvas).
 - **Página `/miedo/:id`**: URL pública por miedo con OG dinámico (`og:title/description` = contenido del miedo). Sirve como destino de los posts compartidos. Si el miedo no existe o no está aprobado, redirige a `/`.
