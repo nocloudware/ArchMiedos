@@ -22,19 +22,34 @@ export async function createSession(env) {
   return json; // { accessJwt, did, handle, ... }
 }
 
-export async function createPost(env, text) {
+export async function createPost(env, text, imageBytes = null) {
   const session = await createSession(env);
+  const record = {
+    $type: 'app.bsky.feed.post',
+    text,
+    createdAt: new Date().toISOString(),
+  };
+
+  if (imageBytes) {
+    const blob = await uploadBlob(session, imageBytes, 'image/png');
+    record.embed = {
+      $type: 'app.bsky.embed.images',
+      images: [
+        {
+          image: blob,
+          alt: 'Tarjeta de un miedo depositado en el Archivo de Miedos',
+        },
+      ],
+    };
+  }
+
   const res = await fetch(`${BSKY_API}/com.atproto.repo.createRecord`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.accessJwt}` },
     body: JSON.stringify({
       repo: session.did,
       collection: 'app.bsky.feed.post',
-      record: {
-        $type: 'app.bsky.feed.post',
-        text,
-        createdAt: new Date().toISOString(),
-      },
+      record,
     }),
   });
   const json = await res.json();
@@ -46,6 +61,17 @@ export async function createPost(env, text) {
     rkey,
     url: `https://bsky.app/profile/${session.handle}/post/${rkey}`,
   };
+}
+
+async function uploadBlob(session, bytes, contentType) {
+  const res = await fetch(`${BSKY_API}/com.atproto.repo.uploadBlob`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${session.accessJwt}`, 'Content-Type': contentType },
+    body: bytes,
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(`uploadBlob ${res.status}: ${JSON.stringify(json)}`);
+  return json.blob;
 }
 
 export function shareText(content) {

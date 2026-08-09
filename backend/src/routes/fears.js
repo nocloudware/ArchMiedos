@@ -8,6 +8,7 @@ import * as db from '../services/db.js';
 const VISITOR_COOKIE = 'am_visitor';
 const MINE_COOKIE = 'am_mine';
 const SHARE_LIMIT_PER_DAY = 10;
+const SITE_BASE = 'https://archmiedos.nocloudware.com';
 
 export async function handleFears(request, env, path, url) {
   const method = request.method;
@@ -108,7 +109,24 @@ async function shareFear(request, env, idStr) {
   }
 
   try {
-    const post = await createPost(env, shareText(fear.content));
+    let body = {};
+    try {
+      body = await request.json();
+    } catch {
+      /* sin imagen */
+    }
+
+    const image = typeof body?.image === 'string' && body.image.startsWith('data:image/png;base64,')
+      ? body.image.slice('data:image/png;base64,'.length)
+      : null;
+
+    const miedoUrl = `${SITE_BASE}/miedo/${fearId}`;
+    const text = image
+      ? `📁 Un miedo depositado en el Archivo de Miedos (anonimo)\n\n${miedoUrl}`
+      : shareText(fear.content);
+
+    const imageBytes = image ? Uint8Array.from(atob(image), (c) => c.charCodeAt(0)) : null;
+    const post = await createPost(env, text, imageBytes);
     await db.insertShare(env, { fearId, ipHash, rkey: post.rkey, postUri: post.uri });
     return json({ url: post.url, alreadyShared: false });
   } catch {
