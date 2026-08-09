@@ -6,6 +6,8 @@ Una oficina secreta de los años 50 donde la gente deja sus miedos. En serio.
 
 Escribe tu miedo, deposítalo en el archivador correcto y olvídate de él. Anónimo, sencillo y sin juicios. Nadie sabe quién eres: solo tú y el archivo.
 
+![Archivo de Miedos](screenshots/banner.png)
+
 ---
 
 ## ¿De qué se trata?
@@ -19,9 +21,18 @@ Algunas personas encuentran alivio con solo escribirlo. Otras encuentran consuel
 Es muy fácil. No necesitas cuenta, correo ni contraseña.
 
 1. **Deposita tu miedo.** En la portada, escribe lo que te da miedo (entre 10 y 300 caracteres) y pulsa *"Depositar en el Archivo"*. Eso es todo.
+
+   ![Portada](screenshots/inicio.png)
+
 2. **Explora el archivo.** Nueve archivadores de oficina guardan los miedos por el **tema real que los provoca** — una inteligencia artificial clasifica cada depósito y lo archiva donde corresponde (por ejemplo, *"tengo miedo a las arañas"* queda en la A). Abre un cajón y recorre las fichas como un **carrusel**: flechas en escritorio o desliza con el dedo en el móvil.
+
+   ![El Archivo](screenshots/archivo.png)
+
 3. **Busca.** Dentro de cada cajón puedes buscar por palabra clave. ¿Miedo a la oscuridad? Busca "oscu" y verás que no eres el único.
+
 4. **Acompaña.** Si un miedo te llega, puedes dejarle **🫂 Apoyo** o **💪 Fuerza**. Es tu forma de decirle a un desconocido: *"te leo y no estás solo"*. Cada persona puede dar cada reacción una sola vez.
+
+   ![Ficha de un miedo](screenshots/tarjeta.png)
 
 ## Lo que hace especial a este lugar
 
