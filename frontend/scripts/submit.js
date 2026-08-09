@@ -32,9 +32,17 @@ btn.addEventListener('click', async () => {
     const data = await res.json();
 
     if (!res.ok) {
-      showMessage(data.error || 'Algo salió mal al depositar tu miedo.', 'error');
+      showMessage(escapeHtml(data.error || 'Algo salió mal al depositar tu miedo.'), 'error');
     } else {
-      showMessage(data.message, 'success');
+      let html = escapeHtml(data.message);
+      const c = data.classification;
+      if (c && c.group) {
+        html +=
+          `<br /><span class="classify-note">Quedó en el cajón <strong>${escapeHtml(c.group)}</strong> · ` +
+          `tema: <strong>${escapeHtml(c.topic)}</strong>. La IA identificó que el centro de tu miedo es ` +
+          `${escapeHtml(c.topic)}.</span>`;
+      }
+      showMessage(html, 'success');
       input.value = '';
       counter.textContent = `0 / ${MAX_LENGTH}`;
       counter.classList.remove('warn');
@@ -46,7 +54,16 @@ btn.addEventListener('click', async () => {
   }
 });
 
-function showMessage(text, type) {
-  message.textContent = text;
+function showMessage(html, type) {
+  message.innerHTML = html;
   message.className = `form-message ${type}`;
+}
+
+function escapeHtml(str) {
+  return String(str ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
 }

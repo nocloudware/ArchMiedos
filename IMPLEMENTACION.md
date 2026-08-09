@@ -66,7 +66,7 @@ Las páginas públicas (`archive`, `terminos`, `mision`) llevan un menú vertica
 | status | TEXT | pending / approved / rejected |
 | moderation_comment | TEXT | motivo de la moderación |
 
-**Agrupación por letra.** Los archivadores agrupan por el **tema real del miedo**, no por la primera letra de la frase: "Tengo miedo a las arañas" queda en la letra **A**. En `POST /api/fears`, `services/classify.js` llama a Workers AI (`@cf/meta/llama-3.3-70b-instruct-fp8-fast`) para extraer el sustantivo del miedo, del que se deriva `topic` y `topic_letter` (normalizada a A–Z, sin acentos). Si la IA falla, cae a una heurística en español (patrones "miedo a las X", "me da miedo la X", "me asusta la X", etc.); como último recurso usa la primera letra del contenido. Las consultas públicas filtran por `topic_letter`. La columna generada `first_letter` queda como legado sin uso.
+**Agrupación por letra.** Los archivadores agrupan por el **tema real del miedo**, no por la primera letra de la frase: "Tengo miedo a las arañas" queda en la letra **A**. En `POST /api/fears`, `services/classify.js` llama a Workers AI (`@cf/meta/llama-3.3-70b-instruct-fp8-fast`, `temperature: 0`) para identificar el **miedo de fondo** (concepto emocional) entre una taxonomía de referencia (fracaso, rechazo, abandono, soledad, maltrato, muerte, enfermedad, oscuridad, etc.): "Tengo miedo a mi papá" → `maltrato` (M); "Tengo miedo a que nadie ocupe esta app" → `abandono` (A). De ahí se deriva `topic` y `topic_letter` (normalizada a A–Z, sin acentos). Si la IA falla, cae a una heurística en español (patrones "miedo a las X", "me da miedo la X", "me asusta la X", etc.); como último recurso usa la primera letra del contenido. Las consultas públicas filtran por `topic_letter`. La columna generada `first_letter` queda como legado sin uso.
 
 ### `reactions` — reacciones (dedup por cookie + tipo)
 `UNIQUE(fear_id, cookie_id, type)`. `type ∈ {apoyo, fuerza}`. Sustituye a la antigua tabla `likes` (migración: `database/migrate_reactions.sql`).
@@ -105,7 +105,7 @@ POST /api/fears                                { content } → modera + guarda
 POST /api/fears/:id/reaction                   { type: "apoyo"|"fuerza" } → reacciona (cookie)
 ```
 
-`POST /api/fears` devuelve `201` (aprobado) o `202` (en revisión). El rate limit es de 5 envíos/día por IP (hash).
+`POST /api/fears` devuelve `201` (aprobado) o `202` (en revisión) e incluye `classification: { topic, letter, group }` con el tema extraído por IA, la letra y el rango de cajón (A-C…Y-Z). El frontend muestra al usuario dónde quedó archivado su miedo y el tema detectado. El rate limit es de 5 envíos/día por IP (hash).
 
 `POST /api/fears/:id/reaction`: dedup por cookie (`am_visitor`, HttpOnly, 1 año) y tipo. Si la cookie no existe se genera un UUID y se devuelve `Set-Cookie`. Devuelve `{ apoyos, fuerzas, alreadyReacted }`.
 

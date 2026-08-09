@@ -193,6 +193,17 @@ body {
 .form-message.success { color: var(--olive-dark); }
 .form-message.error { color: var(--accent-red); }
 
+.classify-note {
+  display: block;
+  margin-top: 10px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--steel);
+  line-height: 1.55;
+}
+
+.classify-note strong { color: var(--brown-dark); }
+
 /* ---------- Footer ---------- */
 .site-footer { text-align: center; padding: 32px 0 56px; }
 

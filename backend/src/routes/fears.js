@@ -1,7 +1,7 @@
 import { json, notFound } from '../utils/http.js';
 import { validateContent, parseLetterRange, clamp, RATE_LIMIT_PER_DAY } from '../utils/validation.js';
 import { moderateContent } from '../services/ai.js';
-import { classifyFear } from '../services/classify.js';
+import { classifyFear, groupForLetter } from '../services/classify.js';
 import * as db from '../services/db.js';
 
 const VISITOR_COOKIE = 'am_visitor';
@@ -96,6 +96,11 @@ async function createFear(request, env) {
       message: approved
         ? 'Tu miedo ha sido depositado en el archivo'
         : 'Tu miedo está en revisión por un moderador',
+      classification: {
+        topic: topic || null,
+        letter: letter || null,
+        group: groupForLetter(letter),
+      },
     },
     approved ? 201 : 202
   );
