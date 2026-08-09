@@ -113,6 +113,23 @@ export async function deleteFear(env, id) {
   return env.DB.prepare('DELETE FROM fears WHERE id = ?').bind(id).run();
 }
 
+export async function logAdminAccess(env, { ip, asn, country, region, city, timezone, user_agent, cf_ray, username, method, path, success }) {
+  return env.DB.prepare(
+    `INSERT INTO admin_logs (ip, asn, country, region, city, timezone, user_agent, cf_ray, username, method, path, success)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  )
+    .bind(ip, asn, country, region, city, timezone, user_agent, cf_ray, username, method, path, success)
+    .run();
+}
+
+export async function listAdminLogs(env, limit) {
+  return env.DB.prepare(
+    'SELECT * FROM admin_logs ORDER BY created_at DESC, id DESC LIMIT ?'
+  )
+    .bind(limit)
+    .all();
+}
+
 export async function getStats(env) {
   const [total, pending, approved, rejected, reported, apoyos, fuerzas] = await Promise.all([
     env.DB.prepare('SELECT COUNT(*) as n FROM fears').first(),

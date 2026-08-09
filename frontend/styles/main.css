@@ -211,6 +211,82 @@ body {
 
 .explore-link:hover { color: var(--brown-dark); border-color: var(--brown-dark); }
 
+/* ---------- Disclaimer ---------- */
+.disclaimer-footer {
+  text-align: center;
+  padding: 20px 0 40px;
+  border-top: 1px dashed var(--gold);
+  margin-top: 32px;
+}
+
+.disclaimer-text {
+  font-family: var(--font-retro);
+  font-size: 0.82rem;
+  color: var(--steel);
+  line-height: 1.7;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.disclaimer-text a {
+  color: var(--brown);
+  text-decoration: underline dashed;
+  transition: color 0.2s ease;
+}
+
+.disclaimer-text a:hover { color: var(--accent-red); }
+
+/* ---------- Términos de servicio ---------- */
+.terms-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 20px 0;
+}
+
+.terms-wrap {
+  max-width: 660px;
+  margin: 0 auto;
+  padding: 24px 0 16px;
+}
+
+.terms-wrap h1 {
+  font-family: var(--font-retro);
+  font-size: 1.9rem;
+  color: var(--ink);
+  margin: 0 0 8px;
+}
+
+.terms-updated {
+  font-size: 0.85rem;
+  color: var(--steel-light);
+  margin: 0 0 28px;
+}
+
+.terms-section {
+  margin: 0 0 28px;
+}
+
+.terms-section h2 {
+  font-family: var(--font-retro);
+  font-size: 1.15rem;
+  color: var(--brown-dark);
+  margin: 0 0 10px;
+}
+
+.terms-section p,
+.terms-section li {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--ink);
+}
+
+.terms-section ul { padding-left: 22px; margin: 8px 0; }
+
+.terms-section a { color: var(--brown); text-decoration: underline dashed; }
+
 /* ---------- Reutilizables ---------- */
 .empty-note {
   font-family: var(--font-retro);

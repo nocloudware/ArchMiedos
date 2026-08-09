@@ -61,8 +61,34 @@
         </table>
         <p id="fears-empty" class="empty-note" hidden>No hay miedos en esta categoría.</p>
       </section>
+
+      <section class="fears-panel logs-panel">
+        <h3>Accesos recientes al panel</h3>
+        <p class="logs-hint">Cada intento de acceso (válido o inválido) queda registrado con IP, ubicación aproximada, agente de usuario y resultado.</p>
+        <table class="fears-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>IP</th>
+              <th>Ubicación</th>
+              <th>Usuario</th>
+              <th>Resultado</th>
+            </tr>
+          </thead>
+          <tbody id="logs-tbody"></tbody>
+        </table>
+        <p id="logs-empty" class="empty-note" hidden>Sin registros todavía.</p>
+      </section>
     </main>
   </div>
+
+  <footer class="disclaimer-footer">
+    <p class="disclaimer-text">
+      Este archivo no guarda información personal ni de telemetría de quienes lo visitan.
+      El código es abierto: <a href="https://github.com/nocloudware/ArchMiedos" target="_blank" rel="noopener">revisa el repositorio</a> ·
+      <a href="/terminos.html">Términos de servicio</a>
+    </p>
+  </footer>
 
   <script src="/scripts/admin.js"></script>
 </body>

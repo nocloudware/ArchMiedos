@@ -1,99 +1,42 @@
 # 📁 Archivo de Miedos
 
-Una aplicación web que funciona como un *archivo anónimo de miedos* con estética retro de oficina de los años 50, pero con animaciones modernas y fluidas. Los usuarios pueden depositar sus miedos anónimamente, explorar los miedos de otros a través de archivadores metálicos interactivos, y dar *apoyos* (likes) para crear comunidad.
+> *"Deposita tu miedo en el archivo y libérate."*
 
-> Deposita tu miedo en el archivo y libérate.
+Una oficina secreta de los años 50 donde la gente deja sus miedos. En serio.
 
-## 🏗️ Arquitectura
+Escribe tu miedo, deposítalo en el archivador correcto y olvídate de él. Anónimo, sencillo y sin juicios. Nadie sabe quién eres: solo tú y el archivo.
 
-| Componente | Tecnología | Propósito |
-|------------|------------|-----------|
-| Hosting + API | Cloudflare Workers | Servir el frontend y exponer la API |
-| Base de Datos | Cloudflare D1 (SQLite) | Almacenar miedos, likes y reportes |
-| Moderación IA | Workers AI — Llama Guard 3 8B | Filtrar contenido ofensivo |
+---
 
-El Worker sirve tanto los archivos estáticos (`index.html`, `archive.html`, `admin.html`, CSS y JS) como la API bajo `/api/*` en un único despliegue.
+## ¿De qué se trata?
 
-## 🗄️ Funcionalidades
+Todos cargamos con miedos: a fracasar, a no ser suficientes, a las arañas, a que nadie nos entienda. El Archivo de Miedos es un espacio colectivo y anónimo para sacarlos de la cabeza y dejarlos escritos en papel (digital, claro).
 
-- **Depositar un miedo**: formulario con validación (10–2000 caracteres), moderación automática por IA y rate limit de 5 envíos/día por IP.
-- **Explorar el archivo**: grid 3x3 de archivadores metálicos (A–C hasta Y–Z), apertura animada de cajones, tarjetas estilo ficha de biblioteca.
-- **Búsqueda**: por palabra clave dentro de cada cajón.
-- **Apoyos (likes)**: cada visitante puede apoyar cada miedo una sola vez (dedup por cookie).
-- **Panel de administración**: moderación (aprobar/rechazar/eliminar), reportes y estadísticas. Protegido con HTTP Basic Auth.
+Algunas personas encuentran alivio con solo escribirlo. Otras encuentran consuelo al descubrir que no están solas: los miedos de los demás se parecen mucho a los tuyos.
 
-## 🗄️ Endpoints de la API
+## ¿Cómo se usa?
 
-### Públicos
+Es muy fácil. No necesitas cuenta, correo ni contraseña.
 
-```
-GET  /api/fears?letter=A&limit=20&offset=0   Miedos aprobados por letra
-GET  /api/fears/search?q=araña&limit=20      Búsqueda por palabra clave
-POST /api/fears                              Depositar un miedo { content }
-POST /api/fears/:id/like                     Añadir un apoyo (cookie)
-GET  /api/fears/random                       Miedo aleatorio aprobado
-```
+1. **Deposita tu miedo.** En la portada, escribe lo que te da miedo (entre 10 y 2000 caracteres) y pulsa *"Depositar en el Archivo"*. Eso es todo.
+2. **Explora el archivo.** Nueve archivadores de oficina guardan los miedos por su primera letra, de A a la Z. Abre un cajón y lee lo que otros han dejado.
+3. **Busca.** Dentro de cada cajón puedes buscar por palabra clave. ¿Miedo a la oscuridad? Busca "oscu" y verás que no eres el único.
+4. **Acompaña.** Si un miedo te llega, puedes dejarle **🫂 Apoyo** o **💪 Fuerza**. Es tu forma de decirle a un desconocido: *"te leo y no estás solo"*. Cada persona puede dar cada reacción una sola vez.
 
-### Administración (requiere autenticación)
+## Lo que hace especial a este lugar
 
-```
-GET    /api/admin/fears?status=pending       Lista miedos para moderar
-PUT    /api/admin/fears/:id                  Actualizar estado
-DELETE /api/admin/fears/:id                  Eliminar miedo
-GET    /api/admin/stats                      Estadísticas del sistema
-```
+- **Anónimo de verdad.** No se pide nombre, correo ni datos personales. No hay cuentas, no hay perfiles, no hay seguimiento.
+- **Sin juicios.** Un miedo no se juzga: se archiva.
+- **Moderado con cuidado.** Cada miedo pasa por una revisión automática con inteligencia artificial y, cuando hace falta, por revisión humana, para que el archivo siga siendo un espacio seguro.
+- **Código abierto.** Puedes revisar exactamente cómo funciona este sitio, qué datos guarda y cuáles no. [Mira el código en GitHub](https://github.com/nocloudware/ArchMiedos).
 
-## 🚀 Setup para desarrollo
+## Enlaces
 
-Requisitos: Node.js 18+, [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/) (incluido como devDependency).
+- 🌐 **Sitio en vivo:** https://archmiedos.nocloudware.com
+- 📖 **Términos de servicio:** https://archmiedos.nocloudware.com/terminos.html
+- 🐙 **Repositorio:** https://github.com/nocloudware/ArchMiedos
+- 🛠️ **Detalles técnicos:** [IMPLEMENTACION.md](IMPLEMENTACION.md)
 
-Este proyecto usa credenciales de Cloudflare **exclusivas** (cuenta `nocloudware`). Todos los comandos de wrangler se ejecutan a través del wrapper `scripts/cf.mjs`, que inyecta las variables de `.env.cloudflare` (gitignored) sin tocar el OAuth global de otras cuentas.
+---
 
-```bash
-npm install
-# Configurar credenciales de la cuenta (una sola vez)
-#   CLOUDFLARE_EMAIL, CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID en .env.cloudflare
-
-# Aplicar esquema de base de datos (local y remoto)
-npm run db:init          # local
-npm run db:init:remote   # remoto (producción)
-
-# Configurar secretos de admin (producción)
-node scripts/cf.mjs secret put ADMIN_USERNAME
-node scripts/cf.mjs secret put ADMIN_PASSWORD
-
-# Desarrollo local (usa .dev.vars)
-npm run dev
-
-# Desplegar
-npm run deploy
-```
-
-## 📁 Estructura
-
-```
-├── frontend/
-│   ├── index.html          # Página de ingreso
-│   ├── archive.html        # Página del archivo (archivadores)
-│   ├── admin.html          # Panel de administración
-│   ├── styles/             # main.css, archive.css, admin.css
-│   └── scripts/            # submit.js, archive.js, admin.js
-├── backend/
-│   └── src/
-│       ├── index.js        # Worker principal (estáticos + API)
-│       ├── routes/         # fears.js, admin.js
-│       ├── services/       # db.js, ai.js, auth.js
-│       └── utils/          # validation.js
-├── database/
-│   └── schema.sql          # Esquema D1
-├── scripts/
-│   └── cf.mjs              # Wrapper wrangler con credenciales del proyecto
-├── .env.cloudflare         # Credenciales de cuenta (gitignored)
-├── .dev.vars               # Secretos locales de desarrollo (gitignored)
-├── wrangler.jsonc
-└── package.json
-```
-
-## 🚀 Próximas mejoras
-
-Comentarios anidados · Tags/categorías · Modo oscuro · Notificaciones · Certificado de superación (exportar) · Muro de la fama.
+*Si algo te preocupa o tienes una duda, escríbenos a nocloudware@outlook.com.*

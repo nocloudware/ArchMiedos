@@ -1,10 +1,14 @@
 import { json, notFound } from '../utils/http.js';
 import { isAuthorized } from '../services/auth.js';
+import { logAdminAccess } from '../services/adminLog.js';
 import * as db from '../services/db.js';
 import { clamp } from '../utils/validation.js';
 
 export async function handleAdmin(request, env, path, url) {
-  if (!isAuthorized(request, env)) {
+  const authorized = isAuthorized(request, env);
+  await logAdminAccess(request, env, path, authorized);
+
+  if (!authorized) {
     return json({ error: 'No autorizado' }, 401, {
       'WWW-Authenticate': 'Basic realm="Archivo de Miedos"',
     });
@@ -14,6 +18,7 @@ export async function handleAdmin(request, env, path, url) {
 
   if (path === '/api/admin/stats' && method === 'GET') return getStats(env);
   if (path === '/api/admin/fears' && method === 'GET') return listFears(env, url);
+  if (path === '/api/admin/logs' && method === 'GET') return getLogs(env, url);
 
   const updateMatch = path.match(/^\/api\/admin\/fears\/(\d+)$/);
   if (updateMatch && method === 'PUT') return updateFear(request, env, updateMatch[1]);
@@ -70,4 +75,10 @@ async function getStats(env) {
     db.getRecentActivity(env, 7),
   ]);
   return json({ ...stats, topLiked: top.results, activity: activity.results });
+}
+
+async function getLogs(env, url) {
+  const limit = clamp(url.searchParams.get('limit'), 1, 100, 50);
+  const result = await db.listAdminLogs(env, limit);
+  return json({ items: result.results });
 }

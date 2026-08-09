@@ -158,6 +158,46 @@ function rowHTML(f) {
   `;
 }
 
+async function loadLogs() {
+  try {
+    const res = await fetch('/api/admin/logs?limit=50');
+    if (!res.ok) return;
+    const data = await res.json();
+    const tbody = document.getElementById('logs-tbody');
+    const empty = document.getElementById('logs-empty');
+    if (!data.items.length) {
+      tbody.innerHTML = '';
+      empty.hidden = false;
+      return;
+    }
+    empty.hidden = true;
+    tbody.innerHTML = data.items.map((l) => logRowHTML(l)).join('');
+  } catch {
+    /* sin cambios */
+  }
+}
+
+function logRowHTML(l) {
+  const where = [l.country, l.city].filter(Boolean).join(', ') || '—';
+  const ok = l.success === 1;
+  return `
+    <tr>
+      <td class="cell-muted">${formatDateTime(l.created_at)}</td>
+      <td class="cell-mono">${escapeHtml(l.ip || '—')}</td>
+      <td class="cell-muted">${escapeHtml(where)}</td>
+      <td class="cell-mono">${escapeHtml(l.username || '—')}</td>
+      <td>${ok ? '<span class="badge approved">ok</span>' : '<span class="badge rejected">fallo</span>'}</td>
+    </tr>
+  `;
+}
+
+function formatDateTime(raw) {
+  const [datePart, timePart] = String(raw || '').split(' ');
+  if (!datePart) return raw || '';
+  const [y, m, d] = datePart.split('-');
+  return `${d}/${m}/${y} ${timePart || ''}`.trim();
+}
+
 function escapeHtml(str) {
   return String(str ?? '')
     .replaceAll('&', '&amp;')
@@ -175,3 +215,4 @@ function formatDate(raw) {
 
 loadStats();
 loadFears('pending');
+loadLogs();
