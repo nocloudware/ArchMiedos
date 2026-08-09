@@ -8,6 +8,7 @@ node_modules/
 # Secretos y credenciales
 api keys y tokens.txt
 .env.cloudflare
+.env.bsky
 *.key
 *.pem
 

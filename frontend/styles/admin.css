@@ -170,7 +170,7 @@
   border: 1px solid var(--cream-dark);
   border-radius: 12px;
   box-shadow: var(--shadow-soft);
-  overflow: hidden;
+  overflow-x: auto;
 }
 
 .fears-table {
@@ -247,4 +247,5 @@
   .admin-nav { flex-direction: row; flex-wrap: wrap; }
   .nav-link { border-top: none; border-left: 1px solid rgba(245,239,224,.2); margin-top: 0; padding-top: 10px; }
   .stats-extra { grid-template-columns: 1fr; }
+  .fears-table { min-width: 640px; }
 }

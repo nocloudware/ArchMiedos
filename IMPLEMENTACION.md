@@ -138,13 +138,33 @@ npm run whoami          # verifica la cuenta activa
 
 Migraciones: los cambios de esquema sobre bases existentes se aplican con los scripts de `database/migrate_*.sql` (ej. `migrate_reactions.sql`, `migrate_admin_logs.sql`) mediante `wrangler d1 execute ... --file=...`.
 
+## Integración con Bluesky (AT Protocol)
+
+Al compartir un enlace del sitio en Bluesky se muestra una tarjeta. Se usan dos mecanismos (implementados según el patrón del proyecto Bluesk-AI):
+
+1. **Tags Open Graph** (método 1). Todas las páginas (`index`, `archive`, `admin`, `terminos`) llevan `og:title`, `og:description`, `og:type`, `og:url`, `og:image` (usando `card.png`, 892×448, servido por ASSETS en `/card.png`) y `twitter:card = summary_large_image`. El fetcher de Bluesky los lee automáticamente al compartir el link. No requiere cuenta.
+
+2. **Tarjeta extendida `site.standard.*`** (método 2). Se crean records AT en el repositorio de `nocloudware.bsky.social`:
+   - `site.standard.publication` (el sitio, una vez, rkey `archmiedos`), con el ícono `card.png` subido como blob.
+   - `site.standard.document` por página pública (rkeys `archmiedos-inicio`, `archmiedos-el-archivo`, `archmiedos-terminos`), con `site` apuntando a la publicación, `title`, `publishedAt`, `description`, `textContent` (para el tiempo de lectura) y `contributors`.
+   - Cada página emite `<link rel="site.standard.publication">` y `<link rel="site.standard.document">` con sus `at://` URIs para que el fetcher resuelva los records.
+
+Configuración: las credenciales están en `.env.bsky` (gitignored): `BSKY_HANDLE`, `BSKY_APP_PASSWORD`. El script `scripts/setup-bsky.mjs` hace login, sube el ícono y crea/actualiza los records con `com.atproto.repo.putRecord` (idempotente). Para regenerar los tags:
+
+```
+node scripts/setup-bsky.mjs
+```
+
+Si cambian los records, actualizar los `<link rel>` embebidos en los HTML con las nuevas `at://` URIs. El documento de admin no se crea (página protegida).
+
 ## Estructura de archivos
 
 ```
 ├── frontend/
 │   ├── index.html / archive.html / admin.html / terminos.html
-│   ├── styles/            # main.css, archive.css, admin.css
-│   └── scripts/           # submit.js, archive.js, admin.js
+│   ├── card.png             # imagen OG / ícono de la publicación AT
+│   ├── styles/              # main.css, archive.css, admin.css
+│   └── scripts/             # submit.js, archive.js, admin.js
 ├── backend/src/
 │   ├── index.js           # Worker principal (enrutado + estáticos)
 │   ├── routes/            # fears.js, admin.js
@@ -153,7 +173,9 @@ Migraciones: los cambios de esquema sobre bases existentes se aplican con los sc
 ├── database/
 │   ├── schema.sql         # esquema completo (instalaciones nuevas)
 │   └── migrate_*.sql      # migraciones incrementales
-├── scripts/cf.mjs         # wrapper de wrangler con credenciales del proyecto
+├── scripts/
+│   ├── cf.mjs             # wrapper de wrangler con credenciales del proyecto
+│   └── setup-bsky.mjs     # crea/actualiza records site.standard.* en Bluesky
 ├── wrangler.jsonc
 └── package.json
 ```

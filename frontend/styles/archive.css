@@ -16,6 +16,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
 .brand-link { text-decoration: none; }
@@ -133,6 +134,7 @@
   width: min(760px, 94vw);
   max-height: 86vh;
   overflow-y: auto;
+  overflow-x: hidden;
   background: var(--paper);
   border: 2px solid var(--brown);
   border-radius: 14px;
@@ -191,7 +193,7 @@
 /* ---------- Tarjetas (fichas de catálogo) ---------- */
 .cards-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   gap: 16px;
 }
 
@@ -238,6 +240,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
   border-top: 1px solid var(--cream-dark);
   padding-top: 10px;
 }
@@ -324,10 +328,13 @@
 /* ---------- Responsive ---------- */
 @media (max-width: 768px) {
   .cabinets-grid { grid-template-columns: repeat(2, 1fr); gap: 18px; }
-  .drawer-modal-panel { padding: 20px; }
+  .drawer-modal { padding: 14px; }
+  .drawer-modal-panel { width: min(760px, 96vw); padding: 20px; }
 }
 
 @media (max-width: 460px) {
-  .cabinets-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
-  .drawer-label { font-size: 1.1rem; }
+  .cabinets-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .drawer-label { font-size: 1.05rem; }
+  .drawer-modal-panel { padding: 16px; }
+  .reaction-btn { font-size: 0.8rem; padding: 4px 8px; }
 }
