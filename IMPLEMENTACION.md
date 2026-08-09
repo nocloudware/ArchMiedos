@@ -26,10 +26,17 @@ El Worker `archivo-de-miedos` es la única pieza desplegada. Atiende:
 /archive(.html)         → archive.html
 /admin(.html)           → admin.html (requiere auth; loguea el intento)
 /terminos(.html)        → terminos.html
+/mision(.html)          → mision.html (README en vivo desde GitHub)
 /api/*                  → handleFears
 /api/admin/*            → handleAdmin (loguea el intento)
 todo lo demás           → env.ASSETS.fetch
 ```
+
+### Navegación vertical
+
+Las páginas públicas (`archive`, `terminos`, `mision`) llevan un menú vertical izquierdo (`<nav class="side-nav">`) con estética de archivador: pestañas tipo cajón metálico (`Inicio`, `El Archivo`, `Términos`, `Misión`), con la activa resaltada. En móvil (< 900px) se convierte en barra superior horizontal.
+
+`mision.html` muestra el contenido de `README.md` cargándolo en vivo desde `raw.githubusercontent.com` (CORS `*`) y renderizándolo con `marked` (CDN jsdelivr, pinned v12). El renderer escapa HTML crudo del markdown (no se inyecta HTML arbitrario) y abre enlaces externos en otra pestaña. Así la página refleja cualquier actualización del README sin redeploy.
 
 ### Configuración (`wrangler.jsonc`)
 
@@ -161,10 +168,10 @@ Si cambian los records, actualizar los `<link rel>` embebidos en los HTML con la
 
 ```
 ├── frontend/
-│   ├── index.html / archive.html / admin.html / terminos.html
+│   ├── index.html / archive.html / admin.html / terminos.html / mision.html
 │   ├── card.png             # imagen OG / ícono de la publicación AT
 │   ├── styles/              # main.css, archive.css, admin.css
-│   └── scripts/             # submit.js, archive.js, admin.js
+│   └── scripts/             # submit.js, archive.js, admin.js, mision.js
 ├── backend/src/
 │   ├── index.js           # Worker principal (enrutado + estáticos)
 │   ├── routes/            # fears.js, admin.js

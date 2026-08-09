@@ -7,6 +7,7 @@ import indexHtml from '../../frontend/index.html';
 import archiveHtml from '../../frontend/archive.html';
 import adminHtml from '../../frontend/admin.html';
 import terminosHtml from '../../frontend/terminos.html';
+import misionHtml from '../../frontend/mision.html';
 
 const HTML_HEADERS = { 'Content-Type': 'text/html; charset=utf-8' };
 
@@ -39,6 +40,10 @@ export default {
 
     if (path === '/terminos.html' || path === '/terminos') {
       return new Response(terminosHtml, { headers: HTML_HEADERS });
+    }
+
+    if (path === '/mision.html' || path === '/mision') {
+      return new Response(misionHtml, { headers: HTML_HEADERS });
     }
 
     return env.ASSETS.fetch(request);
