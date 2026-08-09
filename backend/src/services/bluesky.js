@@ -30,6 +30,11 @@ export async function createPost(env, text, opts = {}) {
     createdAt: new Date().toISOString(),
   };
 
+  if (opts.link) {
+    const facets = linkFacet(text, opts.link);
+    if (facets.length) record.facets = facets;
+  }
+
   if (opts.imageBytes) {
     const blob = await uploadBlob(session, opts.imageBytes, 'image/png');
     record.embed = {
@@ -72,6 +77,23 @@ async function uploadBlob(session, bytes, contentType) {
   const json = await res.json();
   if (!res.ok) throw new Error(`uploadBlob ${res.status}: ${JSON.stringify(json)}`);
   return json.blob;
+}
+
+// Convierte la URL del texto en un enlace clickeable (facet de Bluesky).
+// Los índices del facet son offsets de bytes UTF-8.
+function linkFacet(text, url) {
+  const index = String(text).indexOf(url);
+  if (index === -1) return [];
+  const enc = new TextEncoder();
+  const start = enc.encode(String(text).slice(0, index)).length;
+  const end = start + enc.encode(url).length;
+  return [
+    {
+      $type: 'app.bsky.richtext.facet',
+      index: { byteStart: start, byteEnd: end },
+      features: [{ $type: 'app.bsky.richtext.facet#link', uri: url }],
+    },
+  ];
 }
 
 export async function getPost(env, rkey) {

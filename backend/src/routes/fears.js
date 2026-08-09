@@ -110,7 +110,8 @@ async function shareFear(request, env, idStr) {
 
   const text = `📁 Un miedo depositado en el Archivo de Miedos (anonimo)\n\n${homeUrl}`;
 
-  const postOpts = image ? { imageBytes } : {};
+  const postOpts = { link: homeUrl };
+  if (image) postOpts.imageBytes = imageBytes;
 
   // Dedup con validación: si el post ya no existe o es de solo texto, se recrea con imagen.
   const existing = await db.getShareByFear(env, fearId);

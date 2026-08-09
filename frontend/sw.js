@@ -1,4 +1,4 @@
-const CACHE = 'archmiedos-v4';
+const CACHE = 'archmiedos-v6';
 const SHELL = [
   '/',
   '/index.html',
@@ -31,6 +31,8 @@ self.addEventListener('activate', (e) => {
   );
 });
 
+// Network-first: siempre sirve la versión más nueva; el cache solo como
+// respaldo cuando no hay conexión.
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET') return;
@@ -39,12 +41,14 @@ self.addEventListener('fetch', (e) => {
   if (url.pathname.startsWith('/api/')) return;
 
   e.respondWith(
-    caches.match(req).then((hit) => hit || fetch(req).then((res) => {
-      if (res.ok && url.pathname.startsWith('/static')) {
-        const copy = res.clone();
-        caches.open(CACHE).then((c) => c.put(req, copy));
-      }
-      return res;
-    }))
+    fetch(req)
+      .then((res) => {
+        if (res && res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy));
+        }
+        return res;
+      })
+      .catch(() => caches.match(req).then((hit) => hit))
   );
 });

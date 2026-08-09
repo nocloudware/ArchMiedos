@@ -39,4 +39,4 @@ Es muy fácil. No necesitas cuenta, correo ni contraseña.
 
 ---
 
-*Si algo te preocupa o tienes una duda, escríbenos a nocloudware@outlook.com.*
+*Si algo te preocupa o tienes una duda, escríbenos a archmiedos@hotmail.com.*

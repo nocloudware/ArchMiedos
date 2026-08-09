@@ -237,12 +237,28 @@ async function shareFear(btn) {
 
 function renderFearCard(fear) {
   const W = 1000;
-  const H = 1000;
+  const FONT = 'Arial, Helvetica, sans-serif';
+
+  const measure = document.createElement('canvas').getContext('2d');
+  measure.font = '32px ' + FONT;
+  const allLines = wrapText(measure, String(fear.content || ''), W - 150);
+  const maxLines = 10;
+  const shown = allLines.slice(0, maxLines);
+  const hasMore = allLines.length > maxLines;
+  const minLines = 2;
+  const usedLines = Math.max(shown.length + (hasMore ? 1 : 0), minLines);
+
+  const lineH = 46;
+  const contentTop = 200;
+  const contentBottom = contentTop + usedLines * lineH + 20;
+  const bottomStart = contentBottom + 26;
+  const footerY = bottomStart + 152;
+  const H = footerY + 36;
+
   const cv = document.createElement('canvas');
   cv.width = W;
   cv.height = H;
   const ctx = cv.getContext('2d');
-  const FONT = 'Arial, Helvetica, sans-serif';
 
   ctx.fillStyle = '#faf5e9';
   ctx.fillRect(0, 0, W, H);
@@ -267,38 +283,33 @@ function renderFearCard(fear) {
   ctx.textAlign = 'left';
   ctx.fillStyle = '#2c2417';
   ctx.font = '32px ' + FONT;
-  const lines = wrapText(ctx, fear.content || '', W - 150);
-  let y = 240;
-  const maxLines = 10;
-  lines.slice(0, maxLines).forEach((l) => {
+  let y = contentTop;
+  shown.forEach((l) => {
     ctx.fillText(l, 75, y);
-    y += 46;
+    y += lineH;
   });
-  if (lines.length > maxLines) {
-    ctx.fillText('…', 75, y);
-  }
+  if (hasMore) ctx.fillText('…', 75, y);
 
-  const bottom = H - 160;
   ctx.strokeStyle = '#e8dfc8';
   ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.moveTo(75, bottom);
-  ctx.lineTo(W - 75, bottom);
+  ctx.moveTo(75, bottomStart);
+  ctx.lineTo(W - 75, bottomStart);
   ctx.stroke();
 
   ctx.fillStyle = '#4b555f';
   ctx.font = '24px ' + FONT;
-  ctx.fillText(`Depositado el ${formatDate(fear.created_at)}`, 75, bottom + 42);
+  ctx.fillText(`Depositado el ${formatDate(fear.created_at)}`, 75, bottomStart + 42);
 
   ctx.fillStyle = '#6b4f3a';
   ctx.font = 'bold 30px ' + FONT;
-  ctx.fillText(`Apoyos: ${fear.apoyos || 0}`, 75, bottom + 94);
-  ctx.fillText(`Fuerzas: ${fear.fuerzas || 0}`, 75, bottom + 138);
+  ctx.fillText(`Apoyos: ${fear.apoyos || 0}`, 75, bottomStart + 94);
+  ctx.fillText(`Fuerzas: ${fear.fuerzas || 0}`, 75, bottomStart + 138);
 
   ctx.textAlign = 'center';
   ctx.font = 'italic 24px ' + FONT;
   ctx.fillStyle = '#6b4f3a';
-  ctx.fillText('Tu miedo importa. El archivo lo guarda.', W / 2, H - 64);
+  ctx.fillText('Tu miedo importa. El archivo lo guarda.', W / 2, footerY);
 
   return cv.toDataURL('image/png');
 }
