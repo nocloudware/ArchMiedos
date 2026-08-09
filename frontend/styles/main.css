@@ -248,6 +248,81 @@ body {
   .home-stat-value { font-size: 1.35rem; }
 }
 
+/* ---------- Paneles de la portada (tu miedo / del archivo) ---------- */
+.home-section-title {
+  font-family: var(--font-retro);
+  font-size: 1.3rem;
+  color: var(--brown-dark);
+  margin: 0 0 14px;
+  text-align: center;
+}
+
+.home-panel {
+  background: rgba(250, 245, 233, 0.7);
+  border: 1px dashed var(--gold);
+  border-radius: 12px;
+  padding: 22px;
+  margin: 0 auto 28px;
+  max-width: 560px;
+  box-shadow: var(--shadow-soft);
+}
+
+.home-panel-body { display: flex; flex-direction: column; gap: 14px; }
+
+.home-mine-text {
+  font-size: 0.95rem;
+  color: var(--ink);
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.home-panel-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.home-panel-actions.center { justify-content: center; }
+
+.btn-cert { flex: 1 1 180px; }
+
+.fear-card-static {
+  background: var(--paper);
+  border: 1px dashed var(--steel-light);
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: var(--shadow-soft);
+}
+
+.home-fear-text {
+  font-size: 0.98rem;
+  color: var(--ink);
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 8px 0 12px;
+}
+
+.home-fear-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-top: 1px solid var(--cream-dark);
+  padding-top: 10px;
+}
+
+.home-fear-date {
+  font-family: var(--font-retro);
+  font-size: 0.75rem;
+  color: var(--steel);
+}
+
+.fear-view-link {
+  color: var(--brown);
+  font-weight: 600;
+  text-decoration: underline dashed;
+}
+
+.fear-view-link:hover { color: var(--accent-red); }
+
 /* ---------- Footer ---------- */
 .site-footer { text-align: center; padding: 32px 0 56px; }
 

@@ -2,14 +2,18 @@ import { handleFears } from './routes/fears.js';
 import { handleAdmin } from './routes/admin.js';
 import { isAuthorized } from './services/auth.js';
 import { logAdminAccess } from './services/adminLog.js';
+import { groupForLetter } from './services/classify.js';
+import * as db from './services/db.js';
 import { unauthorized } from './utils/http.js';
 import indexHtml from '../../frontend/index.html';
 import archiveHtml from '../../frontend/archive.html';
 import adminHtml from '../../frontend/admin.html';
 import terminosHtml from '../../frontend/terminos.html';
 import misionHtml from '../../frontend/mision.html';
+import miedoHtml from '../../frontend/miedo.html';
 
 const HTML_HEADERS = { 'Content-Type': 'text/html; charset=utf-8' };
+const BASE_URL = 'https://archmiedos.nocloudware.com';
 
 export default {
   async fetch(request, env) {
@@ -46,6 +50,46 @@ export default {
       return new Response(misionHtml, { headers: HTML_HEADERS });
     }
 
+    if (path.startsWith('/miedo/')) {
+      return renderMiedo(env, path);
+    }
+
     return env.ASSETS.fetch(request);
   },
 };
+
+async function renderMiedo(env, path) {
+  const id = Number.parseInt(path.slice('/miedo/'.length), 10);
+  if (Number.isNaN(id) || id <= 0) {
+    return new Response(null, { status: 302, headers: { Location: '/' } });
+  }
+  const fear = await db.getApprovedFearById(env, id);
+  if (!fear) {
+    return new Response(null, { status: 302, headers: { Location: '/' } });
+  }
+
+  const group = groupForLetter(fear.topic_letter) || 'A-C';
+  const url = `${BASE_URL}/miedo/${id}`;
+  const title = 'Un miedo depositado en el Archivo de Miedos';
+  const desc = String(fear.content).slice(0, 200);
+
+  const html = miedoHtml
+    .replaceAll('{{OG_TITLE}}', escapeHtml(title))
+    .replaceAll('{{OG_DESC}}', escapeHtml(desc))
+    .replaceAll('{{OG_URL}}', url)
+    .replaceAll('{{CONTENT}}', escapeHtml(fear.content))
+    .replaceAll('{{TOPIC}}', escapeHtml(fear.topic || ''))
+    .replaceAll('{{GROUP}}', group)
+    .replaceAll('{{CABINET_LINK}}', `/archive.html?cajon=${encodeURIComponent(group)}`);
+
+  return new Response(html, { headers: HTML_HEADERS });
+}
+
+function escapeHtml(str) {
+  return String(str ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}

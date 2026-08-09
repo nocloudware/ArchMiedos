@@ -3,27 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Un miedo depositado en el Archivo de Miedos" />
+  <link rel="canonical" href="{{OG_URL}}" />
   <link rel="icon" type="image/png" href="/icons/favicon.png" />
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#6b4f3a" />
   <link rel="apple-touch-icon" href="/icons/icon-192.png" />
-  <meta name="description" content="Deposita tu miedo en el archivo y libérate. Un espacio anónimo para dejar escrito aquello que te da miedo." />
-  <link rel="canonical" href="https://archmiedos.nocloudware.com/" />
   <link rel="site.standard.publication" href="at://did:plc:nejaotrk4vruebohcrcaes57/site.standard.publication/archmiedos" />
-  <link rel="site.standard.document" href="at://did:plc:nejaotrk4vruebohcrcaes57/site.standard.document/archmiedos-inicio" />
   <meta property="og:site_name" content="Archivo de Miedos" />
-  <meta property="og:title" content="Archivo de Miedos" />
-  <meta property="og:description" content="Deposita tu miedo en el archivo y libérate. Anónimo, sin juicios." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://archmiedos.nocloudware.com/" />
+  <meta property="og:title" content="{{OG_TITLE}}" />
+  <meta property="og:description" content="{{OG_DESC}}" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="{{OG_URL}}" />
   <meta property="og:image" content="https://archmiedos.nocloudware.com/card.png" />
   <meta property="og:image:width" content="892" />
   <meta property="og:image:height" content="448" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Archivo de Miedos" />
-  <meta name="twitter:description" content="Deposita tu miedo en el archivo y libérate. Anónimo, sin juicios." />
+  <meta name="twitter:title" content="{{OG_TITLE}}" />
+  <meta name="twitter:description" content="{{OG_DESC}}" />
   <meta name="twitter:image" content="https://archmiedos.nocloudware.com/card.png" />
-  <title>Archivo de Miedos</title>
+  <title>{{OG_TITLE}}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Special+Elite&display=swap" rel="stylesheet" />
@@ -40,11 +39,11 @@
   <div class="nav-backdrop" id="nav-backdrop" hidden></div>
 
   <nav class="side-nav" aria-label="Navegación principal">
-    <a class="side-tab page active" href="/index.html" aria-current="page">
+    <a class="side-tab page" href="/index.html">
       <span class="side-tab-handle"></span>
       <span class="side-tab-label">Inicio</span>
     </a>
-    <a class="side-tab page" href="/archive.html">
+    <a class="side-tab page active" href="/archive.html" aria-current="page">
       <span class="side-tab-handle"></span>
       <span class="side-tab-label">Archivo</span>
     </a>
@@ -70,74 +69,25 @@
   </nav>
 
   <header class="site-header">
-    <div class="container">
-      <h1 class="brand-title">Archivo de Miedos</h1>
-      <p class="brand-subtitle">Est. 1950 — Departamento de Liberación Emocional</p>
+    <div class="container terms-nav">
+      <h1 class="brand-title small">Archivo de Miedos</h1>
+      <a href="/index.html" class="btn-deposit">Depositar tu miedo</a>
     </div>
   </header>
 
-  <main class="container">
-    <section class="hero">
-      <h2 class="hero-title">Deposita tu miedo aquí.</h2>
-      <p class="hero-text">
-        Escríbelo, deposítalo en el archivo y libérate. Anónimo. Nadie sabrá quién eres.
-        Solo tú y el archivo.
-      </p>
-    </section>
-
-    <section id="home-stats" class="home-stats" aria-label="Estadísticas del archivo">
-      <div class="home-stat"><span class="home-stat-value">…</span><span class="home-stat-label">miedos</span></div>
-      <div class="home-stat"><span class="home-stat-value">…</span><span class="home-stat-label">apoyos 🫂</span></div>
-      <div class="home-stat"><span class="home-stat-value">…</span><span class="home-stat-label">fuerzas 💪</span></div>
-    </section>
-
-    <section class="submit-card">
-      <label class="field-label" for="fear-input">Tu miedo</label>
-      <textarea
-        id="fear-input"
-        class="fear-input"
-        maxlength="2000"
-        placeholder="Escribe aquí tu miedo... deposítalo en el archivo y libérate"
-        spellcheck="true"
-      ></textarea>
-      <div class="field-meta">
-        <span id="char-count" class="char-count">0 / 2000</span>
-      </div>
-      <button id="submit-btn" class="btn-stamp" type="button">
-        <span class="stamp-label">Depositar en el Archivo</span>
-      </button>
-      <p id="form-message" class="form-message" role="status"></p>
-    </section>
-
-    <section id="home-mine" class="home-panel" hidden>
-      <h2 class="home-section-title">Tu miedo</h2>
-      <div class="home-panel-body">
-        <p id="home-mine-text" class="home-mine-text"></p>
-        <div class="home-panel-actions">
-          <a id="home-mine-link" class="btn-deposit" href="#">Verlo en el archivo</a>
-          <button id="cert-btn" class="btn-stamp btn-cert" type="button">
-            <span class="stamp-label">Descargar certificado</span>
-          </button>
+  <main class="container mision-wrap">
+    <article class="fear-card fear-card-static">
+      <p class="fear-text">{{CONTENT}}</p>
+      <div class="fear-meta">
+        <span class="fear-date">Un miedo depositado en el Archivo</span>
+        <div class="reaction-buttons">
+          <span class="fear-date">tema: <strong>{{TOPIC}}</strong></span>
         </div>
       </div>
-    </section>
-
-    <section class="home-panel">
-      <h2 class="home-section-title">Del archivo</h2>
-      <div id="home-fear-card" class="fear-card-static">
-        <p class="loading-note">Abriendo un cajón...</p>
-      </div>
-      <div class="home-panel-actions center">
-        <button id="random-btn" class="btn-deposit" type="button">Saca otro miedo al azar</button>
-      </div>
-    </section>
-
-    <footer class="site-footer">
-      <a class="explore-link" href="/archive.html">
-        Explorar el Archivo
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-      </a>
-    </footer>
+    </article>
+    <p class="empty-note">
+      <a href="{{CABINET_LINK}}">Verlo en el cajón {{GROUP}}</a>
+    </p>
   </main>
 
   <footer class="disclaimer-footer">
@@ -149,7 +99,5 @@
   </footer>
 
   <script src="/scripts/nav.js" defer></script>
-  <script src="/scripts/home.js" defer></script>
-  <script src="/scripts/submit.js"></script>
 </body>
 </html>

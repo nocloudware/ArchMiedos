@@ -71,6 +71,9 @@ Las páginas públicas (`archive`, `terminos`, `mision`) llevan un menú vertica
 ### `reactions` — reacciones (dedup por cookie + tipo)
 `UNIQUE(fear_id, cookie_id, type)`. `type ∈ {apoyo, fuerza}`. Sustituye a la antigua tabla `likes` (migración: `database/migrate_reactions.sql`).
 
+### `shares` — publicaciones en Bluesky
+Dedup por miedo (`fear_id UNIQUE`), con `ip_hash` (para rate limit de compartidos), `rkey` y `post_uri` del post creado en `@archmiedos.bsky.social`. El texto del post es anónimo (solo el contenido del miedo). Límite: 10 compartidos/día por IP.
+
 ### `reports` — reportes de moderación
 Referencia `fear_id` con `ON DELETE CASCADE`.
 
@@ -101,9 +104,12 @@ El logging es *best-effort*: si la inserción falla, no bloquea la petición.
 GET  /api/fears?letter=A-C&limit=20&offset=0   Lista aprobados por rango de letra
 GET  /api/fears/search?q=araña&limit=20        Búsqueda por palabra clave
 GET  /api/fears/random                         Miedo aleatorio aprobado
-GET  /api/stats                                Contadores públicos: miedos/apoyos/fuerzas aprobados
-POST /api/fears                                { content } → modera + guarda
+GET  /api/fears/latest                         Último miedo aprobado
+GET  /api/fears/:id                            Un miedo aprobado por id
+POST /api/fears                                { content } → modera + clasifica + guarda
 POST /api/fears/:id/reaction                   { type: "apoyo"|"fuerza" } → reacciona (cookie)
+POST /api/fears/:id/share                      Publica el miedo de forma anónima en @archmiedos.bsky.social → { url }
+GET  /api/stats                                Contadores públicos: miedos/apoyos/fuerzas aprobados
 ```
 
 `POST /api/fears` devuelve `201` (aprobado) o `202` (en revisión) e incluye `classification: { topic, letter, group }` con el tema extraído por IA, la letra y el rango de cajón (A-C…Y-Z). El frontend muestra al usuario dónde quedó archivado su miedo y el tema detectado. El rate limit es de 5 envíos/día por IP (hash).
@@ -136,6 +142,24 @@ Las credenciales de admin se leen de los secretos `ADMIN_USERNAME` / `ADMIN_PASS
 - **Sin datos personales**: los visitantes no registran IP ni telemetría. La única excepción es el rate limit de envíos, que usa un hash SHA-256 de la IP (no reversible).
 - **Sanitización**: el contenido se escapa en el frontend (`escapeHtml`) antes de insertarse en el DOM.
 - Los secrets (`ADMIN_USERNAME`, `ADMIN_PASSWORD`, credenciales de cuenta) están gitignoreados.
+
+## Integración con Bluesky (AT Protocol)
+
+Hay dos usos de Bluesky:
+
+**1. Tarjeta al compartir enlaces** (cuenta `nocloudware.bsky.social`, records `site.standard.*`, ver arriba).
+
+**2. Compartir miedos de forma anónima** (`@archmiedos.bsky.social`). Cada tarjeta del archivo tiene un botón "Compartir en Bluesky". `POST /api/fears/:id/share` (`services/bluesky.js`):
+- Crea un post `app.bsky.feed.post` en `@archmiedos.bsky.social` con el contenido del miedo y un prefijo anónimo (sin identidad del autor).
+- Devuelve `{ url }` con el enlace directo al post (`bsky.app/profile/archmiedos.bsky.social/post/<rkey>`), que la UI muestra ("ver el post").
+- Dedup: cada miedo se comparte una sola vez (`shares`); un segundo intento devuelve el post existente. Rate limit: 10/día por IP.
+- Credenciales en secretos `BSKY_HANDLE` / `BSKY_APP_PASSWORD` (y `.dev.vars` local).
+
+## Otros
+
+- **Página `/miedo/:id`**: URL pública por miedo con OG dinámico (`og:title/description` = contenido del miedo). Sirve como destino de los posts compartidos y enlaces "ver ficha". Si el miedo no existe o no está aprobado, redirige a `/`.
+- **PWA**: `manifest.json`, `sw.js` (caché del shell), iconos 192/512 y `theme-color`. Registro en `home.js`.
+- **SEO**: `robots.txt` y `sitemap.xml` estáticos en ASSETS.
 
 ## Despliegue y entorno
 

@@ -2,9 +2,12 @@ import { json, notFound } from '../utils/http.js';
 import { validateContent, parseLetterRange, clamp, RATE_LIMIT_PER_DAY } from '../utils/validation.js';
 import { moderateContent } from '../services/ai.js';
 import { classifyFear, groupForLetter } from '../services/classify.js';
+import { createPost, shareAccount, shareText } from '../services/bluesky.js';
 import * as db from '../services/db.js';
 
 const VISITOR_COOKIE = 'am_visitor';
+const MINE_COOKIE = 'am_mine';
+const SHARE_LIMIT_PER_DAY = 10;
 
 export async function handleFears(request, env, path, url) {
   const method = request.method;
@@ -12,6 +15,7 @@ export async function handleFears(request, env, path, url) {
 
   if (path === '/api/fears/search' && method === 'GET') return searchFears(env, url);
   if (path === '/api/fears/random' && method === 'GET') return randomFear(env);
+  if (path === '/api/fears/latest' && method === 'GET') return latestFear(env);
   if (path === '/api/stats' && method === 'GET') return publicStats(env);
   if (path === '/api/fears' && method === 'GET') return listFears(env, url);
   if (path === '/api/fears' && method === 'POST') return createFear(request, env);
@@ -23,6 +27,18 @@ export async function handleFears(request, env, path, url) {
     method === 'POST'
   ) {
     return reactToFear(request, env, segments[2]);
+  }
+  if (
+    segments.length === 4 &&
+    segments[0] === 'api' &&
+    segments[1] === 'fears' &&
+    segments[3] === 'share' &&
+    method === 'POST'
+  ) {
+    return shareFear(request, env, segments[2]);
+  }
+  if (segments.length === 3 && segments[0] === 'api' && segments[1] === 'fears' && method === 'GET') {
+    return getSingleFear(env, segments[2]);
   }
   return notFound();
 }
@@ -55,6 +71,49 @@ async function searchFears(env, url) {
 async function randomFear(env) {
   const fear = await db.randomApproved(env);
   return json({ items: fear ? [fear] : [] });
+}
+
+async function latestFear(env) {
+  const fear = await db.getLatestApproved(env);
+  return json({ items: fear ? [fear] : [] });
+}
+
+async function getSingleFear(env, idStr) {
+  const id = Number.parseInt(idStr, 10);
+  if (Number.isNaN(id) || id <= 0) return notFound();
+  const fear = await db.getApprovedFearById(env, id);
+  if (!fear) return notFound();
+  return json({ item: fear });
+}
+
+async function shareFear(request, env, idStr) {
+  const fearId = Number.parseInt(idStr, 10);
+  if (Number.isNaN(fearId) || fearId <= 0) return notFound();
+
+  const fear = await db.getApprovedFearById(env, fearId);
+  if (!fear) return notFound();
+
+  const existing = await db.getShareByFear(env, fearId);
+  if (existing) {
+    return json({
+      url: `https://bsky.app/profile/${shareAccount(env).handle}/post/${existing.rkey}`,
+      alreadyShared: true,
+    });
+  }
+
+  const ipHash = await hashIp(request.headers.get('CF-Connecting-IP') || 'unknown');
+  const rate = await db.countSharesByIpToday(env, ipHash);
+  if (rate.total >= SHARE_LIMIT_PER_DAY) {
+    return json({ error: 'Has alcanzado el límite de compartidos de hoy. Vuelve mañana.' }, 429);
+  }
+
+  try {
+    const post = await createPost(env, shareText(fear.content));
+    await db.insertShare(env, { fearId, ipHash, rkey: post.rkey, postUri: post.uri });
+    return json({ url: post.url, alreadyShared: false });
+  } catch {
+    return json({ error: 'No se pudo publicar en Bluesky ahora. Inténtalo más tarde.' }, 502);
+  }
 }
 
 async function publicStats(env) {
@@ -95,7 +154,7 @@ async function createFear(request, env) {
     await db.insertReport(env, result.meta.last_row_id, mod.comment || 'Reportado por moderación automática');
   }
 
-  return json(
+  const response = json(
     {
       id: result.meta.last_row_id,
       status: approved ? 'approved' : 'pending_approval',
@@ -110,6 +169,11 @@ async function createFear(request, env) {
     },
     approved ? 201 : 202
   );
+
+  if (result.meta.last_row_id) {
+    response.headers.append('Set-Cookie', makeMineCookie(result.meta.last_row_id, request));
+  }
+  return response;
 }
 
 async function reactToFear(request, env, idStr) {
@@ -170,6 +234,14 @@ function parseCookies(header) {
 
 function makeVisitorCookie(value) {
   return `${VISITOR_COOKIE}=${encodeURIComponent(value)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=31536000`;
+}
+
+function makeMineCookie(fearId, request) {
+  const existing = parseCookies(request.headers.get('Cookie') || '')[MINE_COOKIE] || '';
+  const ids = existing ? existing.split(',') : [];
+  if (!ids.includes(String(fearId))) ids.unshift(String(fearId));
+  const list = ids.slice(0, 20).join(',');
+  return `${MINE_COOKIE}=${encodeURIComponent(list)}; Path=/; SameSite=Lax; Max-Age=31536000`;
 }
 
 async function hashIp(ip) {

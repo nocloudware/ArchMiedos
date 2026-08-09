@@ -116,6 +116,12 @@ function cardHTML(fear, index) {
           </button>
         </div>
       </div>
+      <div class="fear-share">
+        <button class="share-btn" data-id="${fear.id}" aria-label="Compartir este miedo en Bluesky">
+          Compartir en Bluesky ↗
+        </button>
+        <span class="share-note">Se publica de forma anónima en @archmiedos.bsky.social</span>
+      </div>
     </article>
   `;
 }
@@ -150,6 +156,12 @@ searchInput.addEventListener('input', () => {
 });
 
 cardsEl.addEventListener('click', async (e) => {
+  const shareBtn = e.target.closest('.share-btn');
+  if (shareBtn) {
+    await shareFear(shareBtn);
+    return;
+  }
+
   const btn = e.target.closest('.reaction-btn');
   if (!btn || btn.classList.contains('reacted') || btn.dataset.busy) return;
   btn.dataset.busy = '1';
@@ -175,6 +187,38 @@ cardsEl.addEventListener('click', async (e) => {
     delete btn.dataset.busy;
   }
 });
+
+async function shareFear(btn) {
+  if (btn.dataset.busy) return;
+  btn.dataset.busy = '1';
+  const original = btn.textContent;
+  btn.textContent = 'Publicando en Bluesky...';
+
+  try {
+    const res = await fetch(`/api/fears/${btn.dataset.id}/share`, { method: 'POST' });
+    const data = await res.json();
+    if (res.ok && data.url) {
+      const span = document.createElement('span');
+      span.className = 'share-done';
+      span.innerHTML = `Compartido ✓ <a href="${data.url}" target="_blank" rel="noopener">ver el post ↗</a>`;
+      btn.replaceWith(span);
+    } else {
+      btn.textContent = data.error || 'No se pudo compartir';
+      btn.classList.add('share-error');
+    }
+  } catch {
+    btn.textContent = 'Error al compartir';
+    btn.classList.add('share-error');
+  } finally {
+    delete btn.dataset.busy;
+    if (btn.textContent !== original && btn.classList.contains('share-error')) {
+      setTimeout(() => {
+        btn.textContent = original;
+        btn.classList.remove('share-error');
+      }, 3500);
+    }
+  }
+}
 
 function escapeHtml(str) {
   return String(str ?? '')

@@ -306,6 +306,51 @@
 
 .reaction-btn.reacted .reaction-emoji { animation: heartPop 0.35s ease; }
 
+/* ---------- Compartir en Bluesky ---------- */
+.fear-share {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-top: 1px solid var(--cream-dark);
+  padding-top: 10px;
+  margin-top: 10px;
+}
+
+.share-btn {
+  border: none;
+  background: transparent;
+  color: var(--brown);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline dashed;
+  transition: color 0.2s ease;
+}
+
+.share-btn:hover { color: var(--accent-red); }
+
+.share-note {
+  font-size: 0.72rem;
+  color: var(--steel-light);
+}
+
+.share-done {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--olive-dark);
+}
+
+.share-done a {
+  color: var(--brown);
+  text-decoration: underline dashed;
+}
+
+.share-error { color: var(--accent-red) !important; }
+
 /* ---------- Animaciones ---------- */
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 

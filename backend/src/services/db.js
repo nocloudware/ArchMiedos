@@ -45,6 +45,32 @@ export async function getFearById(env, id) {
   return env.DB.prepare('SELECT * FROM fears WHERE id = ?').bind(id).first();
 }
 
+export async function getApprovedFearById(env, id) {
+  return env.DB.prepare(`SELECT ${APPROVED_FIELDS} FROM fears WHERE id = ? AND is_approved = 1`).bind(id).first();
+}
+
+export async function getLatestApproved(env) {
+  return env.DB.prepare(`SELECT ${APPROVED_FIELDS} FROM fears WHERE is_approved = 1 ORDER BY created_at DESC, id DESC LIMIT 1`).first();
+}
+
+export async function getShareByFear(env, fearId) {
+  return env.DB.prepare('SELECT * FROM shares WHERE fear_id = ?').bind(fearId).first();
+}
+
+export async function insertShare(env, { fearId, ipHash, rkey, postUri }) {
+  return env.DB.prepare('INSERT INTO shares (fear_id, ip_hash, rkey, post_uri) VALUES (?, ?, ?, ?)')
+    .bind(fearId, ipHash, rkey, postUri)
+    .run();
+}
+
+export async function countSharesByIpToday(env, ipHash) {
+  return env.DB.prepare(
+    "SELECT COUNT(*) as total FROM shares WHERE ip_hash = ? AND created_at >= datetime('now', '-1 day')"
+  )
+    .bind(ipHash)
+    .first();
+}
+
 export async function insertFear(env, { content, ipHash, approved, comment, topic, topicLetter }) {
   return env.DB.prepare(
     'INSERT INTO fears (content, ip_hash, is_approved, status, moderation_comment, topic, topic_letter) VALUES (?, ?, ?, ?, ?, ?, ?)'
