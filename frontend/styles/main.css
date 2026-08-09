@@ -847,6 +847,30 @@ body {
     flex-direction: column;
     justify-content: center;
   }
+
+  .dashboard .home-side .fear-card {
+    padding: 12px;
+    box-shadow: none;
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+  .dashboard .home-side .fear-text {
+    font-size: 0.84rem;
+    margin: 4px 0 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .dashboard .home-side .fear-topic { font-size: 0.68rem; margin: 0 0 6px; }
+  .dashboard .home-side .fear-date { font-size: 0.62rem; }
+  .dashboard .home-side .fear-meta { padding-top: 6px; }
+  .dashboard .home-side .reaction-btn { font-size: 0.72rem; padding: 3px 6px; }
+  .dashboard .home-side .reaction-emoji { font-size: 0.9rem; }
+  .dashboard .home-side .fear-share { padding-top: 6px; margin-top: 6px; }
+  .dashboard .home-side .share-btn { font-size: 0.7rem; }
+  .dashboard .home-side .share-note { font-size: 0.6rem; }
   .dashboard .home-side .home-fear-text {
     display: -webkit-box;
     -webkit-line-clamp: 9;
