@@ -248,28 +248,59 @@
   color: var(--steel);
 }
 
-.like-button {
+.reaction-buttons {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  border: none;
+}
+
+.reaction-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid transparent;
   background: transparent;
   font-family: var(--font-body);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--steel);
   cursor: pointer;
-  padding: 6px 10px;
+  padding: 5px 10px;
   border-radius: 999px;
-  transition: color 0.2s ease, background 0.2s ease;
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
 }
 
-.like-button:hover { background: rgba(214, 69, 69, 0.08); color: var(--accent-red); }
+.reaction-btn .reaction-emoji {
+  font-size: 1.05rem;
+  line-height: 1;
+  transition: transform 0.15s ease;
+}
 
-.like-button .heart-icon { font-size: 1.15rem; line-height: 1; transition: transform 0.15s ease; }
+.reaction-btn.apoyo:hover {
+  background: rgba(214, 69, 69, 0.08);
+  color: var(--accent-red);
+  border-color: rgba(214, 69, 69, 0.25);
+}
 
-.like-button.liked { color: var(--accent-red); }
-.like-button.liked .heart-icon { animation: heartPop 0.35s ease; }
+.reaction-btn.fuerza:hover {
+  background: rgba(201, 162, 39, 0.12);
+  color: var(--gold);
+  border-color: rgba(201, 162, 39, 0.35);
+}
+
+.reaction-btn.apoyo.reacted {
+  color: var(--accent-red);
+  border-color: rgba(214, 69, 69, 0.35);
+  background: rgba(214, 69, 69, 0.06);
+}
+
+.reaction-btn.fuerza.reacted {
+  color: var(--gold);
+  border-color: rgba(201, 162, 39, 0.45);
+  background: rgba(201, 162, 39, 0.09);
+}
+
+.reaction-btn.reacted .reaction-emoji { animation: heartPop 0.35s ease; }
 
 /* ---------- Animaciones ---------- */
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

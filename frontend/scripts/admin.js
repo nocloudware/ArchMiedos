@@ -70,7 +70,8 @@ function renderStats(s) {
     ['Aprobados', s.approved],
     ['Rechazados', s.rejected],
     ['Reportados', s.reported],
-    ['Apoyos', s.totalLikes],
+    ['Apoyos 🫂', s.apoyos],
+    ['Fuerzas 💪', s.fuerzas],
   ];
   document.getElementById('stats-dashboard').innerHTML = cards
     .map(
@@ -93,7 +94,7 @@ function renderTop(items) {
     .map(
       (f) => `
       <li>${escapeHtml(f.content.slice(0, 60))}${f.content.length > 60 ? '…' : ''}
-        <span class="top-likes">— ${f.likes} apoyo${f.likes === 1 ? '' : 's'}</span>
+        <span class="top-likes">— 🫂 ${f.apoyos} · 💪 ${f.fuerzas}</span>
       </li>`
     )
     .join('');
@@ -144,7 +145,7 @@ function rowHTML(f) {
       <td class="cell-muted">#${f.id}</td>
       <td class="cell-fear">${escapeHtml(f.content)}${reportNote}</td>
       <td class="cell-muted">${formatDate(f.created_at)}</td>
-      <td>${f.likes}</td>
+      <td>🫂 ${f.apoyos}<br />💪 ${f.fuerzas}</td>
       <td>${badges.map((b) => `<span class="badge ${b}">${b}</span>`).join(' ')}</td>
       <td>
         <div class="row-actions">

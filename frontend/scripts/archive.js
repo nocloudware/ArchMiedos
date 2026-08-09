@@ -95,9 +95,16 @@ function cardHTML(fear, index) {
       <p class="fear-text">${escapeHtml(fear.content)}</p>
       <div class="fear-meta">
         <span class="fear-date">depositado el ${formatDate(fear.created_at)}</span>
-        <button class="like-button" data-id="${fear.id}" aria-label="Apoyar este miedo">
-          <span class="heart-icon">♡</span> <span class="like-count">${fear.likes}</span>
-        </button>
+        <div class="reaction-buttons">
+          <button class="reaction-btn apoyo" data-id="${fear.id}" data-type="apoyo" aria-label="Dar apoyo a este miedo">
+            <span class="reaction-emoji" aria-hidden="true">🫂</span>
+            <span class="reaction-count">${fear.apoyos ?? 0}</span>
+          </button>
+          <button class="reaction-btn fuerza" data-id="${fear.id}" data-type="fuerza" aria-label="Dar fuerza a este miedo">
+            <span class="reaction-emoji" aria-hidden="true">💪</span>
+            <span class="reaction-count">${fear.fuerzas ?? 0}</span>
+          </button>
+        </div>
       </div>
     </article>
   `;
@@ -133,17 +140,24 @@ searchInput.addEventListener('input', () => {
 });
 
 cardsEl.addEventListener('click', async (e) => {
-  const btn = e.target.closest('.like-button');
-  if (!btn || btn.classList.contains('liked') || btn.dataset.busy) return;
+  const btn = e.target.closest('.reaction-btn');
+  if (!btn || btn.classList.contains('reacted') || btn.dataset.busy) return;
   btn.dataset.busy = '1';
 
   try {
-    const res = await fetch(`/api/fears/${btn.dataset.id}/like`, { method: 'POST' });
+    const res = await fetch(`/api/fears/${btn.dataset.id}/reaction`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: btn.dataset.type }),
+    });
     const data = await res.json();
     if (res.ok) {
-      btn.classList.add('liked');
-      btn.querySelector('.heart-icon').textContent = '♥';
-      btn.querySelector('.like-count').textContent = data.likes;
+      btn.classList.add('reacted');
+      btn.querySelector('.reaction-count').textContent = data[btn.dataset.type];
+      const otherType = btn.dataset.type === 'apoyo' ? 'fuerza' : 'apoyo';
+      const otherCount = data[otherType === 'apoyo' ? 'apoyos' : 'fuerzas'];
+      const pair = btn.closest('.reaction-buttons').querySelector(`[data-type="${otherType}"]`);
+      if (pair) pair.querySelector('.reaction-count').textContent = otherCount;
     }
   } catch {
     /* sin acción en silencio */

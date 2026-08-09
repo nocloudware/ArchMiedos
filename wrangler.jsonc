@@ -3,6 +3,7 @@
   "name": "archivo-de-miedos",
   "main": "backend/src/index.js",
   "compatibility_date": "2025-08-08",
+  "workers_dev": true,
   "assets": {
     "directory": "./frontend",
     "binding": "ASSETS",

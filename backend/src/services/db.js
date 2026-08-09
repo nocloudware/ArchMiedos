@@ -1,4 +1,4 @@
-const APPROVED_FIELDS = 'id, content, likes, created_at';
+const APPROVED_FIELDS = 'id, content, apoyos, fuerzas, created_at';
 
 export async function listApprovedByLetter(env, fromLetter, toLetter, limit, offset) {
   if (fromLetter === toLetter) {
@@ -63,22 +63,25 @@ export async function insertReport(env, fearId, reason) {
   return env.DB.prepare('INSERT INTO reports (fear_id, reason) VALUES (?, ?)').bind(fearId, reason).run();
 }
 
-export async function addLike(env, fearId, cookieId) {
-  return env.DB.prepare('INSERT INTO likes (fear_id, cookie_id) VALUES (?, ?)').bind(fearId, cookieId).run();
+export async function addReaction(env, fearId, cookieId, type) {
+  return env.DB.prepare('INSERT INTO reactions (fear_id, cookie_id, type) VALUES (?, ?, ?)')
+    .bind(fearId, cookieId, type)
+    .run();
 }
 
-export async function incrementLikes(env, fearId) {
-  return env.DB.prepare('UPDATE fears SET likes = likes + 1 WHERE id = ?').bind(fearId).run();
+export async function incrementReaction(env, fearId, type) {
+  const column = type === 'fuerza' ? 'fuerzas' : 'apoyos';
+  return env.DB.prepare(`UPDATE fears SET ${column} = ${column} + 1 WHERE id = ?`).bind(fearId).run();
 }
 
-export async function getLikes(env, fearId) {
-  return env.DB.prepare('SELECT likes FROM fears WHERE id = ?').bind(fearId).first();
+export async function getReactions(env, fearId) {
+  return env.DB.prepare('SELECT apoyos, fuerzas FROM fears WHERE id = ?').bind(fearId).first();
 }
 
 export async function listAdminFears(env, status, limit, offset) {
   const where = buildAdminWhere(status);
   return env.DB.prepare(
-    `SELECT f.id, f.content, f.first_letter, f.likes, f.created_at, f.status, f.is_reported,
+     `SELECT f.id, f.content, f.first_letter, f.apoyos, f.fuerzas, f.created_at, f.status, f.is_reported,
             f.moderation_comment, f.ip_hash, COUNT(r.id) as report_count
      FROM fears f
      LEFT JOIN reports r ON r.fear_id = f.id
@@ -111,13 +114,14 @@ export async function deleteFear(env, id) {
 }
 
 export async function getStats(env) {
-  const [total, pending, approved, rejected, reported, totalLikes] = await Promise.all([
+  const [total, pending, approved, rejected, reported, apoyos, fuerzas] = await Promise.all([
     env.DB.prepare('SELECT COUNT(*) as n FROM fears').first(),
     env.DB.prepare("SELECT COUNT(*) as n FROM fears WHERE status = 'pending'").first(),
     env.DB.prepare("SELECT COUNT(*) as n FROM fears WHERE status = 'approved'").first(),
     env.DB.prepare("SELECT COUNT(*) as n FROM fears WHERE status = 'rejected'").first(),
     env.DB.prepare('SELECT COUNT(*) as n FROM fears WHERE is_reported = 1').first(),
-    env.DB.prepare('SELECT COALESCE(SUM(likes), 0) as n FROM fears').first(),
+    env.DB.prepare('SELECT COALESCE(SUM(apoyos), 0) as n FROM fears').first(),
+    env.DB.prepare('SELECT COALESCE(SUM(fuerzas), 0) as n FROM fears').first(),
   ]);
   return {
     total: total.n,
@@ -125,13 +129,14 @@ export async function getStats(env) {
     approved: approved.n,
     rejected: rejected.n,
     reported: reported.n,
-    totalLikes: totalLikes.n,
+    apoyos: apoyos.n,
+    fuerzas: fuerzas.n,
   };
 }
 
 export async function getTopLiked(env, limit = 5) {
   return env.DB.prepare(
-    `SELECT id, content, likes, created_at FROM fears WHERE is_approved = 1 ORDER BY likes DESC LIMIT ?`
+    `SELECT id, content, apoyos, fuerzas, created_at FROM fears WHERE is_approved = 1 ORDER BY (apoyos + fuerzas) DESC LIMIT ?`
   )
     .bind(limit)
     .all();

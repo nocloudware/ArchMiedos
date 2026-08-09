@@ -17,10 +17,10 @@ export async function handleFears(request, env, path, url) {
     segments.length === 4 &&
     segments[0] === 'api' &&
     segments[1] === 'fears' &&
-    segments[3] === 'like' &&
+    segments[3] === 'reaction' &&
     method === 'POST'
   ) {
-    return likeFear(request, env, segments[2]);
+    return reactToFear(request, env, segments[2]);
   }
   return notFound();
 }
@@ -92,27 +92,38 @@ async function createFear(request, env) {
   );
 }
 
-async function likeFear(request, env, idStr) {
+async function reactToFear(request, env, idStr) {
   const fearId = Number.parseInt(idStr, 10);
   if (Number.isNaN(fearId) || fearId <= 0) return notFound();
 
   const existing = await db.getFearById(env, fearId);
   if (!existing) return notFound();
 
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return json({ error: 'JSON inválido' }, 400);
+  }
+  const type = body?.type;
+  if (type !== 'apoyo' && type !== 'fuerza') {
+    return json({ error: 'Tipo inválido. Use "apoyo" o "fuerza".' }, 400);
+  }
+
   let cookieId = getVisitorId(request);
   const isNewCookie = cookieId === null;
   if (isNewCookie) cookieId = crypto.randomUUID();
-  let alreadyLiked = false;
+  let alreadyReacted = false;
 
   try {
-    await db.addLike(env, fearId, cookieId);
-    await db.incrementLikes(env, fearId);
+    await db.addReaction(env, fearId, cookieId, type);
+    await db.incrementReaction(env, fearId, type);
   } catch {
-    alreadyLiked = true;
+    alreadyReacted = true;
   }
 
-  const likes = await db.getLikes(env, fearId);
-  const response = json({ likes: likes.likes, alreadyLiked });
+  const counts = await db.getReactions(env, fearId);
+  const response = json({ apoyos: counts.apoyos, fuerzas: counts.fuerzas, alreadyReacted });
 
   if (isNewCookie) {
     response.headers.append('Set-Cookie', makeVisitorCookie(cookieId));
