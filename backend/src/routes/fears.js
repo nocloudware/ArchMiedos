@@ -12,6 +12,7 @@ export async function handleFears(request, env, path, url) {
 
   if (path === '/api/fears/search' && method === 'GET') return searchFears(env, url);
   if (path === '/api/fears/random' && method === 'GET') return randomFear(env);
+  if (path === '/api/stats' && method === 'GET') return publicStats(env);
   if (path === '/api/fears' && method === 'GET') return listFears(env, url);
   if (path === '/api/fears' && method === 'POST') return createFear(request, env);
   if (
@@ -54,6 +55,11 @@ async function searchFears(env, url) {
 async function randomFear(env) {
   const fear = await db.randomApproved(env);
   return json({ items: fear ? [fear] : [] });
+}
+
+async function publicStats(env) {
+  const s = await db.getPublicStats(env);
+  return json({ fears: s.fears, apoyos: s.apoyos, fuerzas: s.fuerzas });
 }
 
 async function createFear(request, env) {

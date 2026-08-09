@@ -204,6 +204,50 @@ body {
 
 .classify-note strong { color: var(--brown-dark); }
 
+/* ---------- Contador de la portada ---------- */
+.home-stats {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin: 8px auto 28px;
+  max-width: 560px;
+}
+
+.home-stat {
+  flex: 1 1 0;
+  min-width: 120px;
+  text-align: center;
+  padding: 14px 12px 12px;
+  background: var(--paper);
+  border: 1px dashed var(--gold);
+  border-radius: 10px;
+  box-shadow: var(--shadow-soft);
+}
+
+.home-stat-value {
+  display: block;
+  font-family: var(--font-retro);
+  font-size: 1.6rem;
+  line-height: 1.1;
+  color: var(--brown-dark);
+}
+
+.home-stat-label {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--steel);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 460px) {
+  .home-stat { min-width: 100px; padding: 12px 8px 10px; }
+  .home-stat-value { font-size: 1.35rem; }
+}
+
 /* ---------- Footer ---------- */
 .site-footer { text-align: center; padding: 32px 0 56px; }
 

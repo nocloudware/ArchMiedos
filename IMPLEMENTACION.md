@@ -101,6 +101,7 @@ El logging es *best-effort*: si la inserción falla, no bloquea la petición.
 GET  /api/fears?letter=A-C&limit=20&offset=0   Lista aprobados por rango de letra
 GET  /api/fears/search?q=araña&limit=20        Búsqueda por palabra clave
 GET  /api/fears/random                         Miedo aleatorio aprobado
+GET  /api/stats                                Contadores públicos: miedos/apoyos/fuerzas aprobados
 POST /api/fears                                { content } → modera + guarda
 POST /api/fears/:id/reaction                   { type: "apoyo"|"fuerza" } → reacciona (cookie)
 ```
@@ -176,7 +177,7 @@ Si cambian los records, actualizar los `<link rel>` embebidos en los HTML con la
 │   ├── index.html / archive.html / admin.html / terminos.html / mision.html
 │   ├── card.png             # imagen OG / ícono de la publicación AT
 │   ├── styles/              # main.css, archive.css, admin.css
-│   └── scripts/             # submit.js, archive.js, admin.js, mision.js
+│   └── scripts/             # submit.js, archive.js, admin.js, mision.js, home.js, nav.js
 ├── backend/src/
 │   ├── index.js           # Worker principal (enrutado + estáticos)
 │   ├── routes/            # fears.js, admin.js

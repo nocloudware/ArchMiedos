@@ -142,6 +142,15 @@ export async function listAdminLogs(env, limit) {
     .all();
 }
 
+export async function getPublicStats(env) {
+  return env.DB.prepare(
+    `SELECT
+       (SELECT COUNT(*) FROM fears WHERE is_approved = 1) as fears,
+       (SELECT COALESCE(SUM(apoyos), 0) FROM fears WHERE is_approved = 1) as apoyos,
+       (SELECT COALESCE(SUM(fuerzas), 0) FROM fears WHERE is_approved = 1) as fuerzas`
+  ).first();
+}
+
 export async function getStats(env) {
   const [total, pending, approved, rejected, reported, apoyos, fuerzas] = await Promise.all([
     env.DB.prepare('SELECT COUNT(*) as n FROM fears').first(),
