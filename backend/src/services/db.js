@@ -1,4 +1,4 @@
-const APPROVED_FIELDS = 'id, content, topic, apoyos, fuerzas, created_at';
+const APPROVED_FIELDS = 'id, content, topic, topic_letter, apoyos, fuerzas, created_at';
 
 export async function listApprovedByLetter(env, fromLetter, toLetter, limit, offset) {
   if (fromLetter === toLetter) {
