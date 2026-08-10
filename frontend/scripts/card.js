@@ -257,25 +257,56 @@ function wrapText(ctx, text, maxWidth) {
 }
 
 // Timbre de goma en verde suave, inclinado, con correlativo y fecha.
+// La tinta lleva textura de grano (puntos) como un timbre real.
 function drawRubberStamp(ctx, cx, cy, num, date) {
   const SW = 300;
   const SH = 80;
   ctx.save();
   ctx.translate(cx, cy);
   ctx.rotate(-0.05);
-  ctx.strokeStyle = 'rgba(62, 142, 90, 0.7)';
-  ctx.fillStyle = 'rgba(62, 142, 90, 0.08)';
+
+  ctx.strokeStyle = 'rgba(62, 142, 90, 0.72)';
   ctx.lineWidth = 4;
   roundRect(ctx, -SW / 2, -SH / 2, SW, SH, 14);
-  ctx.fill();
   ctx.stroke();
-  ctx.fillStyle = 'rgba(52, 122, 78, 0.9)';
+
+  roundRect(ctx, -SW / 2, -SH / 2, SW, SH, 14);
+  ctx.clip();
+
+  ctx.fillStyle = 'rgba(62, 142, 90, 0.14)';
+  ctx.fillRect(-SW / 2, -SH / 2, SW, SH);
+
+  const rng = mulberry32(20260810);
+  for (let i = 0; i < 2200; i++) {
+    const x = -SW / 2 + rng() * SW;
+    const y = -SH / 2 + rng() * SH;
+    const s = 1 + rng() * 2.2;
+    const isInk = rng() > 0.45;
+    ctx.fillStyle = isInk
+      ? `rgba(52, 122, 78, ${0.06 + rng() * 0.16})`
+      : `rgba(250, 245, 233, ${0.04 + rng() * 0.14})`;
+    ctx.fillRect(x, y, s, s);
+  }
+
+  ctx.fillStyle = 'rgba(52, 122, 78, 0.92)';
   ctx.textAlign = 'center';
   ctx.font = '400 26px "Special Elite", "Courier New", monospace';
   ctx.fillText('Miedo Archivado', 0, -12);
   ctx.font = '400 19px "Special Elite", "Courier New", monospace';
   ctx.fillText(`N° ${num} · ${date}`, 0, 22);
+
   ctx.restore();
+}
+
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
 }
 
 function roundRect(ctx, x, y, w, h, r) {

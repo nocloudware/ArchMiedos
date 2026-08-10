@@ -351,7 +351,10 @@ body {
   padding: 6px 14px;
   border: 2px solid rgba(62, 142, 90, 0.65);
   border-radius: 12px;
-  background: rgba(62, 142, 90, 0.07);
+  background:
+    radial-gradient(circle, rgba(62, 142, 90, 0.16) 0.6px, transparent 1.1px),
+    rgba(62, 142, 90, 0.07);
+  background-size: 5px 5px;
   color: rgba(52, 122, 78, 0.92);
   font-family: var(--font-retro);
   font-size: 0.72rem;
