@@ -23,7 +23,10 @@ function fearCardHTML(fear, index = 0) {
       <p class="fear-text">${escapeHtml(fear.content)}</p>
       <span class="fear-topic">tema: ${escapeHtml(fear.topic || '—')}</span>
       <div class="fear-meta">
-        <span class="fear-date">depositado el ${formatDate(fear.created_at)}</span>
+        <span class="fear-stamp">
+          <span class="fear-stamp-line">Miedo Archivado</span>
+          <span class="fear-stamp-line">N° ${fear.id} · ${formatDate(fear.created_at)}</span>
+        </span>
         <div class="reaction-buttons">
           <button class="reaction-btn apoyo" data-id="${fear.id}" data-type="apoyo" aria-label="Dar apoyo a este miedo">
             <span class="reaction-emoji" aria-hidden="true">🫂</span>
@@ -147,7 +150,7 @@ async function renderFearCard(fear) {
   const contentTop = 256;
   const contentBottom = contentTop + usedLines * lineH + 18;
   const bottomStart = contentBottom + 26;
-  const footerY = bottomStart + 160;
+  const footerY = bottomStart + 182;
   const H = footerY + 32;
 
   const cv = document.createElement('canvas');
@@ -203,18 +206,16 @@ async function renderFearCard(fear) {
   ctx.lineTo(W - 75, bottomStart);
   ctx.stroke();
 
-  ctx.fillStyle = '#4b555f';
-  ctx.font = `400 24px ${RETRO}`;
-  ctx.fillText(`Depositado el ${formatDate(fear.created_at)}`, 75, bottomStart + 42);
+  drawRubberStamp(ctx, 220, bottomStart + 48, fear.id, formatDate(fear.created_at));
 
   ctx.fillStyle = '#6b4f3a';
   ctx.font = `400 32px ${RETRO}`;
   ctx.textAlign = 'left';
-  ctx.fillText(`🫂 Apoyos: ${fear.apoyos || 0}`, 75, bottomStart + 100);
+  ctx.fillText(`🫂 Apoyos: ${fear.apoyos || 0}`, 75, bottomStart + 122);
   ctx.textAlign = 'center';
-  ctx.fillText(`Tema: ${fear.topic || '—'}`, W / 2, bottomStart + 100);
+  ctx.fillText(`Tema: ${fear.topic || '—'}`, W / 2, bottomStart + 122);
   ctx.textAlign = 'right';
-  ctx.fillText(`💪 Fuerzas: ${fear.fuerzas || 0}`, W - 75, bottomStart + 100);
+  ctx.fillText(`💪 Fuerzas: ${fear.fuerzas || 0}`, W - 75, bottomStart + 122);
 
   ctx.textAlign = 'center';
   ctx.font = `400 24px ${RETRO}`;
@@ -253,4 +254,40 @@ function wrapText(ctx, text, maxWidth) {
   });
   if (line) lines.push(line);
   return lines;
+}
+
+// Timbre de goma en verde suave, inclinado, con correlativo y fecha.
+function drawRubberStamp(ctx, cx, cy, num, date) {
+  const SW = 300;
+  const SH = 80;
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(-0.05);
+  ctx.strokeStyle = 'rgba(62, 142, 90, 0.7)';
+  ctx.fillStyle = 'rgba(62, 142, 90, 0.08)';
+  ctx.lineWidth = 4;
+  roundRect(ctx, -SW / 2, -SH / 2, SW, SH, 14);
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = 'rgba(52, 122, 78, 0.9)';
+  ctx.textAlign = 'center';
+  ctx.font = '400 26px "Special Elite", "Courier New", monospace';
+  ctx.fillText('Miedo Archivado', 0, -12);
+  ctx.font = '400 19px "Special Elite", "Courier New", monospace';
+  ctx.fillText(`N° ${num} · ${date}`, 0, 22);
+  ctx.restore();
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.arcTo(x + w, y, x + w, y + r, r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+  ctx.lineTo(x + r, y + h);
+  ctx.arcTo(x, y + h, x, y + h - r, r);
+  ctx.lineTo(x, y + r);
+  ctx.arcTo(x, y, x + r, y, r);
+  ctx.closePath();
 }

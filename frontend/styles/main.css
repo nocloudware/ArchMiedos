@@ -335,35 +335,67 @@ body {
 .btn-cert { flex: 1 1 180px; }
 
 .fear-card-static {
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      var(--paper) 0 27px,
-      rgba(107, 79, 58, 0.12) 27px 29px
-    ),
-    var(--paper);
+  background: var(--paper);
   border: 1px dashed var(--steel-light);
   border-radius: 10px;
   padding: 16px;
   box-shadow: var(--shadow-soft);
 }
 
+.fear-stamp {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 14px;
+  border: 2px solid rgba(62, 142, 90, 0.65);
+  border-radius: 12px;
+  background: rgba(62, 142, 90, 0.07);
+  color: rgba(52, 122, 78, 0.92);
+  font-family: var(--font-retro);
+  font-size: 0.72rem;
+  line-height: 1.15;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transform: rotate(-2deg);
+  white-space: nowrap;
+}
+
+.fear-stamp-line:first-child {
+  font-size: 0.8rem;
+}
+
 .fear-text {
   font-family: 'Kalam', 'Comic Sans MS', cursive;
   font-size: 1.06rem;
+  line-height: 28px;
   color: var(--ink);
   white-space: pre-wrap;
   word-break: break-word;
   margin: 8px 0 12px;
+  padding: 0 4px;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 26px,
+    rgba(107, 79, 58, 0.12) 26px 28px
+  );
 }
 
 .home-fear-text {
   font-family: 'Kalam', 'Comic Sans MS', cursive;
   font-size: 1.06rem;
+  line-height: 28px;
   color: var(--ink);
   white-space: pre-wrap;
   word-break: break-word;
   margin: 8px 0 12px;
+  padding: 0 4px;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 26px,
+    rgba(107, 79, 58, 0.12) 26px 28px
+  );
 }
 
 .home-fear-meta {
@@ -872,6 +904,12 @@ body {
   .dashboard .home-side .fear-topic { font-size: 0.65rem; margin: 0 0 6px; }
   .dashboard .home-side .fear-date { font-size: 0.6rem; }
   .dashboard .home-side .fear-meta { padding-top: 6px; }
+  .dashboard .home-side .fear-stamp {
+    font-size: 0.6rem;
+    padding: 3px 8px;
+    gap: 1px;
+  }
+  .dashboard .home-side .fear-stamp-line:first-child { font-size: 0.66rem; }
   .dashboard .home-side .reaction-btn { font-size: 0.7rem; padding: 3px 6px; }
   .dashboard .home-side .reaction-emoji { font-size: 0.85rem; }
   .dashboard .home-side .fear-share { padding-top: 6px; margin-top: 6px; }

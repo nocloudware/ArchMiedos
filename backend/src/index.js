@@ -79,6 +79,8 @@ async function renderMiedo(env, path) {
     .replaceAll('{{OG_URL}}', url)
     .replaceAll('{{CONTENT}}', escapeHtml(fear.content))
     .replaceAll('{{TOPIC}}', escapeHtml(fear.topic || ''))
+    .replaceAll('{{NUM}}', String(fear.id))
+    .replaceAll('{{DATE}}', formatShortDate(fear.created_at))
     .replaceAll('{{GROUP}}', group)
     .replaceAll('{{CABINET_LINK}}', `/archive.html?cajon=${encodeURIComponent(group)}`);
 
@@ -92,4 +94,9 @@ function escapeHtml(str) {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;');
+}
+
+function formatShortDate(raw) {
+  const parts = String(raw || '').split(' ')[0].split('-');
+  return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : '';
 }

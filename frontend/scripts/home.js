@@ -148,6 +148,8 @@ function downloadCertificate() {
   ctx.fillStyle = '#6b4f3a';
   ctx.fillText('— Archivo de Miedos · Est. 1950 —', W / 2, y + 170);
 
+  drawRubberStamp(ctx, 186, H - 90, myFear.id, formatDate(myFear.created_at));
+
   const a = document.createElement('a');
   a.href = cv.toDataURL('image/png');
   a.download = 'certificado-de-superacion.png';
@@ -169,6 +171,42 @@ function wrapText(ctx, text, maxWidth) {
   });
   if (line) lines.push(line);
   return lines;
+}
+
+// Timbre de goma en verde suave, inclinado, con correlativo y fecha.
+function drawRubberStamp(ctx, cx, cy, num, date) {
+  const SW = 300;
+  const SH = 80;
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(-0.05);
+  ctx.strokeStyle = 'rgba(62, 142, 90, 0.7)';
+  ctx.fillStyle = 'rgba(62, 142, 90, 0.08)';
+  ctx.lineWidth = 4;
+  roundRect(ctx, -SW / 2, -SH / 2, SW, SH, 14);
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = 'rgba(52, 122, 78, 0.9)';
+  ctx.textAlign = 'center';
+  ctx.font = '400 26px "Special Elite", "Courier New", monospace';
+  ctx.fillText('Miedo Archivado', 0, -12);
+  ctx.font = '400 19px "Special Elite", "Courier New", monospace';
+  ctx.fillText(`N° ${num} · ${date}`, 0, 22);
+  ctx.restore();
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.arcTo(x + w, y, x + w, y + r, r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+  ctx.lineTo(x + r, y + h);
+  ctx.arcTo(x, y + h, x, y + h - r, r);
+  ctx.lineTo(x, y + r);
+  ctx.arcTo(x, y, x + r, y, r);
+  ctx.closePath();
 }
 
 // ---------- Service worker (PWA) ----------
