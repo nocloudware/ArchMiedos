@@ -5,19 +5,26 @@
 
 const CLASSIFY_MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
 
-const CLASSIFY_PROMPT = `Identifica el MIEDO DE FONDO de la frase: la causa emocional o el concepto detrás del miedo, no el objeto literal ni la frase completa. Si menciona a una persona o una situación, traduce a qué teme la persona en su raíz.
+const CLASSIFY_PROMPT = `Identifica de qué tiene miedo la persona, en 1-2 palabras, en español y en singular.
 
-Elige el concepto más cercano de esta lista, o si ninguno encaja escribe uno equivalente breve (1-2 palabras):
-fracaso, rechazo, abandono, soledad, maltrato, muerte, enfermedad, pobreza, oscuridad, animales, alturas, exposición, incertidumbre, pérdida, compromiso, encierro, multitudes, sangre, olvido
+Sigue este orden de prioridad:
+
+1. Si el miedo nombra un objeto, animal, situación o entidad CONCRETA y reconocible (arañas, perros, payasos, alturas, aviones, agujas, oscuridad, sangre, multitudes, tormentas, agua, encierro, etc.), usa ESA palabra literal, tal cual, en singular. NO la generalices a una categoría más amplia (arañas no es "animales" ni "naturaleza"; aviones no es "transporte"; agujas no es "objetos punzantes").
+2. Solo si el miedo es puramente emocional o relacional y NO tiene un objeto concreto (miedo a fallar, a que lo abandonen, a estar solo, a que lo juzguen), identifica el concepto de fondo: fracaso, rechazo, abandono, soledad, maltrato, muerte, enfermedad, pobreza, incertidumbre, pérdida, compromiso, exposición, olvido, o uno equivalente breve si ninguno encaja.
+3. Si menciona a una persona específica (mi papá, mi jefe, mi ex) sin más contexto, usa el concepto relacional de fondo (maltrato, abandono, rechazo, etc.), no el nombre de la persona.
 
 Ejemplos:
+- "Tengo miedo a las arañas" -> araña
+- "Le tengo pánico a los payasos" -> payaso
+- "Me dan terror las alturas" -> alturas
+- "Tengo miedo a los aviones" -> avión
+- "Me da miedo la oscuridad" -> oscuridad
 - "Tengo miedo a que nadie ocupe esta app" -> fracaso
 - "Tengo miedo a mi papá" -> maltrato
-- "Tengo miedo a las arañas" -> animales
-- "Me da miedo la oscuridad" -> oscuridad
 - "Tengo miedo de perder a mi familia" -> pérdida
+- "Me aterra quedarme sola en la vida" -> soledad
 
-Responde ÚNICAMENTE con el concepto elegido, en minúsculas, sin punto final ni explicaciones.`;
+Responde ÚNICAMENTE con la palabra o concepto elegido, en minúsculas, sin punto final ni explicaciones.`;
 
 const ARTICLE_RE = /^(?:el|la|los|las|lo|un|una|unos|unas)\s+/i;
 const AUX_RE = /^(?:ser|estar|tener|haber|ponerse|volverse)\s+/i;
