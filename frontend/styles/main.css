@@ -335,7 +335,13 @@ body {
 .btn-cert { flex: 1 1 180px; }
 
 .fear-card-static {
-  background: var(--paper);
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      var(--paper) 0 27px,
+      rgba(107, 79, 58, 0.12) 27px 29px
+    ),
+    var(--paper);
   border: 1px dashed var(--steel-light);
   border-radius: 10px;
   padding: 16px;

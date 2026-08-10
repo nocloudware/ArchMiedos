@@ -144,7 +144,7 @@ async function renderFearCard(fear) {
   const usedLines = Math.max(shown.length + (hasMore ? 1 : 0), minLines);
 
   const lineH = 46;
-  const contentTop = 210;
+  const contentTop = 256;
   const contentBottom = contentTop + usedLines * lineH + 18;
   const bottomStart = contentBottom + 26;
   const footerY = bottomStart + 160;
@@ -170,6 +170,21 @@ async function renderFearCard(fear) {
   ctx.fillStyle = '#6b4f3a';
   ctx.font = `400 24px ${RETRO}`;
   ctx.fillText('Est. 1950 · Departamento de Liberación Emocional', W / 2, 164);
+
+  // Reglones de cuaderno (tenues) en el bloque del miedo
+  ctx.strokeStyle = 'rgba(107, 79, 58, 0.14)';
+  ctx.lineWidth = 2;
+  for (let ry = contentTop; ry <= contentTop + usedLines * lineH; ry += lineH) {
+    ctx.beginPath();
+    ctx.moveTo(75, ry);
+    ctx.lineTo(W - 75, ry);
+    ctx.stroke();
+  }
+  ctx.strokeStyle = 'rgba(201, 162, 39, 0.35)';
+  ctx.beginPath();
+  ctx.moveTo(62, contentTop - lineH / 2);
+  ctx.lineTo(62, contentTop + usedLines * lineH + lineH / 2);
+  ctx.stroke();
 
   ctx.textAlign = 'left';
   ctx.fillStyle = '#2c2417';
