@@ -983,7 +983,11 @@ body {
     padding: 14px 18px;
   }
 
-  .dashboard .fear-input { flex: 1 1 auto; min-height: 120px; resize: none; }
+  .dashboard .fear-input { flex: 1 1 0; min-height: 120px; max-height: 220px; resize: none; }
+
+  .dashboard .submit-card .optional-fields,
+  .dashboard .submit-card .btn-stamp,
+  .dashboard .submit-card .form-message { flex-shrink: 0; }
 
   .dashboard .home-side { min-height: 0; display: flex; flex-direction: column; gap: 14px; }
 
