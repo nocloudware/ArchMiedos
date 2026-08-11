@@ -40,23 +40,21 @@ async function loadHomeStats() {
 function demographicsHTML(d) {
   const sex = d?.sex || {};
   const age = d?.age || [];
-  const countries = d?.countries || {};
-  const countryList = Array.isArray(countries.items) ? countries.items : [];
+  const countries = d?.countries || [];
   return `
     <div class="demo-col">
       <span class="demo-title">Sexo</span>
       ${demoRow('Hombres', sex.hombres ?? 0)}
       ${demoRow('Mujeres', sex.mujeres ?? 0)}
       ${demoRow('Otro', sex.otro ?? 0)}
-      ${demoRow('S/C', sex.sinClasificar ?? 0)}
+      ${demoRow('N/C', sex.sinClasificar ?? 0)}
     </div>
     <div class="demo-col">
       <span class="demo-title">Países</span>
       <div class="demo-list">
-        ${countryList.length
-          ? countryList.map((c) => demoRow(`${countryFlag(c.code)} ${countryName(c.code) || c.code}`, c.count)).join('')
+        ${countries.length
+          ? countries.map((c) => demoRow(`${countryFlag(c.code)} ${countryName(c.code) || c.code}`, c.count)).join('')
           : '<span class="demo-empty">Sin datos</span>'}
-        ${demoRow('S/C', countries.sinClasificar ?? 0)}
       </div>
     </div>
     <div class="demo-col">

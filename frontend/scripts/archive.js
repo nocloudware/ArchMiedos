@@ -19,7 +19,7 @@ function buildCabinets() {
         <div class="cabinet-top"></div>
         <div class="drawer">
           <div class="drawer-handle"></div>
-          <div class="drawer-label">${g}</div>
+          <div class="drawer-label" data-letters="${g}"></div>
           <div class="drawer-count">…</div>
         </div>
       </div>
@@ -52,7 +52,7 @@ async function loadCounts() {
 
 function openDrawer(group) {
   currentGroup = group;
-  drawerLetters.textContent = group;
+  drawerLetters.dataset.letters = group;
   searchInput.value = '';
   modal.hidden = false;
   document.body.style.overflow = 'hidden';
