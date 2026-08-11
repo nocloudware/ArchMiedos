@@ -256,7 +256,7 @@ const COUNTRIES = {
 function countryFlag(code) {
   const c = String(code || '').toUpperCase();
   if (!COUNTRIES[c]) return '';
-  return `<img class="flag-ico" src="/flags/${c.toLowerCase()}.svg" alt="${c}" width="21" height="14" loading="lazy">`;
+  return `<img class="flag-ico" src="/flags/${c.toLowerCase()}.svg" alt="${c}" width="18" height="12" loading="lazy">`;
 }
 
 function countryName(code) {
