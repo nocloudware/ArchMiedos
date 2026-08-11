@@ -4,17 +4,61 @@ const btn = document.getElementById('submit-btn');
 const message = document.getElementById('form-message');
 const sexEl = document.getElementById('fear-sex');
 const ageEl = document.getElementById('fear-age');
-const countryEl = document.getElementById('fear-country');
+const countryInput = document.getElementById('fear-country');
+const countryCode = document.getElementById('fear-country-code');
+const countryDropdown = document.getElementById('country-dropdown');
 
 const MIN_LENGTH = 10;
 const MAX_LENGTH = 300;
 
-if (countryEl && typeof COUNTRIES !== 'undefined') {
-  Object.keys(COUNTRIES).forEach((code) => {
-    const opt = document.createElement('option');
-    opt.value = code;
-    opt.textContent = `${countryFlag(code)} ${COUNTRIES[code]}`;
-    countryEl.appendChild(opt);
+// Combobox de país: escribe para filtrar la lista; al elegir se guarda el código ISO2.
+if (countryInput && countryCode && countryDropdown && typeof COUNTRIES !== 'undefined') {
+  const COUNTRY_KEYS = Object.keys(COUNTRIES).sort((a, b) =>
+    COUNTRIES[a].localeCompare(COUNTRIES[b], 'es')
+  );
+
+  function renderCountryOptions(q) {
+    const query = (q || '').trim().toLowerCase();
+    const matches = query
+      ? COUNTRY_KEYS.filter((c) => COUNTRIES[c].toLowerCase().includes(query) || c.toLowerCase() === query)
+      : COUNTRY_KEYS;
+    countryDropdown.innerHTML = matches.length
+      ? matches
+          .map((c) => `<button type="button" class="country-option" data-code="${c}">${countryFlag(c)} ${COUNTRIES[c]}</button>`)
+          .join('')
+      : '<div class="country-empty">Sin coincidencias</div>';
+  }
+
+  countryInput.addEventListener('input', () => {
+    const v = countryInput.value.trim();
+    countryCode.value =
+      /^[A-Za-z]{2}$/.test(v) || COUNTRY_KEYS.some((c) => COUNTRIES[c].toLowerCase() === v.toLowerCase())
+        ? (v.length === 2 ? v.toUpperCase() : COUNTRY_KEYS.find((c) => COUNTRIES[c].toLowerCase() === v.toLowerCase()))
+        : '';
+    renderCountryOptions(v);
+    countryDropdown.hidden = false;
+  });
+
+  countryInput.addEventListener('focus', () => {
+    if (!countryInput.value.trim()) renderCountryOptions('');
+    countryDropdown.hidden = false;
+  });
+
+  countryInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') countryDropdown.hidden = true;
+  });
+
+  countryDropdown.addEventListener('click', (e) => {
+    const opt = e.target.closest('.country-option');
+    if (!opt) return;
+    const code = opt.dataset.code;
+    countryCode.value = code;
+    countryInput.value = `${countryFlag(code)} ${COUNTRIES[code]}`;
+    countryDropdown.hidden = true;
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.country-picker')) countryDropdown.hidden = true;
   });
 }
 
@@ -43,7 +87,7 @@ btn.addEventListener('click', async () => {
         content,
         sex: sexEl?.value || null,
         ageGroup: ageEl?.value || null,
-        country: countryEl?.value || null,
+        country: countryCode?.value || null,
       }),
     });
     const data = await res.json();

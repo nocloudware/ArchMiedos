@@ -153,15 +153,12 @@ body {
   background: rgba(250, 245, 233, 0.6);
 }
 
-.optional-fields summary {
-  cursor: pointer;
+.optional-note {
   font-family: var(--font-retro);
   font-size: 0.88rem;
   color: var(--brown);
-  user-select: none;
+  margin: 0 0 10px;
 }
-
-.optional-fields summary:hover { color: var(--brown-dark); }
 
 .optional-grid {
   display: grid;
@@ -194,6 +191,64 @@ body {
   outline: none;
   border-color: var(--olive);
   box-shadow: 0 0 0 4px rgba(90, 95, 60, 0.15);
+}
+
+.country-picker { position: relative; }
+
+.country-input {
+  width: 100%;
+  border: 2px solid var(--cream-dark);
+  border-radius: 8px;
+  background: #fffdf7;
+  padding: 8px 10px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+.country-input:focus {
+  outline: none;
+  border-color: var(--olive);
+  box-shadow: 0 0 0 4px rgba(90, 95, 60, 0.15);
+}
+
+.country-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  max-height: 200px;
+  overflow-y: auto;
+  background: var(--paper);
+  border: 2px solid var(--cream-dark);
+  border-radius: 8px;
+  box-shadow: var(--shadow-soft);
+}
+
+.country-option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--ink);
+  padding: 7px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.country-option:hover { background: rgba(90, 95, 60, 0.1); }
+
+.country-empty {
+  padding: 8px 10px;
+  font-size: 0.8rem;
+  color: var(--steel-light);
+  text-align: center;
 }
 
 @media (max-width: 460px) {

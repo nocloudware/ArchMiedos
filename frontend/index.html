@@ -97,8 +97,8 @@
         <div class="field-meta">
           <span id="char-count" class="char-count">0 / 300</span>
         </div>
-        <details class="optional-fields">
-          <summary>Si deseas puedes agregar esta información</summary>
+        <div class="optional-fields">
+          <p class="optional-note">Si deseas puedes agregar esta información</p>
           <div class="optional-grid">
             <label class="optional-field">
               <span>Sexo</span>
@@ -121,17 +121,19 @@
                 <option value="60-69">60-69</option>
                 <option value="70-79">70-79</option>
                 <option value="80-89">80-89</option>
-                <option value="90+">90+ ∞</option>
+                <option value="90+">90-∞</option>
               </select>
             </label>
             <label class="optional-field">
               <span>País</span>
-              <select id="fear-country">
-                <option value="">Prefiero no decirlo</option>
-              </select>
+              <div class="country-picker">
+                <input id="fear-country" class="country-input" type="text" placeholder="Escribe para buscar..." autocomplete="off" />
+                <input id="fear-country-code" type="hidden" />
+                <div id="country-dropdown" class="country-dropdown" hidden></div>
+              </div>
             </label>
           </div>
-        </details>
+        </div>
         <button id="submit-btn" class="btn-stamp" type="button">
           <span class="stamp-label">Depositar en el Archivo</span>
         </button>
