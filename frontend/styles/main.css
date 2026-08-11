@@ -258,19 +258,13 @@ body {
   text-align: center;
 }
 
-.flag-chip {
+.flag-ico {
   display: inline-block;
-  min-width: 1.8em;
-  padding: 1px 5px;
-  margin-right: 4px;
-  font-size: 0.7em;
-  font-weight: 700;
-  text-align: center;
-  letter-spacing: 0.08em;
-  color: var(--brown-dark);
-  background: rgba(201, 162, 39, 0.15);
-  border: 1px solid rgba(201, 162, 39, 0.5);
-  border-radius: 4px;
+  vertical-align: -2px;
+  margin-right: 5px;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
 }
 
 @media (max-width: 460px) {
