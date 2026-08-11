@@ -53,6 +53,19 @@
 
 .nav-link { margin-top: 12px; border-top: 1px solid rgba(245, 239, 224, 0.2); padding-top: 16px; }
 
+.nav-action { margin-top: 12px; border-top: 1px solid rgba(245, 239, 224, 0.2); padding-top: 16px; }
+.nav-action:disabled { opacity: 0.55; cursor: wait; }
+
+.reclassify-progress {
+  margin: 8px 4px 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(201, 162, 39, 0.12);
+  color: rgba(245, 239, 224, 0.85);
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
 .admin-main {
   flex: 1;
   padding: 28px 32px 60px;

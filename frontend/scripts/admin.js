@@ -213,6 +213,41 @@ function formatDate(raw) {
   return `${d}/${m}/${y}`;
 }
 
+// ---------- Reclasificación por lotes (SEC-003) ----------
+const reclassifyBtn = document.getElementById('reclassify-btn');
+const reclassifyProgress = document.getElementById('reclassify-progress');
+let reclassifyCursor = 0;
+
+if (reclassifyBtn) {
+  reclassifyBtn.addEventListener('click', runReclassifyBatch);
+}
+
+async function runReclassifyBatch() {
+  reclassifyBtn.disabled = true;
+  reclassifyProgress.hidden = false;
+  reclassifyProgress.textContent = 'Reclasificando...';
+  try {
+    const res = await fetch(`/api/admin/reclassify?cursor=${reclassifyCursor}`, { method: 'POST' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (data.hasMore) {
+      reclassifyCursor = data.nextCursor;
+      reclassifyProgress.textContent = `Lote procesado: ${data.nextCursor} de ${data.total}. Cliquea para el siguiente lote.`;
+      reclassifyBtn.textContent = 'Reclasificar siguiente lote (20)';
+    } else {
+      reclassifyProgress.textContent = `Reclasificación completa: ${data.total} miedos.`;
+      reclassifyBtn.textContent = 'Reclasificar lote (20)';
+      reclassifyCursor = 0;
+    }
+    loadFears(currentStatus);
+    loadStats();
+  } catch {
+    reclassifyProgress.textContent = 'Error al reclasificar. Inténtalo de nuevo.';
+  } finally {
+    reclassifyBtn.disabled = false;
+  }
+}
+
 loadStats();
 loadFears('pending');
 loadLogs();

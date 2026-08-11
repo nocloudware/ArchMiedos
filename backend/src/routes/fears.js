@@ -9,6 +9,8 @@ const VISITOR_COOKIE = 'am_visitor';
 const MINE_COOKIE = 'am_mine';
 const SHARE_LIMIT_PER_DAY = 10;
 const SITE_BASE = 'https://archmiedos.nocloudware.com';
+const MAX_SHARE_BODY_BYTES = 3_200_000; // ~2,7 MB base64 + overhead del JSON
+const MAX_IMAGE_B64 = 2_800_000; // ~2 MB de PNG en base64
 
 export async function handleFears(request, env, path, url) {
   const method = request.method;
@@ -94,6 +96,11 @@ async function shareFear(request, env, idStr) {
   const fear = await db.getApprovedFearById(env, fearId);
   if (!fear) return notFound();
 
+  const contentLength = Number.parseInt(request.headers.get('Content-Length') || '0', 10);
+  if (contentLength > MAX_SHARE_BODY_BYTES) {
+    return json({ error: 'La imagen es demasiado grande. Máximo 2 MB.' }, 413);
+  }
+
   let body = {};
   try {
     body = await request.json();
@@ -104,6 +111,10 @@ async function shareFear(request, env, idStr) {
   const image = typeof body?.image === 'string' && body.image.startsWith('data:image/png;base64,')
     ? body.image.slice('data:image/png;base64,'.length)
     : null;
+
+  if (image && image.length > MAX_IMAGE_B64) {
+    return json({ error: 'La imagen es demasiado grande. Máximo 2 MB.' }, 413);
+  }
 
   const homeUrl = `${SITE_BASE}/`;
   const imageBytes = image ? Uint8Array.from(atob(image), (c) => c.charCodeAt(0)) : null;
@@ -236,8 +247,7 @@ async function reactToFear(request, env, idStr) {
   let alreadyReacted = false;
 
   try {
-    await db.addReaction(env, fearId, cookieId, type);
-    await db.incrementReaction(env, fearId, type);
+    await db.addReactionAtomic(env, fearId, cookieId, type);
   } catch {
     alreadyReacted = true;
   }
@@ -268,16 +278,16 @@ function parseCookies(header) {
   return out;
 }
 
-function makeVisitorCookie(value) {
-  return `${VISITOR_COOKIE}=${encodeURIComponent(value)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=31536000`;
+export function makeVisitorCookie(value) {
+  return `${VISITOR_COOKIE}=${encodeURIComponent(value)}; Path=/; HttpOnly; SameSite=Lax; Secure; Max-Age=31536000`;
 }
 
-function makeMineCookie(fearId, request) {
+export function makeMineCookie(fearId, request) {
   const existing = parseCookies(request.headers.get('Cookie') || '')[MINE_COOKIE] || '';
   const ids = existing ? existing.split(',') : [];
   if (!ids.includes(String(fearId))) ids.unshift(String(fearId));
   const list = ids.slice(0, 20).join(',');
-  return `${MINE_COOKIE}=${encodeURIComponent(list)}; Path=/; SameSite=Lax; Max-Age=31536000`;
+  return `${MINE_COOKIE}=${encodeURIComponent(list)}; Path=/; SameSite=Lax; Secure; Max-Age=31536000`;
 }
 
 async function hashIp(ip) {

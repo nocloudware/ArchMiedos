@@ -12,7 +12,19 @@ import terminosHtml from '../../frontend/terminos.html';
 import misionHtml from '../../frontend/mision.html';
 import miedoHtml from '../../frontend/miedo.html';
 
-const HTML_HEADERS = { 'Content-Type': 'text/html; charset=utf-8' };
+const HTML_HEADERS = {
+  'Content-Type': 'text/html; charset=utf-8',
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Content-Security-Policy':
+    "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://raw.githubusercontent.com; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
+};
+const STATIC_HEADERS = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+};
 const BASE_URL = 'https://archmiedos.nocloudware.com';
 
 export default {
@@ -54,7 +66,12 @@ export default {
       return renderMiedo(env, path);
     }
 
-    return env.ASSETS.fetch(request);
+    const assetResponse = await env.ASSETS.fetch(request);
+    if (!assetResponse || assetResponse.status === 404) return assetResponse;
+    return new Response(assetResponse.body, {
+      status: assetResponse.status,
+      headers: new Headers({ ...Object.fromEntries(assetResponse.headers), ...STATIC_HEADERS }),
+    });
   },
 };
 

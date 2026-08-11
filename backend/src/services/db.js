@@ -97,15 +97,14 @@ export async function insertReport(env, fearId, reason) {
   return env.DB.prepare('INSERT INTO reports (fear_id, reason) VALUES (?, ?)').bind(fearId, reason).run();
 }
 
-export async function addReaction(env, fearId, cookieId, type) {
-  return env.DB.prepare('INSERT INTO reactions (fear_id, cookie_id, type) VALUES (?, ?, ?)')
-    .bind(fearId, cookieId, type)
-    .run();
-}
-
-export async function incrementReaction(env, fearId, type) {
+// INSERT + UPDATE en una transacción atómica (D1 batch). Si el INSERT choca con
+// el UNIQUE(fear_id, cookie_id, type), toda la transacción se revierte.
+export async function addReactionAtomic(env, fearId, cookieId, type) {
   const column = type === 'fuerza' ? 'fuerzas' : 'apoyos';
-  return env.DB.prepare(`UPDATE fears SET ${column} = ${column} + 1 WHERE id = ?`).bind(fearId).run();
+  return env.DB.batch([
+    env.DB.prepare('INSERT INTO reactions (fear_id, cookie_id, type) VALUES (?, ?, ?)').bind(fearId, cookieId, type),
+    env.DB.prepare(`UPDATE fears SET ${column} = ${column} + 1 WHERE id = ?`).bind(fearId),
+  ]);
 }
 
 export async function getReactions(env, fearId) {
@@ -153,8 +152,14 @@ export async function updateFearClassification(env, id, topic, letter) {
     .run();
 }
 
-export async function getAllFearsForClassification(env) {
-  return env.DB.prepare('SELECT id, content FROM fears ORDER BY id ASC').all();
+export async function getAllFearsForClassification(env, limit = 20, offset = 0) {
+  return env.DB.prepare('SELECT id, content FROM fears ORDER BY id ASC LIMIT ? OFFSET ?')
+    .bind(limit, offset)
+    .all();
+}
+
+export async function countAllFearsForClassification(env) {
+  return env.DB.prepare('SELECT COUNT(*) as total FROM fears').first();
 }
 
 export async function logAdminAccess(env, { ip, asn, country, region, city, timezone, user_agent, cf_ray, username, method, path, success }) {
