@@ -1,0 +1,101 @@
+/* ============================================
+   Archivo de Miedos — modo oscuro
+   El atributo data-theme="dark" lo pone theme.js
+   sobre <html> (default: preferencia del sistema).
+   Este archivo se carga al final: sobreescribe las
+   variables de :root y los colores fijos de la luz.
+   ============================================ */
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --cream: #232019;
+  --cream-dark: #342e23;
+  --paper: #2a261d;
+  --ink: #e8dfc9;
+  --brown: #c9a678;
+  --brown-dark: #dcc097;
+  --olive: #9aa36c;
+  --olive-dark: #b3bb80;
+  --steel: #a09c8f;
+  --steel-light: #87847a;
+  --accent-red: #e0655f;
+  --gold: #d3ae47;
+  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --shadow-stamp: 4px 4px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* Fondo general: sin el resplandor claro del tema luz */
+:root[data-theme="dark"] body {
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.04), transparent 40%),
+    var(--cream);
+}
+
+:root[data-theme="dark"] .paper-texture { opacity: 0.22; }
+
+/* ---------- Superficies con blanco fijo ---------- */
+:root[data-theme="dark"] .submit-card {
+  box-shadow: var(--shadow-soft), inset 0 0 0 6px rgba(255, 255, 255, 0.03);
+}
+
+:root[data-theme="dark"] .fear-input,
+:root[data-theme="dark"] .opt-trigger,
+:root[data-theme="dark"] .country-input,
+:root[data-theme="dark"] .search-bar {
+  background: #322d22;
+}
+
+:root[data-theme="dark"] .optional-fields { background: rgba(42, 38, 29, 0.6); }
+:root[data-theme="dark"] .home-box { background: rgba(42, 38, 29, 0.7); }
+
+:root[data-theme="dark"] .btn-stamp { border-color: #e8dfc9; }
+
+/* ---------- Papel rayado (fichas de miedo) ---------- */
+:root[data-theme="dark"] .fear-text,
+:root[data-theme="dark"] .home-fear-text {
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 26px,
+    rgba(255, 255, 255, 0.06) 26px 28px
+  );
+}
+
+/* ---------- Modales ---------- */
+:root[data-theme="dark"] .ficha-panel,
+:root[data-theme="dark"] .drawer-modal-panel {
+  box-shadow: var(--shadow-soft), 6px 6px 0 rgba(0, 0, 0, 0.45);
+}
+
+/* ---------- Archivadores metálicos (tono nocturno) ---------- */
+:root[data-theme="dark"] .side-tab.cab,
+:root[data-theme="dark"] .drawer {
+  background: linear-gradient(170deg, #4c535b 0%, #3a4148 50%, #30363c 100%);
+}
+
+:root[data-theme="dark"] .side-tab-handle,
+:root[data-theme="dark"] .drawer-handle {
+  background: linear-gradient(180deg, #5d646c, #41484f);
+}
+
+:root[data-theme="dark"] .cabinet-frame {
+  background: linear-gradient(160deg, #565e67 0%, #3b434c 45%, #2c3238 100%);
+}
+
+:root[data-theme="dark"] .cabinet-top { background: #5d656d; }
+
+:root[data-theme="dark"] .side-tab.cab .side-tab-label,
+:root[data-theme="dark"] .drawer-label { color: #efe6d2; }
+
+/* ---------- Página archivo ---------- */
+:root[data-theme="dark"] .archive-header { background: rgba(35, 32, 25, 0.92); }
+:root[data-theme="dark"] .fear-card { background: #2d281e; }
+
+/* ---------- Panel de administración ---------- */
+:root[data-theme="dark"] .admin-sidebar { background: #241e16; }
+:root[data-theme="dark"] .admin-logo { color: #efe6d2; }
+:root[data-theme="dark"] .admin-logo-sub { color: rgba(239, 230, 210, 0.6); }
+
+:root[data-theme="dark"] .fears-table th { background: #3a2f22; color: #efe6d2; }
+:root[data-theme="dark"] .fears-table tr:hover td { background: rgba(90, 95, 60, 0.12); }
+
+:root[data-theme="dark"] .btn-mini { background: #373127; border-color: #453e30; }

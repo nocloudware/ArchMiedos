@@ -29,6 +29,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Special+Elite&family=Kalam:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles/main.css" />
   <link rel="stylesheet" href="/styles/archive.css" />
+  <link rel="stylesheet" href="/styles/dark.css" />
+  <script>
+    (function () {
+      var t = localStorage.getItem('am.theme');
+      var s = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', t === 'light' || t === 'dark' ? t : s);
+    })();
+  </script>
 </head>
 <body class="page-home dashboard has-side-nav">
   <div class="paper-texture"></div>
@@ -68,6 +76,16 @@
       <span class="side-tab-handle"></span>
       <span class="side-tab-label">Misión</span>
     </a>
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Cambiar a modo oscuro">
+      <svg class="theme-ico theme-sun" viewBox="0 0 24 24" aria-hidden="true" hidden>
+        <circle cx="12" cy="12" r="4" fill="currentColor" />
+        <path d="M12 1v3M12 20v3M1 12h3M20 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M19.4 4.6l-2.1 2.1M6.7 17.3l-2.1 2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" />
+      </svg>
+      <svg class="theme-ico theme-moon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" fill="currentColor" />
+      </svg>
+      <span class="theme-label">Oscuro</span>
+    </button>
   </nav>
 
   <main class="container home-layout">
@@ -184,6 +202,7 @@
   </footer>
 
   <script src="/scripts/nav.js" defer></script>
+  <script src="/scripts/theme.js" defer></script>
   <script src="/scripts/countries.js"></script>
   <script src="/scripts/card.js"></script>
   <script src="/scripts/home.js" defer></script>
