@@ -77,11 +77,22 @@ export async function countSharesByIpToday(env, ipHash) {
     .first();
 }
 
-export async function insertFear(env, { content, ipHash, approved, comment, topic, topicLetter }) {
+export async function insertFear(env, { content, ipHash, approved, comment, topic, topicLetter, sex, ageGroup, country }) {
   return env.DB.prepare(
-    'INSERT INTO fears (content, ip_hash, is_approved, status, moderation_comment, topic, topic_letter) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    'INSERT INTO fears (content, ip_hash, is_approved, status, moderation_comment, topic, topic_letter, sex, age_group, country) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
   )
-    .bind(content, ipHash, approved ? 1 : 0, approved ? 'approved' : 'pending', comment, topic || null, topicLetter || null)
+    .bind(
+      content,
+      ipHash,
+      approved ? 1 : 0,
+      approved ? 'approved' : 'pending',
+      comment || null,
+      topic || null,
+      topicLetter || null,
+      sex || null,
+      ageGroup || null,
+      country || null
+    )
     .run();
 }
 
@@ -180,12 +191,45 @@ export async function listAdminLogs(env, limit) {
 }
 
 export async function getPublicStats(env) {
-  return env.DB.prepare(
+  const base = await env.DB.prepare(
     `SELECT
        (SELECT COUNT(*) FROM fears WHERE is_approved = 1) as fears,
        (SELECT COALESCE(SUM(apoyos), 0) FROM fears WHERE is_approved = 1) as apoyos,
        (SELECT COALESCE(SUM(fuerzas), 0) FROM fears WHERE is_approved = 1) as fuerzas`
   ).first();
+
+  const [sex, age, countries] = await Promise.all([
+    env.DB.prepare(
+      `SELECT sex, COUNT(*) as n FROM fears WHERE is_approved = 1 AND sex IS NOT NULL GROUP BY sex ORDER BY n DESC`
+    ).all(),
+    env.DB.prepare(
+      `SELECT age_group as grp, COUNT(*) as n FROM fears WHERE is_approved = 1 AND age_group IS NOT NULL GROUP BY age_group ORDER BY n DESC`
+    ).all(),
+    env.DB.prepare(
+      `SELECT country, COUNT(*) as n FROM fears WHERE is_approved = 1 AND country IS NOT NULL GROUP BY country ORDER BY n DESC`
+    ).all(),
+  ]);
+
+  const sexCounts = { hombre: 0, mujer: 0, otro: 0 };
+  for (const row of sex.results) {
+    if (row.sex in sexCounts) sexCounts[row.sex] = row.n;
+  }
+
+  return {
+    fears: base.fears,
+    apoyos: base.apoyos,
+    fuerzas: base.fuerzas,
+    demographics: {
+      sex: {
+        hombres: sexCounts.hombre,
+        mujeres: sexCounts.mujer,
+        otro: sexCounts.otro,
+        sinClasificar: Math.max(0, base.fears - (sexCounts.hombre + sexCounts.mujer + sexCounts.otro)),
+      },
+      age: age.results.map((r) => ({ group: r.grp, count: r.n })),
+      countries: countries.results.map((r) => ({ code: r.country, count: r.n })),
+    },
+  };
 }
 
 export async function getStats(env) {

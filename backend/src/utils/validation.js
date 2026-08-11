@@ -2,6 +2,9 @@ export const MIN_LENGTH = 10;
 export const MAX_LENGTH = 300;
 export const RATE_LIMIT_PER_DAY = 5;
 
+export const SEX_OPTIONS = ['hombre', 'mujer', 'otro'];
+export const AGE_GROUPS = ['0-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '80-89', '90+'];
+
 export function validateContent(content) {
   if (typeof content !== 'string') {
     return { ok: false, error: 'El contenido debe ser texto' };
@@ -14,6 +17,22 @@ export function validateContent(content) {
     return { ok: false, error: `El miedo no puede superar los ${MAX_LENGTH} caracteres` };
   }
   return { ok: true, value: trimmed };
+}
+
+// Datos opcionales del formulario: vacío o inválido => null (se guarda sin clasificar).
+export function normalizeSex(value) {
+  return typeof value === 'string' && SEX_OPTIONS.includes(value) ? value : null;
+}
+
+export function normalizeAgeGroup(value) {
+  return typeof value === 'string' && AGE_GROUPS.includes(value) ? value : null;
+}
+
+export function normalizeCountry(value) {
+  if (typeof value !== 'string') return null;
+  const code = value.trim();
+  if (!/^[A-Za-z]{2}$/.test(code)) return null;
+  return code.toUpperCase();
 }
 
 export function escapeHtml(str) {

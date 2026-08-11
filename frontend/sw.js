@@ -1,4 +1,4 @@
-const CACHE = 'archmiedos-1786476072968';
+const CACHE = 'archmiedos-1786477295518';
 const SHELL = [
   '/',
   '/index.html',
@@ -8,6 +8,8 @@ const SHELL = [
   '/styles/main.css',
   '/styles/archive.css',
   '/styles/admin.css',
+  '/scripts/countries.js',
+  '/scripts/card.js',
   '/scripts/home.js',
   '/scripts/submit.js',
   '/scripts/archive.js',

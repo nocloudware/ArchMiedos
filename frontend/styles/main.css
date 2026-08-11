@@ -144,6 +144,62 @@ body {
 
 .char-count.warn { color: var(--accent-red); }
 
+/* ---------- Campos opcionales del formulario ---------- */
+.optional-fields {
+  margin-top: 14px;
+  border: 1px dashed rgba(201, 162, 39, 0.55);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: rgba(250, 245, 233, 0.6);
+}
+
+.optional-fields summary {
+  cursor: pointer;
+  font-family: var(--font-retro);
+  font-size: 0.88rem;
+  color: var(--brown);
+  user-select: none;
+}
+
+.optional-fields summary:hover { color: var(--brown-dark); }
+
+.optional-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.optional-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--steel);
+}
+
+.optional-field select {
+  width: 100%;
+  border: 2px solid var(--cream-dark);
+  border-radius: 8px;
+  background: #fffdf7;
+  padding: 8px 10px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+.optional-field select:focus {
+  outline: none;
+  border-color: var(--olive);
+  box-shadow: 0 0 0 4px rgba(90, 95, 60, 0.15);
+}
+
+@media (max-width: 460px) {
+  .optional-grid { grid-template-columns: 1fr; }
+}
+
 /* ---------- Botón sello ---------- */
 .btn-stamp {
   display: block;
@@ -297,6 +353,72 @@ body {
 @media (max-width: 460px) {
   .home-stat { min-width: 100px; padding: 12px 8px 10px; }
   .home-stat-value { font-size: 1.35rem; }
+}
+
+/* ---------- Demografía (sexo / países / edad) ---------- */
+.demographics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  margin-top: 8px;
+  border-top: 1px dashed var(--gold);
+  padding-top: 8px;
+}
+
+.demo-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.demo-title {
+  font-family: var(--font-retro);
+  font-size: 0.68rem;
+  color: var(--brown-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  text-align: center;
+  border-bottom: 1px solid rgba(201, 162, 39, 0.4);
+  padding-bottom: 2px;
+  margin-bottom: 2px;
+}
+
+.demo-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px;
+  font-size: 0.62rem;
+  line-height: 1.4;
+  color: var(--steel);
+  white-space: nowrap;
+}
+
+.demo-row > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.demo-row b {
+  flex: 0 0 auto;
+  color: var(--brown-dark);
+  font-weight: 700;
+}
+
+.demo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  max-height: 104px;
+  overflow-y: auto;
+}
+
+.demo-empty {
+  font-size: 0.6rem;
+  color: var(--steel-light);
+  text-align: center;
+  padding: 4px 0;
 }
 
 /* ---------- Paneles de la portada (tu miedo / del archivo) ---------- */

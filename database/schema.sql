@@ -14,7 +14,10 @@ CREATE TABLE IF NOT EXISTS fears (
   is_approved BOOLEAN DEFAULT 0,
   is_reported BOOLEAN DEFAULT 0,
   status TEXT DEFAULT 'pending',
-  moderation_comment TEXT
+  moderation_comment TEXT,
+  sex TEXT,
+  age_group TEXT,
+  country TEXT
 );
 
 -- Índices para búsquedas rápidas
@@ -23,6 +26,9 @@ CREATE INDEX IF NOT EXISTS idx_approved ON fears(is_approved);
 CREATE INDEX IF NOT EXISTS idx_created_at ON fears(created_at);
 CREATE INDEX IF NOT EXISTS idx_ip_hash ON fears(ip_hash);
 CREATE INDEX IF NOT EXISTS idx_topic_letter ON fears(topic_letter);
+CREATE INDEX IF NOT EXISTS idx_fears_sex ON fears(sex);
+CREATE INDEX IF NOT EXISTS idx_fears_age_group ON fears(age_group);
+CREATE INDEX IF NOT EXISTS idx_fears_country ON fears(country);
 
 -- Reacciones (Apoyo/Fuerza) con dedup por cookie y tipo
 CREATE TABLE IF NOT EXISTS reactions (

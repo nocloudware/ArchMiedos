@@ -1,5 +1,5 @@
 import { json, notFound } from '../utils/http.js';
-import { validateContent, parseLetterRange, clamp, RATE_LIMIT_PER_DAY } from '../utils/validation.js';
+import { validateContent, parseLetterRange, clamp, normalizeSex, normalizeAgeGroup, normalizeCountry, RATE_LIMIT_PER_DAY } from '../utils/validation.js';
 import { moderateContent } from '../services/ai.js';
 import { classifyFear, groupForLetter } from '../services/classify.js';
 import { createPost, getPost, shareAccount } from '../services/bluesky.js';
@@ -165,7 +165,12 @@ async function shareFear(request, env, idStr) {
 
 async function publicStats(env) {
   const s = await db.getPublicStats(env);
-  return json({ fears: s.fears, apoyos: s.apoyos, fuerzas: s.fuerzas });
+  return json({
+    fears: s.fears,
+    apoyos: s.apoyos,
+    fuerzas: s.fuerzas,
+    demographics: s.demographics,
+  });
 }
 
 async function createFear(request, env) {
@@ -195,6 +200,9 @@ async function createFear(request, env) {
     comment: mod.comment,
     topic,
     topicLetter: letter,
+    sex: normalizeSex(body?.sex),
+    ageGroup: normalizeAgeGroup(body?.ageGroup),
+    country: normalizeCountry(body?.country),
   });
 
   if (!approved) {

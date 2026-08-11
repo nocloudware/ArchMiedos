@@ -97,6 +97,41 @@
         <div class="field-meta">
           <span id="char-count" class="char-count">0 / 300</span>
         </div>
+        <details class="optional-fields">
+          <summary>Si deseas puedes agregar esta información</summary>
+          <div class="optional-grid">
+            <label class="optional-field">
+              <span>Sexo</span>
+              <select id="fear-sex">
+                <option value="">Prefiero no decirlo</option>
+                <option value="hombre">Hombre</option>
+                <option value="mujer">Mujer</option>
+                <option value="otro">Otro</option>
+              </select>
+            </label>
+            <label class="optional-field">
+              <span>Edad</span>
+              <select id="fear-age">
+                <option value="">Prefiero no decirlo</option>
+                <option value="0-19">0-19</option>
+                <option value="20-29">20-29</option>
+                <option value="30-39">30-39</option>
+                <option value="40-49">40-49</option>
+                <option value="50-59">50-59</option>
+                <option value="60-69">60-69</option>
+                <option value="70-79">70-79</option>
+                <option value="80-89">80-89</option>
+                <option value="90+">90+ ∞</option>
+              </select>
+            </label>
+            <label class="optional-field">
+              <span>País</span>
+              <select id="fear-country">
+                <option value="">Prefiero no decirlo</option>
+              </select>
+            </label>
+          </div>
+        </details>
         <button id="submit-btn" class="btn-stamp" type="button">
           <span class="stamp-label">Depositar en el Archivo</span>
         </button>
@@ -119,6 +154,7 @@
           <div class="home-stat"><span class="home-stat-value">…</span><span class="home-stat-label">apoyos 🫂</span></div>
           <div class="home-stat"><span class="home-stat-value">…</span><span class="home-stat-label">fuerzas 💪</span></div>
         </div>
+        <div id="home-demographics" class="demographics" aria-label="Estadísticas demográficas"></div>
       </section>
 
       <section class="home-box">
@@ -142,6 +178,7 @@
   </footer>
 
   <script src="/scripts/nav.js" defer></script>
+  <script src="/scripts/countries.js"></script>
   <script src="/scripts/card.js"></script>
   <script src="/scripts/home.js" defer></script>
   <script src="/scripts/submit.js"></script>

@@ -2,9 +2,21 @@ const input = document.getElementById('fear-input');
 const counter = document.getElementById('char-count');
 const btn = document.getElementById('submit-btn');
 const message = document.getElementById('form-message');
+const sexEl = document.getElementById('fear-sex');
+const ageEl = document.getElementById('fear-age');
+const countryEl = document.getElementById('fear-country');
 
 const MIN_LENGTH = 10;
 const MAX_LENGTH = 300;
+
+if (countryEl && typeof COUNTRIES !== 'undefined') {
+  Object.keys(COUNTRIES).forEach((code) => {
+    const opt = document.createElement('option');
+    opt.value = code;
+    opt.textContent = `${countryFlag(code)} ${COUNTRIES[code]}`;
+    countryEl.appendChild(opt);
+  });
+}
 
 input.addEventListener('input', () => {
   counter.textContent = `${input.value.length} / ${MAX_LENGTH}`;
@@ -27,7 +39,12 @@ btn.addEventListener('click', async () => {
     const res = await fetch('/api/fears', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content }),
+      body: JSON.stringify({
+        content,
+        sex: sexEl?.value || null,
+        ageGroup: ageEl?.value || null,
+        country: countryEl?.value || null,
+      }),
     });
     const data = await res.json();
 

@@ -5,10 +5,23 @@ function fmt(n) {
   return Number(n || 0).toLocaleString('es-CL');
 }
 
+const AGE_LABELS = {
+  '0-19': '0-19',
+  '20-29': '20-29',
+  '30-39': '30-39',
+  '40-49': '40-49',
+  '50-59': '50-59',
+  '60-69': '60-69',
+  '70-79': '70-79',
+  '80-89': '80-89',
+  '90+': '90+ ∞',
+};
+
 // ---------- Contador ----------
 async function loadHomeStats() {
   const el = document.getElementById('home-stats');
-  if (!el) return;
+  const demoEl = document.getElementById('home-demographics');
+  if (!el || !demoEl) return;
   try {
     const res = await fetch('/api/stats');
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -17,9 +30,45 @@ async function loadHomeStats() {
       <div class="home-stat"><span class="home-stat-value">${fmt(s.fears)}</span><span class="home-stat-label">miedos</span></div>
       <div class="home-stat"><span class="home-stat-value">${fmt(s.apoyos)}</span><span class="home-stat-label">apoyos 🫂</span></div>
       <div class="home-stat"><span class="home-stat-value">${fmt(s.fuerzas)}</span><span class="home-stat-label">fuerzas 💪</span></div>`;
+    demoEl.innerHTML = demographicsHTML(s.demographics);
   } catch {
     el.hidden = true;
+    demoEl.hidden = true;
   }
+}
+
+function demographicsHTML(d) {
+  const sex = d?.sex || {};
+  const age = d?.age || [];
+  const countries = d?.countries || [];
+  return `
+    <div class="demo-col">
+      <span class="demo-title">Sexo</span>
+      ${demoRow('Hombres', sex.hombres ?? 0)}
+      ${demoRow('Mujeres', sex.mujeres ?? 0)}
+      ${demoRow('Otro', sex.otro ?? 0)}
+      ${demoRow('S/C', sex.sinClasificar ?? 0)}
+    </div>
+    <div class="demo-col">
+      <span class="demo-title">Países</span>
+      <div class="demo-list">
+        ${countries.length
+          ? countries.map((c) => demoRow(`${countryFlag(c.code)} ${countryName(c.code) || c.code}`, c.count)).join('')
+          : '<span class="demo-empty">Sin datos</span>'}
+      </div>
+    </div>
+    <div class="demo-col">
+      <span class="demo-title">Edad</span>
+      <div class="demo-list">
+        ${age.length
+          ? age.map((a) => demoRow(AGE_LABELS[a.group] || a.group, a.count)).join('')
+          : '<span class="demo-empty">Sin datos</span>'}
+      </div>
+    </div>`;
+}
+
+function demoRow(label, count) {
+  return `<span class="demo-row"><span>${label}</span><b>${count}</b></span>`;
 }
 
 // ---------- Del archivo: último + aleatorio ----------
