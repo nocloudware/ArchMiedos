@@ -53,7 +53,7 @@ if (countryInput && countryCode && countryDropdown && typeof COUNTRIES !== 'unde
     if (!opt) return;
     const code = opt.dataset.code;
     countryCode.value = code;
-    countryInput.value = `${countryFlag(code)} ${COUNTRIES[code]}`;
+    countryInput.value = COUNTRIES[code];
     countryDropdown.hidden = true;
   });
 

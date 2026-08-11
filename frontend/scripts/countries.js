@@ -1,5 +1,5 @@
 // Países ISO 3166-1 alpha-2 con nombres en español.
-// Uso: COUNTRIES['CL'] -> 'Chile'; countryFlag('CL') -> '🇨🇱'.
+// Uso: COUNTRIES['CL'] -> 'Chile'; countryFlag('CL') -> '<span class="flag-chip">CL</span>'.
 
 const COUNTRIES = {
   AF: 'Afganistán',
@@ -254,7 +254,8 @@ const COUNTRIES = {
 };
 
 function countryFlag(code) {
-  return String(code || '').toUpperCase().replace(/./g, (c) => String.fromCodePoint(127397 + c.charCodeAt(0)));
+  const c = String(code || '').toUpperCase();
+  return `<span class="flag-chip">${c}</span>`;
 }
 
 function countryName(code) {
