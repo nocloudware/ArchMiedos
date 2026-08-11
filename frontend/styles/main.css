@@ -106,11 +106,18 @@ body {
   box-shadow: var(--shadow-soft), inset 0 0 0 6px rgba(255, 255, 255, 0.4);
 }
 
+.field-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
 .field-label {
   display: block;
   font-family: var(--font-retro);
   color: var(--brown);
-  margin-bottom: 8px;
   font-size: 1.05rem;
 }
 
@@ -134,7 +141,7 @@ body {
   box-shadow: 0 0 0 4px rgba(90, 95, 60, 0.15);
 }
 
-.field-meta { text-align: right; margin-top: 6px; }
+.field-meta { text-align: right; }
 
 .char-count {
   font-family: var(--font-retro);
@@ -983,7 +990,8 @@ body {
     padding: 10px 14px;
   }
 
-  .dashboard .submit-card .field-label { font-size: 0.92rem; margin-bottom: 4px; }
+  .dashboard .submit-card .field-head { margin-bottom: 4px; }
+  .dashboard .submit-card .field-label { font-size: 0.92rem; }
 
   .dashboard .fear-input {
     flex: 1 1 0;
@@ -994,7 +1002,6 @@ body {
     padding: 10px 12px;
   }
 
-  .dashboard .submit-card .field-meta { margin-top: 4px; }
   .dashboard .submit-card .char-count { font-size: 0.75rem; }
 
   .dashboard .submit-card .optional-fields { margin-top: 8px; padding: 8px 10px; }
