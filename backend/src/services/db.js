@@ -215,6 +215,8 @@ export async function getPublicStats(env) {
     if (row.sex in sexCounts) sexCounts[row.sex] = row.n;
   }
 
+  const countryStats = buildCountryStats({ total: base.fears, rows: countries.results });
+
   return {
     fears: base.fears,
     apoyos: base.apoyos,
@@ -227,9 +229,15 @@ export async function getPublicStats(env) {
         sinClasificar: Math.max(0, base.fears - (sexCounts.hombre + sexCounts.mujer + sexCounts.otro)),
       },
       age: age.results.map((r) => ({ group: r.grp, count: r.n })),
-      countries: countries.results.map((r) => ({ code: r.country, count: r.n })),
+      countries: countryStats,
     },
   };
+}
+
+export function buildCountryStats({ total, rows }) {
+  const items = (rows || []).map((r) => ({ code: r.country, count: r.n }));
+  const sum = items.reduce((acc, r) => acc + r.count, 0);
+  return { items, sinClasificar: Math.max(0, total - sum) };
 }
 
 export async function getStats(env) {

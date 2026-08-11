@@ -7,6 +7,7 @@ import {
   SEX_OPTIONS,
   AGE_GROUPS,
 } from '../src/utils/validation.js';
+import { buildCountryStats } from '../src/services/db.js';
 
 test('normalizeSex acepta opciones válidas y rechaza el resto', () => {
   assert.equal(normalizeSex('hombre'), 'hombre');
@@ -46,4 +47,31 @@ test('normalizeCountry valida ISO2 y normaliza a mayúsculas', () => {
 
 test('SEX_OPTIONS contiene las 3 opciones de sexo', () => {
   assert.deepEqual(SEX_OPTIONS, ['hombre', 'mujer', 'otro']);
+});
+
+test('buildCountryStats cuenta todas las ocurrencias por país y el resto como S/C', () => {
+  const stats = buildCountryStats({
+    total: 37,
+    rows: [
+      { country: 'CL', n: 1 },
+      { country: 'ES', n: 3 },
+    ],
+  });
+  assert.deepEqual(stats.items, [
+    { code: 'CL', count: 1 },
+    { code: 'ES', count: 3 },
+  ]);
+  assert.equal(stats.sinClasificar, 33);
+  assert.equal(stats.items[0].count + stats.items[1].count + stats.sinClasificar, 37);
+});
+
+test('buildCountryStats sin países asigna todo a S/C', () => {
+  const stats = buildCountryStats({ total: 10, rows: [] });
+  assert.deepEqual(stats.items, []);
+  assert.equal(stats.sinClasificar, 10);
+});
+
+test('buildCountryStats sin filas ni total suma cero', () => {
+  const stats = buildCountryStats({ total: 0, rows: [] });
+  assert.equal(stats.sinClasificar, 0);
 });
