@@ -104,27 +104,35 @@
           <div class="optional-grid">
             <label class="optional-field">
               <span>Sexo</span>
-              <select id="fear-sex">
-                <option value="">Prefiero no decirlo</option>
-                <option value="hombre">Hombre</option>
-                <option value="mujer">Mujer</option>
-                <option value="otro">Otro</option>
-              </select>
+              <div class="opt-picker">
+                <input type="hidden" id="fear-sex" value="" />
+                <button type="button" class="opt-trigger" data-opt-value="" aria-haspopup="listbox" aria-expanded="false">Prefiero no decirlo</button>
+                <div class="opt-dropdown" role="listbox" aria-label="Sexo" hidden>
+                  <button type="button" class="opt-option" role="option" data-opt-value="">Prefiero no decirlo</button>
+                  <button type="button" class="opt-option" role="option" data-opt-value="hombre">Hombre</button>
+                  <button type="button" class="opt-option" role="option" data-opt-value="mujer">Mujer</button>
+                  <button type="button" class="opt-option" role="option" data-opt-value="otro">Otro</button>
+                </div>
+              </div>
             </label>
             <label class="optional-field">
               <span>Edad</span>
-              <select id="fear-age">
-                <option value="">Prefiero no decirlo</option>
-                <option value="0-19">0-19</option>
-                <option value="20-29">20-29</option>
-                <option value="30-39">30-39</option>
-                <option value="40-49">40-49</option>
-                <option value="50-59">50-59</option>
-                <option value="60-69">60-69</option>
-                <option value="70-79">70-79</option>
-                <option value="80-89">80-89</option>
-                <option value="90+">90-∞</option>
-              </select>
+              <div class="opt-picker">
+                <input type="hidden" id="fear-age" value="" />
+                <button type="button" class="opt-trigger" data-opt-value="" aria-haspopup="listbox" aria-expanded="false">Prefiero no decirlo</button>
+                <div class="opt-dropdown" role="listbox" aria-label="Edad" hidden>
+                  <button type="button" class="opt-option" role="option" data-opt-value="">Prefiero no decirlo</button>
+                  <button type="button" class="opt-option" role="option" data-opt-value="0-19">0-19</button>
+                  <button type="button" class="opt-option" role="option" data-opt-value="20-29">20-29</button>
+                  <button type="button" class="opt-option" role="option" data-opt-value="30-39">30-39</button>
+                  <button type="button" class="opt-option" role="option" data-opt-value="40-49">40-49</button>
+                  <button type="button" class="opt-option" role="option" data-opt-value="50-59">50-59</button>
+                  <button type="button" class="opt-option" role="option" data-opt-value="60-69">60-69</button>
+                  <button type="button" class="opt-option" role="option" data-opt-value="70-79">70-79</button>
+                  <button type="button" class="opt-option" role="option" data-opt-value="80-89">80-89</button>
+                  <button type="button" class="opt-option" role="option" data-opt-value="90+">90-∞</button>
+                </div>
+              </div>
             </label>
             <label class="optional-field">
               <span>País</span>

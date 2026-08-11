@@ -12,8 +12,7 @@ const MIN_LENGTH = 10;
 const MAX_LENGTH = 300;
 
 // Combobox de país: escribe para filtrar la lista; al elegir se guarda el código ISO2.
-if (countryInput && countryCode && countryDropdown && typeof COUNTRIES !== 'undefined') {
-  const COUNTRY_KEYS = Object.keys(COUNTRIES).sort((a, b) =>
+if (countryInput && countryCode && countryDropdown && typeof COUNTRIES !== 'undefined') {  const COUNTRY_KEYS = Object.keys(COUNTRIES).sort((a, b) =>
     COUNTRIES[a].localeCompare(COUNTRIES[b], 'es')
   );
 
@@ -61,6 +60,40 @@ if (countryInput && countryCode && countryDropdown && typeof COUNTRIES !== 'unde
     if (!e.target.closest('.country-picker')) countryDropdown.hidden = true;
   });
 }
+
+// Dropdowns personalizados de sexo/edad: opciones como texto normal (las traduce el navegador).
+document.querySelectorAll('.opt-picker').forEach((picker) => {
+  const trigger = picker.querySelector('.opt-trigger');
+  const dropdown = picker.querySelector('.opt-dropdown');
+  const hidden = picker.querySelector('input[type="hidden"]');
+
+  function close() {
+    dropdown.hidden = true;
+    trigger.setAttribute('aria-expanded', 'false');
+  }
+
+  trigger.addEventListener('click', () => {
+    const willOpen = dropdown.hidden;
+    dropdown.hidden = !willOpen;
+    trigger.setAttribute('aria-expanded', String(willOpen));
+  });
+
+  dropdown.addEventListener('click', (e) => {
+    const opt = e.target.closest('.opt-option');
+    if (!opt) return;
+    hidden.value = opt.dataset.optValue ?? '';
+    trigger.textContent = opt.textContent;
+    close();
+  });
+
+  trigger.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') close();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.opt-picker')) close();
+  });
+});
 
 input.addEventListener('input', () => {
   counter.textContent = `${input.value.length} / ${MAX_LENGTH}`;

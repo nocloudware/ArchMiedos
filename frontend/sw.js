@@ -1,4 +1,4 @@
-const CACHE = 'archmiedos-1786481541692';
+const CACHE = 'archmiedos-1786482171780';
 const SHELL = [
   '/',
   '/index.html',

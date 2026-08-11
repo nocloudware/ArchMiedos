@@ -183,8 +183,15 @@ body {
   color: var(--steel);
 }
 
-.optional-field select {
+/* Dropdown personalizado (sexo/edad): opciones como texto normal, traducibles por el navegador */
+.opt-picker { position: relative; }
+
+.opt-trigger {
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
   border: 2px solid var(--cream-dark);
   border-radius: 8px;
   background: #fffdf7;
@@ -192,13 +199,53 @@ body {
   font-family: var(--font-body);
   font-size: 0.9rem;
   color: var(--ink);
+  text-align: left;
+  cursor: pointer;
 }
 
-.optional-field select:focus {
+.opt-trigger::after {
+  content: '▾';
+  font-size: 0.72rem;
+  color: var(--steel);
+  flex-shrink: 0;
+}
+
+.opt-trigger:focus-visible,
+.opt-trigger[aria-expanded="true"] {
   outline: none;
   border-color: var(--olive);
   box-shadow: 0 0 0 4px rgba(90, 95, 60, 0.15);
 }
+
+.opt-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  max-height: 200px;
+  overflow-y: auto;
+  background: var(--paper);
+  border: 2px solid var(--cream-dark);
+  border-radius: 8px;
+  box-shadow: var(--shadow-soft);
+}
+
+.opt-option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--ink);
+  padding: 7px 10px;
+  cursor: pointer;
+}
+
+.opt-option:hover,
+.opt-option:focus-visible { background: rgba(90, 95, 60, 0.1); }
 
 .country-picker { position: relative; }
 
@@ -1021,8 +1068,8 @@ body {
   .dashboard .submit-card .optional-note { font-size: 0.78rem; margin-bottom: 6px; }
   .dashboard .submit-card .optional-grid { gap: 8px; margin-top: 6px; }
   .dashboard .submit-card .optional-field { gap: 2px; font-size: 0.72rem; }
-  .dashboard .submit-card .optional-field select,
-  .dashboard .submit-card .country-input { font-size: 0.8rem; padding: 6px 8px; }
+  .dashboard .submit-card .country-input,
+  .dashboard .submit-card .opt-trigger { font-size: 0.8rem; padding: 6px 8px; }
 
   .dashboard .submit-card .optional-fields,
   .dashboard .submit-card .btn-stamp,
