@@ -1,23 +1,8 @@
-const GROUPS = ['A-C', 'D-F', 'G-I', 'J-L', 'M-O', 'P-R', 'S-U', 'V-X', 'Y-Z'];
+// Portada: contador, último miedo y miedo al azar.
+// El certificado vive en card.js (cada tarjeta tiene "Obtener certificado").
 
-function escapeHtml(str) {
-  return String(str ?? '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
-}
-
-function formatDate(raw) {
-  const [datePart] = String(raw || '').split(' ');
-  const [y, m, d] = datePart.split('-');
-  return `${d}/${m}/${y}`;
-}
-
-function groupOfLetter(letter) {
-  const L = String(letter || '').toUpperCase();
-  return GROUPS.find((g) => L >= g[0] && L <= g[2]) || 'A-C';
+function fmt(n) {
+  return Number(n || 0).toLocaleString('es-CL');
 }
 
 // ---------- Contador ----------
@@ -35,10 +20,6 @@ async function loadHomeStats() {
   } catch {
     el.hidden = true;
   }
-}
-
-function fmt(n) {
-  return Number(n || 0).toLocaleString('es-CL');
 }
 
 // ---------- Del archivo: último + aleatorio ----------
@@ -66,180 +47,6 @@ if (randomBtn) randomBtn.addEventListener('click', () => loadFear('/api/fears/ra
 
 bindCardActions(fearCard);
 
-// ---------- Mi miedo (cookie am_mine) ----------
-const mineSection = document.getElementById('home-mine');
-let myFear = null;
-
-function readMineCookie() {
-  const raw = document.cookie.split(';').find((c) => c.trim().startsWith('am_mine='));
-  if (!raw) return [];
-  try {
-    return decodeURIComponent(raw.split('=').slice(1).join('=')).split(',').filter(Boolean);
-  } catch {
-    return [];
-  }
-}
-
-async function loadMine() {
-  const ids = readMineCookie();
-  if (!ids.length) return;
-  try {
-    const res = await fetch(`/api/fears/${ids[0]}`);
-    if (!res.ok) return;
-    const data = await res.json();
-    if (!data.item) return;
-    myFear = data.item;
-    const group = groupOfLetter(myFear.topic_letter);
-    document.getElementById('home-mine-text').textContent = `Depositaste: "${myFear.content}"`;
-    const link = document.getElementById('home-mine-link');
-    link.href = `/archive.html?cajon=${encodeURIComponent(group)}`;
-    link.textContent = `Verlo en el cajón ${group}`;
-    mineSection.hidden = false;
-  } catch {
-    /* sin panel */
-  }
-}
-
-// ---------- Certificado ----------
-const certBtn = document.getElementById('cert-btn');
-if (certBtn) certBtn.addEventListener('click', downloadCertificate);
-
-function downloadCertificate() {
-  if (!myFear) return;
-  const W = 1200;
-  const H = 900;
-  const cv = document.createElement('canvas');
-  cv.width = W;
-  cv.height = H;
-  const ctx = cv.getContext('2d');
-
-  ctx.fillStyle = '#faf5e9';
-  ctx.fillRect(0, 0, W, H);
-  ctx.strokeStyle = '#6b4f3a';
-  ctx.lineWidth = 14;
-  ctx.strokeRect(28, 28, W - 56, H - 56);
-  ctx.strokeStyle = '#c9a227';
-  ctx.lineWidth = 4;
-  ctx.setLineDash([16, 12]);
-  ctx.strokeRect(60, 60, W - 120, H - 120);
-  ctx.setLineDash([]);
-
-  ctx.textAlign = 'center';
-  ctx.fillStyle = '#4a3526';
-  ctx.font = '600 56px Georgia, serif';
-  ctx.fillText('Certificado de Superación', W / 2, 150);
-
-  ctx.font = 'italic 30px Georgia, serif';
-  ctx.fillText('El Archivo de Miedos certifica que este miedo fue depositado:', W / 2, 235);
-
-  ctx.font = 'italic 34px Georgia, serif';
-  const lines = wrapText(ctx, `«${myFear.content}»`, W - 200);
-  let y = 330;
-  lines.forEach((l) => {
-    ctx.fillText(l, W / 2, y);
-    y += 48;
-  });
-
-  ctx.font = '28px Georgia, serif';
-  ctx.fillText('Fue escrito, archivado y compartido en comunidad.', W / 2, y + 40);
-  ctx.fillText(`Fecha: ${formatDate(myFear.created_at)}`, W / 2, y + 90);
-
-  ctx.font = '600 30px Georgia, serif';
-  ctx.fillStyle = '#6b4f3a';
-  ctx.fillText('— Archivo de Miedos · Est. 1950 —', W / 2, y + 170);
-
-  drawRubberStamp(ctx, 186, H - 90, myFear.id, formatDate(myFear.created_at));
-
-  const a = document.createElement('a');
-  a.href = cv.toDataURL('image/png');
-  a.download = 'certificado-de-superacion.png';
-  a.click();
-}
-
-function wrapText(ctx, text, maxWidth) {
-  const words = text.split(' ');
-  const lines = [];
-  let line = '';
-  words.forEach((w) => {
-    const test = line ? line + ' ' + w : w;
-    if (ctx.measureText(test).width > maxWidth) {
-      lines.push(line);
-      line = w;
-    } else {
-      line = test;
-    }
-  });
-  if (line) lines.push(line);
-  return lines;
-}
-
-// Timbre de goma en verde suave, inclinado, con correlativo y fecha.
-// La tinta lleva textura de grano (puntos) como un timbre real.
-function drawRubberStamp(ctx, cx, cy, num, date) {
-  const SW = 300;
-  const SH = 80;
-  ctx.save();
-  ctx.translate(cx, cy);
-  ctx.rotate(-0.05);
-
-  ctx.strokeStyle = 'rgba(62, 142, 90, 0.72)';
-  ctx.lineWidth = 4;
-  roundRect(ctx, -SW / 2, -SH / 2, SW, SH, 14);
-  ctx.stroke();
-
-  roundRect(ctx, -SW / 2, -SH / 2, SW, SH, 14);
-  ctx.clip();
-
-  ctx.fillStyle = 'rgba(62, 142, 90, 0.14)';
-  ctx.fillRect(-SW / 2, -SH / 2, SW, SH);
-
-  const rng = mulberry32(20260810);
-  for (let i = 0; i < 2200; i++) {
-    const x = -SW / 2 + rng() * SW;
-    const y = -SH / 2 + rng() * SH;
-    const s = 1 + rng() * 2.2;
-    const isInk = rng() > 0.45;
-    ctx.fillStyle = isInk
-      ? `rgba(52, 122, 78, ${0.06 + rng() * 0.16})`
-      : `rgba(250, 245, 233, ${0.04 + rng() * 0.14})`;
-    ctx.fillRect(x, y, s, s);
-  }
-
-  ctx.fillStyle = 'rgba(52, 122, 78, 0.92)';
-  ctx.textAlign = 'center';
-  ctx.font = '400 26px "Special Elite", "Courier New", monospace';
-  ctx.fillText('Miedo Archivado', 0, -12);
-  ctx.font = '400 19px "Special Elite", "Courier New", monospace';
-  ctx.fillText(`N° ${num} · ${date}`, 0, 22);
-
-  ctx.restore();
-}
-
-function mulberry32(seed) {
-  let a = seed >>> 0;
-  return function () {
-    a |= 0;
-    a = (a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function roundRect(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + w - r, y);
-  ctx.arcTo(x + w, y, x + w, y + r, r);
-  ctx.lineTo(x + w, y + h - r);
-  ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
-  ctx.lineTo(x + r, y + h);
-  ctx.arcTo(x, y + h, x, y + h - r, r);
-  ctx.lineTo(x, y + r);
-  ctx.arcTo(x, y, x + r, y, r);
-  ctx.closePath();
-}
-
 // ---------- Service worker (PWA) ----------
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js').catch(() => {});
@@ -248,5 +55,4 @@ if ('serviceWorker' in navigator) {
 document.addEventListener('DOMContentLoaded', () => {
   loadHomeStats();
   loadFear('/api/fears/latest');
-  loadMine();
 });

@@ -39,9 +39,14 @@ function fearCardHTML(fear, index = 0) {
         </div>
       </div>
       <div class="fear-share">
-        <button class="share-btn" data-id="${fear.id}" data-content="${escapeHtml(fear.content)}" data-date="${fear.created_at}" data-apoyos="${fear.apoyos ?? 0}" data-fuerzas="${fear.fuerzas ?? 0}" data-topic="${escapeHtml(fear.topic || '')}" aria-label="Compartir este miedo en Bluesky">
-          Compartir en Bluesky ↗
-        </button>
+        <div class="fear-share-actions">
+          <button class="share-btn" data-id="${fear.id}" data-content="${escapeHtml(fear.content)}" data-date="${fear.created_at}" data-apoyos="${fear.apoyos ?? 0}" data-fuerzas="${fear.fuerzas ?? 0}" data-topic="${escapeHtml(fear.topic || '')}" aria-label="Compartir este miedo en Bluesky">
+            Compartir en Bluesky ↗
+          </button>
+          <button class="cert-btn" data-id="${fear.id}" data-content="${escapeHtml(fear.content)}" data-date="${fear.created_at}" aria-label="Descargar el certificado de este miedo">
+            Obtener certificado
+          </button>
+        </div>
         <span class="share-note">Se publica de forma anónima en @archmiedos.bsky.social</span>
       </div>
     </article>
@@ -50,6 +55,16 @@ function fearCardHTML(fear, index = 0) {
 
 function bindCardActions(rootEl) {
   rootEl.addEventListener('click', async (e) => {
+    const certBtn = e.target.closest('.cert-btn');
+    if (certBtn) {
+      downloadCertificate({
+        id: certBtn.dataset.id,
+        content: certBtn.dataset.content || '',
+        created_at: certBtn.dataset.date || '',
+      });
+      return;
+    }
+
     const shareBtn = e.target.closest('.share-btn');
     if (shareBtn) {
       await shareFear(shareBtn);
@@ -129,6 +144,57 @@ async function shareFear(btn) {
       }, 3500);
     }
   }
+}
+
+function downloadCertificate(fear) {
+  const W = 1200;
+  const H = 900;
+  const cv = document.createElement('canvas');
+  cv.width = W;
+  cv.height = H;
+  const ctx = cv.getContext('2d');
+
+  ctx.fillStyle = '#faf5e9';
+  ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = '#6b4f3a';
+  ctx.lineWidth = 14;
+  ctx.strokeRect(28, 28, W - 56, H - 56);
+  ctx.strokeStyle = '#c9a227';
+  ctx.lineWidth = 4;
+  ctx.setLineDash([16, 12]);
+  ctx.strokeRect(60, 60, W - 120, H - 120);
+  ctx.setLineDash([]);
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#4a3526';
+  ctx.font = '600 56px Georgia, serif';
+  ctx.fillText('Certificado de Superación', W / 2, 150);
+
+  ctx.font = 'italic 30px Georgia, serif';
+  ctx.fillText('El Archivo de Miedos certifica que este miedo fue depositado:', W / 2, 235);
+
+  ctx.font = 'italic 34px Georgia, serif';
+  const lines = wrapText(ctx, `«${fear.content}»`, W - 200);
+  let y = 330;
+  lines.forEach((l) => {
+    ctx.fillText(l, W / 2, y);
+    y += 48;
+  });
+
+  ctx.font = '28px Georgia, serif';
+  ctx.fillText('Fue escrito, archivado y compartido en comunidad.', W / 2, y + 40);
+  ctx.fillText(`Fecha: ${formatDate(fear.created_at)}`, W / 2, y + 90);
+
+  ctx.font = '600 30px Georgia, serif';
+  ctx.fillStyle = '#6b4f3a';
+  ctx.fillText('— Archivo de Miedos · Est. 1950 —', W / 2, y + 170);
+
+  drawRubberStamp(ctx, 186, H - 90, fear.id, formatDate(fear.created_at));
+
+  const a = document.createElement('a');
+  a.href = cv.toDataURL('image/png');
+  a.download = `certificado-de-superacion-${fear.id}.png`;
+  a.click();
 }
 
 async function renderFearCard(fear) {

@@ -386,13 +386,19 @@
 /* ---------- Compartir en Bluesky ---------- */
 .fear-share {
   display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid var(--cream-dark);
+  padding-top: 10px;
+  margin-top: 10px;
+}
+
+.fear-share-actions {
+  display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 8px;
-  border-top: 1px solid var(--cream-dark);
-  padding-top: 10px;
-  margin-top: 10px;
 }
 
 .share-btn {
@@ -409,6 +415,21 @@
 }
 
 .share-btn:hover { color: var(--accent-red); }
+
+.cert-btn {
+  border: none;
+  background: transparent;
+  color: var(--olive-dark);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline dashed;
+  transition: color 0.2s ease;
+}
+
+.cert-btn:hover { color: var(--accent-red); }
 
 .share-note {
   font-size: 0.72rem;
