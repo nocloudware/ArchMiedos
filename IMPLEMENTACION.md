@@ -37,6 +37,8 @@ todo lo demás           → env.ASSETS.fetch
 
 Todas las páginas llevan un menú vertical izquierdo (`<nav class="side-nav">`) con estética de archivador: `Inicio`, `Archivo` y los **9 cajones** (A-C…Y-Z) que abren el cajón en `/archive.html?cajon=X`, más `Términos` y `Misión`. Los cajones del menú son los mismos archivadores de la página de archivos y llenan el alto disponible. En la página de archivo, `archive.js` marca como activo el cajón según `?cajon=` y lo abre. En móvil (< 900px) el menú se oculta y se despliega desde un botón hamburguesa (izquierda → derecha, con backdrop), colapsando al elegir una opción o al pulsar Esc.
 
+**Protección contra el traductor del navegador.** Los rangos de letras (A-C…Y-Z) en el menú, las gavetas del archivo, el título del cajón abierto ("Archivo A-C") y el enlace de `miedo.html` **no existen como texto en el DOM**: se renderizan por CSS con `content: attr(data-letters)` (pseudo-elementos). Esto evita que el traductor integrado de Chrome (que ignora `translate="no"`/`notranslate` en tokens cortos y pierde el guion) los mangllee. Como refuerzo para Firefox/Edge, los enlaces de cajón llevan además `class="notranslate"` y `translate="no"`. No reemplazar estas etiquetas por texto plano.
+
 `mision.html` muestra el contenido de `README.md` cargándolo en vivo desde `raw.githubusercontent.com` (CORS `*`) y renderizándolo con `marked` (CDN jsdelivr, pinned v12). El renderer escapa HTML crudo del markdown (no se inyecta HTML arbitrario) y abre enlaces externos en otra pestaña. Así la página refleja cualquier actualización del README sin redeploy.
 
 ### Configuración (`wrangler.jsonc`)
@@ -66,6 +68,9 @@ Todas las páginas llevan un menú vertical izquierdo (`<nav class="side-nav">`)
 | is_reported | BOOLEAN | |
 | status | TEXT | pending / approved / rejected |
 | moderation_comment | TEXT | motivo de la moderación |
+| sex | TEXT | opcional: `hombre` / `mujer` / `otro`, o NULL si se omitió |
+| age_group | TEXT | opcional: `0-19` … `90+`, o NULL si se omitió |
+| country | TEXT | opcional: código ISO 3166-1 alpha-2 (mayúsculas), o NULL si se omitió |
 
 **Agrupación por letra.** Los archivadores agrupan por el **tema real del miedo**, no por la primera letra de la frase: "Tengo miedo a las arañas" queda en la letra **A**. En `POST /api/fears`, `services/classify.js` llama a Workers AI (`@cf/meta/llama-3.3-70b-instruct-fp8-fast`, `temperature: 0`) para identificar el **miedo de fondo** (concepto emocional) entre una taxonomía de referencia (fracaso, rechazo, abandono, soledad, maltrato, muerte, enfermedad, oscuridad, etc.): "Tengo miedo a mi papá" → `maltrato` (M); "Tengo miedo a que nadie ocupe esta app" → `abandono` (A). De ahí se deriva `topic` y `topic_letter` (normalizada a A–Z, sin acentos). Si la IA falla, cae a una heurística en español (patrones "miedo a las X", "me da miedo la X", "me asusta la X", etc.); como último recurso usa la primera letra del contenido. Las consultas públicas filtran por `topic_letter`. La columna generada `first_letter` queda como legado sin uso.
 
@@ -110,7 +115,7 @@ GET  /api/fears/:id                            Un miedo aprobado por id
 POST /api/fears                                { content } → modera + clasifica + guarda
 POST /api/fears/:id/reaction                   { type: "apoyo"|"fuerza" } → reacciona (cookie)
 POST /api/fears/:id/share                      Publica el miedo de forma anónima en @archmiedos.bsky.social → { url }
-GET  /api/stats                                Contadores públicos: miedos/apoyos/fuerzas aprobados
+GET  /api/stats                                Contadores públicos + demographics (sex / age / countries)
 ```
 
 `POST /api/fears` devuelve `201` (aprobado) o `202` (en revisión) e incluye `classification: { topic, letter, group }` con el tema extraído por IA, la letra y el rango de cajón (A-C…Y-Z). El frontend muestra al usuario dónde quedó archivado su miedo y el tema detectado. El rate limit es de 5 envíos/día por IP (hash).
@@ -128,6 +133,24 @@ POST   /api/admin/reclassify       reclasifica todos los miedos por tema (IA); b
 ```
 
 Las credenciales de admin se leen de los secretos `ADMIN_USERNAME` / `ADMIN_PASSWORD` (en `.dev.vars` para local). Comparación con `timingSafeEqual`.
+
+## Panel demográfico
+
+El formulario de depósito (`frontend/index.html` + `scripts/submit.js`) permite indicar de forma **opcional y anónima** sexo (`hombre`/`mujer`/`otro`), rango de edad (`0-19` … `90+`, 9 rangos) y país (combobox con lista de países y código ISO2 oculto). Si no se indican, se guardan como `NULL` — el miedo se deposita igual. La validación se centraliza en `utils/validation.js` (`normalizeSex`, `normalizeAgeGroup`, `normalizeCountry`), que normalizan y rechazan valores inválidos.
+
+`GET /api/stats` agrega en `demographics`:
+
+```json
+{
+  "demographics": {
+    "sex": { "hombres": 12, "mujeres": 20, "otro": 3, "sinClasificar": 5 },
+    "age": [{ "group": "20-29", "count": 11 }, { "group": "30-39", "count": 7 }],
+    "countries": [{ "code": "CL", "count": 8 }, { "code": "ES", "count": 5 }]
+  }
+}
+```
+
+`sex.sinClasificar` = aprobados totales − suma de los 3 sexos (quienes omitieron el dato); el frontend lo muestra como **N/C**. `countries` solo incluye países reales con al menos un depósito: **no existe fila S/C** (si no hay datos se muestra "Sin datos"). La portada renderiza las tres columnas con `home.js` (`demographicsHTML`); las banderas son SVG locales (`countryFlag`). Persistencia: `database/migrate_demographics.sql` añade `sex`, `age_group` y `country` a `fears` (con índices).
 
 ## Flujo de moderación
 
@@ -183,7 +206,7 @@ Cada ficha del archivo y de la portada tiene un botón "Compartir en Bluesky". `
 
   ![El Archivo](screenshots/archivo.png)
 
-- **Portada tipo dashboard**: menú + columna principal (título, hero, depósito, "Tu miedo") + sidebar derecho de 25% con contadores (miedos/apoyos/fuerzas) arriba y "Del archivo" (último + aleatorio) abajo; sin scroll en desktop (≥900px), apilado en móvil.
+- **Portada tipo dashboard**: menú + columna principal (título, hero, depósito con datos demográficos opcionales, "Tu miedo") + sidebar derecho de 25% con "El archivo en cifras" (contadores miedos/apoyos/fuerzas + **panel demográfico** de Sexo/Países/Edad) arriba y "Del archivo" (último + aleatorio) abajo; sin scroll en desktop (≥900px), apilado en móvil.
 
   ![Portada](screenshots/inicio.png)
 - **Mi miedo**: cookie `am_mine` (ids de depósitos del visitante) → panel "Tu miedo" con enlace al cajón y **certificado de superación** (PNG generado en canvas).

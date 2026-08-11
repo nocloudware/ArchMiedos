@@ -22,6 +22,8 @@ Es muy fácil. No necesitas cuenta, correo ni contraseña.
 
 1. **Deposita tu miedo.** En la portada, escribe lo que te da miedo (entre 10 y 300 caracteres) y pulsa *"Depositar en el Archivo"*. Eso es todo.
 
+   Puedes añadir, si quieres, **datos demográficos opcionales y anónimos** (sexo, rango de edad y país) para el panel de cifras. Es opcional y nadie sabe quién depositó qué.
+
    ![Portada](screenshots/inicio.png)
 
 2. **Explora el archivo.** Nueve archivadores de oficina guardan los miedos por el **tema real que los provoca** — una inteligencia artificial clasifica cada depósito y lo archiva donde corresponde (por ejemplo, *"tengo miedo a las arañas"* queda en la A). Abre un cajón y recorre las fichas como un **carrusel**: flechas en escritorio o desliza con el dedo en el móvil.
@@ -37,6 +39,7 @@ Es muy fácil. No necesitas cuenta, correo ni contraseña.
 ## Lo que hace especial a este lugar
 
 - **Anónimo de verdad.** No se pide nombre, correo ni datos personales. No hay cuentas, no hay perfiles, no hay seguimiento.
+- **Un archivo con caras (anónimas).** El formulario permite indicar de forma **opcional** sexo, rango de edad y país. El panel *"El archivo en cifras"* los agrega en la portada (Sexo, Países y Edad) sin vincularlos a ningún depósito en particular.
 - **Sin juicios.** Un miedo no se juzga: se archiva.
 - **Moderado con cuidado.** Cada miedo pasa por una revisión automática con inteligencia artificial y, cuando hace falta, por revisión humana, para que el archivo siga siendo un espacio seguro.
 - **Clasificado por IA.** Una inteligencia artificial identifica el miedo de fondo de cada depósito y lo archiva en el cajón que le corresponde por tema.
