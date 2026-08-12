@@ -26,13 +26,7 @@
   <link rel="stylesheet" href="/styles/main.css" />
   <link rel="stylesheet" href="/styles/archive.css" />
   <link rel="stylesheet" href="/styles/dark.css" />
-  <script>
-    (function () {
-      var t = localStorage.getItem('am.theme');
-      var s = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', t === 'light' || t === 'dark' ? t : s);
-    })();
-  </script>
+  <script src="/scripts/theme.js"></script>
 </head>
 <body class="page-archive has-side-nav">
   <div class="paper-texture"></div>
@@ -133,7 +127,6 @@
   </div>
 
   <script src="/scripts/nav.js" defer></script>
-  <script src="/scripts/theme.js" defer></script>
   <script src="/scripts/card.js"></script>
   <script src="/scripts/archive.js"></script>
 </body>

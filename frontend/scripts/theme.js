@@ -1,6 +1,6 @@
 // Tema claro/oscuro: persistente en localStorage, default = preferencia del sistema.
-// El atributo data-theme="dark" se aplica sobre <html> antes del primer paint
-// desde un script inline en <head> (evita el parpadeo); este archivo enlaza el toggle.
+// Se carga SÍNCRONO en <head> (antes del primer paint) para que data-theme ya esté
+// aplicado cuando el CSS pinta, sin parpadeo. La CSP no permite inline scripts.
 const THEME_KEY = 'am.theme';
 const mq = window.matchMedia('(prefers-color-scheme: dark)');
 const root = document.documentElement;
@@ -26,14 +26,16 @@ function apply(theme) {
   });
 }
 
-document.querySelectorAll('.theme-toggle').forEach((btn) => {
-  btn.addEventListener('click', () => {
-    localStorage.setItem(THEME_KEY, effectiveTheme() === 'dark' ? 'light' : 'dark');
-    apply(effectiveTheme());
+apply(effectiveTheme());
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.theme-toggle').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      localStorage.setItem(THEME_KEY, effectiveTheme() === 'dark' ? 'light' : 'dark');
+      apply(effectiveTheme());
+    });
   });
 });
-
-apply(effectiveTheme());
 
 // Si el usuario no eligió tema explícito, sigue en vivo al sistema.
 const onSystemChange = () => {

@@ -167,8 +167,15 @@ El formulario de depósito (`frontend/index.html` + `scripts/submit.js`) permite
 - **Sanitización**: el contenido se escapa en el frontend (`escapeHtml`) antes de insertarse en el DOM.
 - Los secrets (`ADMIN_USERNAME`, `ADMIN_PASSWORD`, credenciales de cuenta) están gitignoreados.
 
-## Integración con Bluesky (AT Protocol)
+## Indexación (SEO)
 
+- **SSR de fichas**: cada miedo aprobado tiene su URL canónica `/miedo/{id}` renderizada en el servidor (`renderMiedo` en `src/index.js`) con título y descripción derivados del contenido, OG tags y JSON-LD (`Article`). No depende de JS.
+- **Sitemap dinámico**: `/sitemap.xml` lo genera el worker (`renderSitemap`) con las páginas core + todas las fichas `/miedo/` aprobadas (`db.listApprovedForSitemap`). El sitemap estático ya no existe.
+- **Links internos**: cada tarjeta de miedo (`fearCardHTML` en `scripts/card.js`) enlaza a su ficha (`ver ficha`), dándole al crawler un camino desde la portada y el archivo.
+- **Robots**: `robots.txt` bloquea `/admin.html` y `/api/`. El subdominio `*.workers.dev` responde con `X-Robots-Tag: noindex, nofollow` (`withNoindex`) para evitar contenido duplicado con el dominio propio.
+- **Nota**: el toggle de tema se carga como `theme.js` **síncrono en `<head>`** (no inline): la CSP `script-src 'self'` bloquea scripts inline, así que el no-FOUC requiere script externo antes del primer paint.
+
+## Integración con Bluesky (AT Protocol)
 ### 1. Tarjeta al compartir enlaces (cuenta `nocloudware.bsky.social`)
 
 Al compartir un enlace del sitio en Bluesky se muestra una tarjeta. Se usan dos mecanismos (implementados según el patrón del proyecto Bluesk-AI):

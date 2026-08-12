@@ -53,6 +53,13 @@ export async function getLatestApproved(env) {
   return env.DB.prepare(`SELECT ${APPROVED_FIELDS} FROM fears WHERE is_approved = 1 ORDER BY created_at DESC, id DESC LIMIT 1`).first();
 }
 
+export async function listApprovedForSitemap(env) {
+  const res = await env.DB.prepare(
+    'SELECT id, created_at FROM fears WHERE is_approved = 1 ORDER BY created_at DESC'
+  ).all();
+  return res.results || [];
+}
+
 export async function getShareByFear(env, fearId) {
   return env.DB.prepare('SELECT * FROM shares WHERE fear_id = ?').bind(fearId).first();
 }

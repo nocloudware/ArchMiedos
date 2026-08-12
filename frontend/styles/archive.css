@@ -317,6 +317,14 @@
   margin: -6px 0 10px;
 }
 
+.fear-permalink {
+  color: var(--brown);
+  text-decoration: underline dashed;
+  transition: color 0.2s ease;
+}
+
+.fear-permalink:hover { color: var(--accent-red); }
+
 .fear-meta {
   display: flex;
   align-items: center;

@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Un miedo depositado en el Archivo de Miedos" />
+  <meta name="description" content="{{OG_DESC}}" />
   <link rel="canonical" href="{{OG_URL}}" />
   <link rel="icon" type="image/png" href="/icons/favicon.png" />
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#6b4f3a" />
   <link rel="apple-touch-icon" href="/icons/icon-192.png" />
   <link rel="site.standard.publication" href="at://did:plc:nejaotrk4vruebohcrcaes57/site.standard.publication/archmiedos" />
+  <script type="application/ld+json">{{JSON_LD}}</script>
   <meta property="og:site_name" content="Archivo de Miedos" />
   <meta property="og:title" content="{{OG_TITLE}}" />
   <meta property="og:description" content="{{OG_DESC}}" />
@@ -28,13 +29,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Special+Elite&family=Kalam:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles/main.css" />
   <link rel="stylesheet" href="/styles/dark.css" />
-  <script>
-    (function () {
-      var t = localStorage.getItem('am.theme');
-      var s = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', t === 'light' || t === 'dark' ? t : s);
-    })();
-  </script>
+  <script src="/scripts/theme.js"></script>
 </head>
 <body class="page-home has-side-nav">
   <div class="paper-texture"></div>
@@ -120,6 +115,5 @@
   </footer>
 
   <script src="/scripts/nav.js" defer></script>
-  <script src="/scripts/theme.js" defer></script>
 </body>
 </html>

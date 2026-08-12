@@ -25,13 +25,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Special+Elite&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles/main.css" />
   <link rel="stylesheet" href="/styles/dark.css" />
-  <script>
-    (function () {
-      var t = localStorage.getItem('am.theme');
-      var s = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', t === 'light' || t === 'dark' ? t : s);
-    })();
-  </script>
+  <script src="/scripts/theme.js"></script>
 </head>
 <body class="page-home has-side-nav">
   <div class="paper-texture"></div>
@@ -187,6 +181,5 @@
     </p>
   </footer>
   <script src="/scripts/nav.js" defer></script>
-  <script src="/scripts/theme.js" defer></script>
 </body>
 </html>

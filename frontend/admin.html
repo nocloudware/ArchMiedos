@@ -25,13 +25,7 @@
   <link rel="stylesheet" href="/styles/main.css" />
   <link rel="stylesheet" href="/styles/admin.css" />
   <link rel="stylesheet" href="/styles/dark.css" />
-  <script>
-    (function () {
-      var t = localStorage.getItem('am.theme');
-      var s = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', t === 'light' || t === 'dark' ? t : s);
-    })();
-  </script>
+  <script src="/scripts/theme.js"></script>
 </head>
 <body class="page-admin has-side-nav">
   <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false">
@@ -161,7 +155,6 @@
   </footer>
 
   <script src="/scripts/nav.js" defer></script>
-  <script src="/scripts/theme.js" defer></script>
   <script src="/scripts/admin.js"></script>
 </body>
 </html>

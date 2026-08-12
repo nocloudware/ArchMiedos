@@ -21,7 +21,7 @@ function fearCardHTML(fear, index = 0) {
   return `
     <article class="fear-card"${anim}>
       <p class="fear-text">${escapeHtml(fear.content)}</p>
-      <span class="fear-topic">tema: ${escapeHtml(fear.topic || '—')}</span>
+      <span class="fear-topic">tema: ${escapeHtml(fear.topic || '—')} · <a class="fear-permalink" href="/miedo/${fear.id}">ver ficha</a></span>
       <div class="fear-meta">
         <span class="fear-stamp">
           <span class="fear-stamp-line">Miedo Archivado</span>
