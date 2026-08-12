@@ -199,7 +199,7 @@ Si cambian los records, actualizar los `<link rel>` embebidos en los HTML con la
 
 Cada ficha del archivo y de la portada tiene un botón "Compartir en Bluesky". `POST /api/fears/:id/share` (`services/bluesky.js`):
 - El frontend renderiza la **tarjeta del miedo como imagen** (`scripts/card.js` → `renderFearCard`, canvas con tipografía de la página: **Special Elite** en títulos y **Kalam** manuscrita en el cuerpo; incluye texto del miedo, fecha, apoyos 🫂, fuerzas 💪 y `Tema:` centrado) y la envía en el body como `image` (data URL PNG).
-- El backend sube la imagen (`uploadBlob`) y crea un post `app.bsky.feed.post` con `app.bsky.embed.images` (imagen simple, sin crop). El texto del post es el encabezado anónimo + **link a la página de inicio** con **facet** (`app.bsky.richtext.facet` → link clickeable). El **alt-text** de la imagen incluye el texto del miedo y los contadores. Si no hay imagen, cae al post de solo texto con link.
+- El backend sube la imagen (`uploadBlob`) y crea un post `app.bsky.feed.post` con `app.bsky.embed.images` (imagen simple, sin crop). El texto del post es el encabezado anónimo + **link a la ficha del miedo** (`/miedo/{id}`, la página SSR indexable) con **facet** (`app.bsky.richtext.facet` → link clickeable). El **alt-text** de la imagen incluye el texto del miedo y los contadores. Si no hay imagen, cae al post de solo texto con link.
 - Dedup con validación: `getRecord` verifica que el post exista y tenga imagen; si fue borrado o es de solo texto, se recrea con la tarjeta y se actualiza la fila de `shares`. Rate limit: 10/día por IP.
 - Credenciales en secretos `BSKY_HANDLE` / `BSKY_APP_PASSWORD` (y `.dev.vars` local).
 

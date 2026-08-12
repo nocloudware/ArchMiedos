@@ -116,12 +116,12 @@ async function shareFear(request, env, idStr) {
     return json({ error: 'La imagen es demasiado grande. Máximo 2 MB.' }, 413);
   }
 
-  const homeUrl = `${SITE_BASE}/`;
+  const fearUrl = `${SITE_BASE}/miedo/${fearId}`;
   const imageBytes = image ? Uint8Array.from(atob(image), (c) => c.charCodeAt(0)) : null;
 
-  const text = `📁 Un miedo depositado en el Archivo de Miedos (anonimo)\n\n${homeUrl}`;
+  const text = `📁 Un miedo depositado en el Archivo de Miedos (anonimo)\n\n${fearUrl}`;
 
-  const postOpts = { link: homeUrl };
+  const postOpts = { link: fearUrl };
   if (image) {
     postOpts.imageBytes = imageBytes;
     postOpts.alt = `Miedo anónimo: "${String(fear.content).slice(0, 220)}". Apoyos: ${fear.apoyos ?? 0} · Fuerzas: ${fear.fuerzas ?? 0}`;
